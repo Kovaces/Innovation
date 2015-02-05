@@ -1,0 +1,72 @@
+﻿using System.Linq;
+using Innovation.Models.Enums;
+using System.Collections.Generic;
+
+namespace Innovation.Models
+{
+	public class Stack
+	{
+		public List<Card> Cards { get; set; } //TODO: make this private and create methods with validations for adding cards to the stack to ensure consistant color
+		public SplayDirection SplayedDirection { get; set; }
+
+		public Card GetTopCard()
+		{
+			return Cards.Last();
+		}
+
+		public int GetSymbolCount(Symbol symbol)
+		{
+			return GetSymbolCounts()[symbol];
+		}
+
+		public Dictionary<Symbol, int> GetSymbolCounts()
+		{
+			var retVal = new Dictionary<Symbol, int>()
+			{
+				{ Symbol.Blank, 0 },
+				{ Symbol.Clock, 0 },
+				{ Symbol.Crown, 0 },
+				{ Symbol.Factory, 0 },
+				{ Symbol.Leaf, 0 },
+				{ Symbol.Lightbulb, 0 },
+				{ Symbol.Tower, 0 },
+			};
+
+			Cards.ForEach(c => CountSymbols(retVal, c));
+			
+			return retVal;
+		}
+		
+		private void CountSymbols(Dictionary<Symbol, int> retVal, Card card)
+		{
+			if (Cards.Last() == card)
+			{
+				retVal[card.Top] = retVal[card.Top] + 1;
+				retVal[card.Left] = retVal[card.Left] + 1;
+				retVal[card.Center] = retVal[card.Center] + 1;
+				retVal[card.Right] = retVal[card.Right] + 1;
+			}
+			else
+			{
+				switch (SplayedDirection)
+				{
+					case SplayDirection.Left:
+						retVal[card.Right] = retVal[card.Right] + 1;
+						break;
+					case SplayDirection.Right:
+						retVal[card.Top] = retVal[card.Top] + 1;
+						retVal[card.Left] = retVal[card.Left] + 1;
+						break;
+					case SplayDirection.Up:
+						retVal[card.Left] = retVal[card.Left] + 1;
+						retVal[card.Center] = retVal[card.Center] + 1;
+						retVal[card.Right] = retVal[card.Right] + 1;
+						break;
+					case SplayDirection.None:
+						break;
+				}
+			}
+			
+		}
+	}
+}
