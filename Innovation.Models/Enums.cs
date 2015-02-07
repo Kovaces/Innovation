@@ -27,4 +27,11 @@
 		Right,
 		Up
 	}
+	
+	public enum ActionType
+	{
+		Optional,
+		Required,
+		Demand
+	}
 }

@@ -6,12 +6,18 @@ namespace Innovation.Models
 {
 	public class Stack
 	{
-		public List<Card> Cards { get; set; } //TODO: make this private and create methods with validations for adding cards to the stack to ensure consistant color
+		public Stack()
+		{
+			Cards = new List<ICard>();
+			SplayedDirection = SplayDirection.None;
+		}
+
+		public List<ICard> Cards { get; set; } //TODO: make this private and create methods with validations for adding cards to the stack to ensure consistant color
 		public SplayDirection SplayedDirection { get; set; }
 
-		public Card GetTopCard()
+		public ICard GetTopCard()
 		{
-			return Cards.Last();
+			return Cards.Any() ? Cards.Last() : null;
 		}
 
 		public int GetSymbolCount(Symbol symbol)
@@ -37,7 +43,7 @@ namespace Innovation.Models
 			return retVal;
 		}
 		
-		private void CountSymbols(Dictionary<Symbol, int> retVal, Card card)
+		private void CountSymbols(Dictionary<Symbol, int> retVal, ICard card)
 		{
 			if (Cards.Last() == card)
 			{

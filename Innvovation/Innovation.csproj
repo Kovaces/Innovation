@@ -39,11 +39,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Actions\Achieve.cs" />
-    <Compile Include="Actions\Dogma.cs" />
-    <Compile Include="Actions\Draw.cs" />
-    <Compile Include="Actions\Meld.cs" />
-    <Compile Include="Game.cs" />
     <Compile Include="PlaceHolder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

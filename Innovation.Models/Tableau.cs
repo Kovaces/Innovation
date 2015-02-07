@@ -6,13 +6,27 @@ namespace Innovation.Models
 {
 	public class Tableau
 	{
+		public Tableau()
+		{
+			NumberOfAchievements = 0;
+			ScorePile = new List<ICard>();
+			Stacks = new Dictionary<Color, Stack>
+			{
+				{Color.Blue, new Stack()},
+				{Color.Green, new Stack()},
+				{Color.Purple, new Stack()},
+				{Color.Red, new Stack()},
+				{Color.Yellow, new Stack()},
+			};
+		}
+
 		public Dictionary<Color, Stack> Stacks { get; set; }
 		public int NumberOfAchievements { get; set; }
-		public List<Card> ScorePile { get; set; }
+		public List<ICard> ScorePile { get; set; }
 
 		public int GetHighestAge()
 		{
-			return Stacks.Max(s => s.Value.GetTopCard().Age);
+			return Stacks.Max(s => (s.Value.GetTopCard() != null ? s.Value.GetTopCard().Age : 1));
 		}
 
 		public int GetScore()

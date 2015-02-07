@@ -15,12 +15,12 @@ namespace Innovation.Actions
 		/// </summary>
 		/// <param name="age">The Age of the Card to Draw</param>
 		/// <param name="game">The Game to perform the Action in</param>
-		public static Card Action(int age, Game game)
+		public static ICard Action(int age, Game game)
 		{
 			return GetCard(age, game);
 		}
 
-		private static Card GetCard(int age, Game game)
+		private static ICard GetCard(int age, Game game)
 		{
 			var ageDeck = game.AgeDecks.First(d => d.Age.Equals(age));
 			var drawnCard = ageDeck.Draw();
