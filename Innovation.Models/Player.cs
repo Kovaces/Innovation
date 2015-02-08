@@ -10,9 +10,13 @@ namespace Innovation.Models
 		public List<ICard> Hand { get; set; }
 		public string Team { get; set; } //the base rules support team play but implementing that is low on the priority list
 
-		public ICard PickCardFromHand(IEnumerable<ICard> cardsToSelectFrom)
+		public ICard PickCardFromHand()
 		{
-			throw new System.NotImplementedException();
+			return PickCardFromHand(Hand);
 		}
-	}
+        public ICard PickCardFromHand(IEnumerable<ICard> cardsToSelectFrom)
+        {
+            throw new System.NotImplementedException();
+        }
+    }
 }

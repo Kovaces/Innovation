@@ -22,6 +22,8 @@ namespace Innovation.Actions
 
 		private static ICard GetCard(int age, Game game)
 		{
+			age = Math.Min(Math.Max(age, 1), 10);
+
 			var ageDeck = game.AgeDecks.First(d => d.Age.Equals(age));
 			var drawnCard = ageDeck.Draw();
 

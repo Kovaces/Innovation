@@ -20,8 +20,16 @@ namespace Innovation.Models
 
 			var drawnCard = Cards[0];
 			Cards.RemoveAt(0);
-			
+
 			return drawnCard;
+		}
+
+		public void InsertAtEnd(ICard card)
+		{
+			if (Cards.Count > 0)
+				Cards.Insert(Cards.Count, card);
+			else
+				Cards.Add(card);
 		}
 	}
 }

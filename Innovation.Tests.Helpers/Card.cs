@@ -15,6 +15,7 @@ namespace Innovation.Tests.Helpers
 		public Symbol Center { get; set; }
 		public Symbol Right { get; set; }
 
+		public string Name { get; set; }
 		public int Age { get; set; }
 		public Color Color { get; set; }
 		public IEnumerable<CardAction> Actions { get; set; }

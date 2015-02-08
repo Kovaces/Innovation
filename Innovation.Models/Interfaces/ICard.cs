@@ -10,6 +10,7 @@ namespace Innovation.Models
 		Symbol Center { get; }
 		Symbol Right { get; }
 
+		string Name { get; }
 		int Age { get; }
 		Color Color { get; }
 		IEnumerable<CardAction> Actions { get; }

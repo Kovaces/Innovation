@@ -40,6 +40,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Achieve.cs" />
+    <Compile Include="Score.cs" />
+    <Compile Include="Return.cs" />
     <Compile Include="Dogma.cs" />
     <Compile Include="Draw.cs" />
     <Compile Include="Meld.cs" />
