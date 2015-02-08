@@ -50,7 +50,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="Helpers\Card.cs" />
+    <Compile Include="DeckTests.cs" />
     <Compile Include="StackTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TableauTests.cs" />
@@ -59,6 +59,10 @@
     <ProjectReference Include="..\Innovation.Models\Innovation.Models.csproj">
       <Project>{36480362-a948-4c1c-aaa8-3d21eaa25d9b}</Project>
       <Name>Innovation.Models</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Innovation.Tests.Helpers\Innovation.Tests.Helpers.csproj">
+      <Project>{a878e64f-8d34-46ce-adb2-6020cf3cea3c}</Project>
+      <Name>Innovation.Tests.Helpers</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>

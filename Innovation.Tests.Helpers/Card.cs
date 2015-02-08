@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Innovation.Models;
 using Innovation.Models.Enums;
 
-namespace Innovation.Models.Tests.Helpers
+namespace Innovation.Tests.Helpers
 {
 	public class Card : ICard
 	{

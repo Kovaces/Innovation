@@ -2,8 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using Innovation.Models.Enums;
-using Innovation.Models.Tests.Helpers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Innovation.Tests.Helpers;
 
 
 namespace Innovation.Models.Tests

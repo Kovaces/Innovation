@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Innovation.Models.Enums;
-using Innovation.Models.Tests.Helpers;
+using Innovation.Tests.Helpers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Innovation.Models.Tests

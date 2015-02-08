@@ -9,5 +9,10 @@ namespace Innovation.Models
 		public Tableau Tableau { get; set; }
 		public List<ICard> Hand { get; set; }
 		public string Team { get; set; } //the base rules support team play but implementing that is low on the priority list
+
+		public ICard PickCardFromHand(IEnumerable<ICard> lowestCards)
+		{
+			throw new System.NotImplementedException();
+		}
 	}
 }

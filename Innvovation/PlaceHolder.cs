@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Innvovation
+namespace Innovation
 {
 	class PlaceHolder
 	{
@@ -12,12 +12,6 @@ namespace Innvovation
 
 
 		/*
-		 * Actions
-		 *		Meld
-		 *		Draw
-		 *		Achieve
-		 *		Dogma
-		 *		
 		 * Create game
 		 *		Create Age Decks
 		 *		Create Special Achievement Decks

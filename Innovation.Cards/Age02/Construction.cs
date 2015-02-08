@@ -19,11 +19,11 @@ namespace Innovation.Cards
             {
                 return new List<CardAction>(){
                     new CardAction(ActionType.Demand,Symbol.Tower,"I demand you transfer two cards from your hand to my hand! Draw a [2]!", Action1)
-                    ,new CardAction(ActionType.Required,Symbol.Tower,"If you are the only player with five to cards, claim the Empire achievement.", Action2)
+                    ,new CardAction(ActionType.Required,Symbol.Tower,"If you are the only player with five top cards, claim the Empire achievement.", Action2)
                 };
             }
         }
-        void Action1(object[] parameters) { throw new NotImplementedException(); }
-        void Action2(object[] parameters) { throw new NotImplementedException(); }
+        bool Action1(object[] parameters) { throw new NotImplementedException(); }
+        bool Action2(object[] parameters) { throw new NotImplementedException(); }
     }
 }

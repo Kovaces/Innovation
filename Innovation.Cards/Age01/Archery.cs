@@ -23,6 +23,6 @@ namespace Innovation.Cards
                 };
             }
         }
-        void Action1(object[] parameters) { throw new NotImplementedException(); }
+        bool Action1(object[] parameters) { throw new NotImplementedException(); }
     }
 }

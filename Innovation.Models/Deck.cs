@@ -5,6 +5,11 @@ namespace Innovation.Models
 {
 	public class Deck
 	{
+		public Deck()
+		{
+			Cards = new List<ICard>();
+		}
+
 		public List<ICard> Cards { get; set; }
 		public int Age { get; set; }
 

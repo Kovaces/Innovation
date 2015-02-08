@@ -2,7 +2,7 @@
 
 namespace Innovation.Models
 {
-	public delegate void CardActionDelegate(object[] parameters);
+	public delegate bool CardActionDelegate(object[] parameters);
 
 	public class CardAction
 	{
