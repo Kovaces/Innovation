@@ -10,7 +10,7 @@ namespace Innovation.Models
 		public List<ICard> Hand { get; set; }
 		public string Team { get; set; } //the base rules support team play but implementing that is low on the priority list
 
-		public ICard PickCardFromHand(IEnumerable<ICard> lowestCards)
+		public ICard PickCardFromHand(IEnumerable<ICard> cardsToSelectFrom)
 		{
 			throw new System.NotImplementedException();
 		}

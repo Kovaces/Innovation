@@ -1,6 +1,7 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using Innovation.Actions;
 using Innovation.Models;
 using Innovation.Models.Enums;
 namespace Innovation.Cards
@@ -23,6 +24,41 @@ namespace Innovation.Cards
                 };
             }
         }
-        bool Action1(object[] parameters) { throw new NotImplementedException(); }
+        bool Action1(object[] parameters)
+        {
+            if (parameters.Length < 2)
+                throw new ArgumentOutOfRangeException("parameters", "Parameter list must include Player and Game");
+
+            var targetPlayer = parameters[0] as Player;
+            if (targetPlayer == null)
+                throw new NullReferenceException("Target player cannot be null");
+
+            var game = parameters[1] as Game;
+            if (game == null)
+                throw new NullReferenceException("Game cannot be null");
+
+            var currentPlayer = parameters[2] as Player;
+            if (currentPlayer == null)
+                throw new NullReferenceException("Current player cannot be null");
+
+            targetPlayer.Hand.Add(Draw.Action(1, game));
+
+            var highestAgeInHand = targetPlayer.Hand.Max(c => c.Age);
+            var highestCards = targetPlayer.Hand.Where(c => c.Age.Equals(highestAgeInHand)).ToList();
+
+            ICard selectedCard = null;
+            if (highestCards.Count() > 1)
+            {
+                selectedCard = targetPlayer.PickCardFromHand(highestCards);
+            }
+            else
+            {
+                selectedCard = targetPlayer.Hand.First();
+            }
+            targetPlayer.Hand.Remove(selectedCard);
+            currentPlayer.Hand.Add(selectedCard);
+
+            return true;
+        }
     }
 }
