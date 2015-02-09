@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Innovation.Actions;
 using Innovation.Models;
 using Innovation.Models.Enums;
 namespace Innovation.Cards
@@ -22,6 +23,31 @@ namespace Innovation.Cards
                 };
             }
         }
-        bool Action1(object[] parameters) { throw new NotImplementedException(); }
+        bool Action1(object[] parameters) 
+		{
+			Game game = null;
+			Player targetPlayer = null;
+			CardHelper.GetParameters(parameters, out game, out targetPlayer);
+
+			List<ICard> cardsWithTowers = new List<ICard>();
+			foreach (ICard card in targetPlayer.Hand)
+			{
+				if (CardHelper.CardHasSymbol(card, Symbol.Tower))
+					cardsWithTowers.Add(card);
+			}
+			if (cardsWithTowers.Count > 0)
+			{
+				List<ICard> selectedCards = targetPlayer.PickMultipleCardsFromHand(cardsWithTowers, 0, cardsWithTowers.Count);
+				foreach (ICard card in selectedCards)
+					Meld.Action(card, targetPlayer);
+
+				if (selectedCards.Count > 4)
+					"hi".ToString();        // TODO::achieve Monument.  Special achievements need a larger framework and some discussion
+
+				return (selectedCards.Count > 0);
+			}
+
+			return false;
+		}
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Innovation.Actions;
 using Innovation.Models;
 using Innovation.Models.Enums;
 namespace Innovation.Cards
@@ -23,7 +24,35 @@ namespace Innovation.Cards
                 };
             }
         }
-        bool Action1(object[] parameters) { throw new NotImplementedException(); }
-        bool Action2(object[] parameters) { throw new NotImplementedException(); }
+        bool Action1(object[] parameters) 
+		{
+			Game game = null;
+			Player targetPlayer = null;
+			CardHelper.GetParameters(parameters, out game, out targetPlayer);
+
+			List<ICard> selectedCards = targetPlayer.PickMultipleCardsFromHand(targetPlayer.Hand, 0, 3);
+			foreach (ICard card in selectedCards)
+			{
+				targetPlayer.Hand.Remove(card);
+				Return.Action(card, game);
+			}
+			if (selectedCards.Count > 0)
+			{
+				Score.Action(Draw.Action(selectedCards.Count, game), targetPlayer);
+				return true;
+			}
+
+			return false;
+		}
+		bool Action2(object[] parameters)
+		{
+			Game game = null;
+			Player targetPlayer = null;
+			CardHelper.GetParameters(parameters, out game, out targetPlayer);
+
+			targetPlayer.Hand.Add(Draw.Action(1, game));
+
+			return true;
+		}
     }
 }

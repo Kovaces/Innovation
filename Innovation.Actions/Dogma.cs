@@ -44,6 +44,8 @@ namespace Innovation.Actions
 			//for the current player if anyother player has executed this action perform a free draw action
 			if (otherPlayerActed)
 				activePlayer.Hand.Add(Draw.Action(activePlayer.Tableau.GetHighestAge(), game));
+
+			game.ClearPropertyBag();
 		}
 
 		private static bool DeterminePlayerEligability(int activePlayerSymbolCount, int playerSymbolCount, bool isDemand)

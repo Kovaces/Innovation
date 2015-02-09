@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using Innovation.Models;
 using Innovation.Models.Enums;
+using Innovation.Actions;
 namespace Innovation.Cards
 {
     public class Oars : ICard
@@ -23,7 +25,42 @@ namespace Innovation.Cards
                 };
             }
         }
-        bool Action1(object[] parameters) { throw new NotImplementedException(); }
-        bool Action2(object[] parameters) { throw new NotImplementedException(); }
+        bool Action1(object[] parameters)
+		{
+			Game game = null;
+			Player targetPlayer = null;
+			Player activePlayer = null;
+			CardHelper.GetParameters(parameters, out game, out targetPlayer, out activePlayer);
+
+			List<ICard> cardsWithCrowns = targetPlayer.Hand.Where(x => x.Top == Symbol.Crown || x.Left == Symbol.Crown || x.Center == Symbol.Crown || x.Right == Symbol.Crown).ToList();
+			if (cardsWithCrowns.Count > 0)
+			{
+				ICard card = targetPlayer.PickCardFromHand(cardsWithCrowns);
+				Score.Action(card, activePlayer);
+
+				targetPlayer.Hand.Add(Draw.Action(1, game));
+
+				game.StashPropertyBagValue("OarsAction1Taken", "true");
+
+				return true;
+			}
+
+			return false;
+		}
+		bool Action2(object[] parameters)
+		{
+			Game game = null;
+			Player targetPlayer = null;
+			CardHelper.GetParameters(parameters, out game, out targetPlayer);
+
+			if (game.GetPropertyBagValue("OarsAction1Taken") == "true")
+			{
+				targetPlayer.Hand.Add(Draw.Action(1, game));
+
+				return true;
+			}
+
+			return false;
+		}
     }
 }

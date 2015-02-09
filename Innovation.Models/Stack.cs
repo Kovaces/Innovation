@@ -25,6 +25,13 @@ namespace Innovation.Models
 		{
 			Cards.Add(card);
 		}
+		public void AddCardToBottom(ICard card)
+		{
+			List<ICard> tempList = new List<ICard>();
+			tempList.Add(card);
+			tempList.AddRange(Cards);
+			Cards = tempList;
+		}
 
 		public int GetSymbolCount(Symbol symbol)
 		{

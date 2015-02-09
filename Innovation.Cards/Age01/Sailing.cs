@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Innovation.Actions;
 using Innovation.Models;
 using Innovation.Models.Enums;
 namespace Innovation.Cards
@@ -22,6 +23,15 @@ namespace Innovation.Cards
                 };
             }
         }
-        bool Action1(object[] parameters) { throw new NotImplementedException(); }
+		bool Action1(object[] parameters)
+		{
+			Game game = null;
+			Player targetPlayer = null;
+			CardHelper.GetParameters(parameters, out game, out targetPlayer);
+
+			Meld.Action(Draw.Action(1, game), targetPlayer);
+
+			return true;
+		}
     }
 }

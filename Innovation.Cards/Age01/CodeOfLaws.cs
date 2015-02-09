@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using Innovation.Models;
 using Innovation.Models.Enums;
+using Innovation.Actions;
 namespace Innovation.Cards
 {
     public class CodeofLaws : ICard
@@ -22,6 +24,28 @@ namespace Innovation.Cards
                 };
             }
         }
-        bool Action1(object[] parameters) { throw new NotImplementedException(); }
+		bool Action1(object[] parameters)
+		{
+			Game game = null;
+			Player targetPlayer = null;
+			CardHelper.GetParameters(parameters, out game, out targetPlayer);
+
+			List<Color> topCardColors = targetPlayer.Tableau.GetStackColors();
+			List<ICard> cardsMatchingBoardColor = targetPlayer.Hand.Where(x => topCardColors.Contains(x.Color)).ToList();
+
+			if (cardsMatchingBoardColor.Count > 0)
+			{
+				ICard cardToTuck = targetPlayer.PickCardFromHand(cardsMatchingBoardColor);
+
+				Tuck.Action(cardToTuck, targetPlayer);
+
+				if (targetPlayer.AskToSplay(cardToTuck.Color, SplayDirection.Left))
+					targetPlayer.Tableau.Stacks[cardToTuck.Color].SplayedDirection = SplayDirection.Left;
+
+				return true;
+			}
+
+			return false;
+		}
     }
 }

@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
+using Innovation.Actions;
 using Innovation.Models;
 using Innovation.Models.Enums;
 namespace Innovation.Cards
@@ -23,7 +25,49 @@ namespace Innovation.Cards
                 };
             }
         }
-        bool Action1(object[] parameters) { throw new NotImplementedException(); }
-        bool Action2(object[] parameters) { throw new NotImplementedException(); }
+        bool Action1(object[] parameters) 
+		{
+			Game game = null;
+			Player targetPlayer = null;
+			CardHelper.GetParameters(parameters, out game, out targetPlayer);
+
+			if (targetPlayer.Hand.Count >= 3)
+			{
+				List<ICard> cardsToReturn = targetPlayer.PickMultipleCardsFromHand(targetPlayer.Hand, 3, 3);
+				foreach (ICard card in cardsToReturn)
+				{
+					targetPlayer.Hand.Remove(card);
+					Return.Action(card, game);
+				}
+
+				Meld.Action(Draw.Action(3, game), targetPlayer);
+
+				return true;
+			}
+			return false;
+		}
+        bool Action2(object[] parameters) 
+		{
+			Game game = null;
+			Player targetPlayer = null;
+			CardHelper.GetParameters(parameters, out game, out targetPlayer);
+
+			List<ICard> ageThreeCardsInHand = targetPlayer.Hand.Where(x => x.Age == 3).ToList();
+			if (ageThreeCardsInHand.Count > 0)
+			{
+				ICard cardToReturn = targetPlayer.PickCardFromHand(ageThreeCardsInHand);
+
+				targetPlayer.Hand.Remove(cardToReturn);
+				Return.Action(cardToReturn, game);
+
+				targetPlayer.Hand.Add(Draw.Action(1, game));
+				targetPlayer.Hand.Add(Draw.Action(1, game));
+				targetPlayer.Hand.Add(Draw.Action(1, game));
+
+				return true;
+			}
+
+			return false;
+		}
     }
 }

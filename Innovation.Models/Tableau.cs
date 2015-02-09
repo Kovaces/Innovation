@@ -39,6 +39,19 @@ namespace Innovation.Models
 			return GetSymbolCounts()[symbol];
 		}
 
+		public List<Color> GetStackColors()
+		{
+			List<Color> topCardColors = new List<Color>();
+			foreach (Stack stack in Stacks.Values)
+			{
+				ICard card = stack.GetTopCard();
+				if (card != null)
+					topCardColors.Add(card.Color);
+			}
+
+			return topCardColors;
+		}
+
 		public Dictionary<Symbol, int> GetSymbolCounts()
 		{
 			var retVal = new Dictionary<Symbol, int>()
