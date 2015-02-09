@@ -28,26 +28,19 @@ namespace Innovation.Cards
 
 	    bool Action1(object[] parameters)
 	    {
-			if (parameters.Length < 2)
-				throw new ArgumentOutOfRangeException("parameters", "Parameter list must include Player and Game");
+			Game game = null;
+			Player targetPlayer = null;
+			CardHelper.GetParameters(parameters, out game, out targetPlayer);
 
-			var player = parameters[0] as Player;
-			if (player == null)
-				throw new NullReferenceException("Player cannot be null");
-
-			var game = parameters[1] as Game;
-			if (game == null)
-				throw new NullReferenceException("Game cannot be null");
-
-			if (player.Hand.Any())
+			if (targetPlayer.Hand.Any())
 			{
-				var lowestAgeInHand = player.Hand.Min(c => c.Age);
-				var lowestCards = player.Hand.Where(c => c.Age.Equals(lowestAgeInHand)).ToList();
+				var lowestAgeInHand = targetPlayer.Hand.Min(c => c.Age);
+				var lowestCards = targetPlayer.Hand.Where(c => c.Age.Equals(lowestAgeInHand)).ToList();
 
-				Meld.Action((lowestCards.Count() == 1) ? lowestCards[0] : player.PickCardFromHand(lowestCards), player);
+				Meld.Action((lowestCards.Count() == 1) ? lowestCards[0] : targetPlayer.PickCardFromHand(lowestCards), targetPlayer);
 			}
 
-			player.Hand.Add(Draw.Action(1, game));
+			targetPlayer.Hand.Add(Draw.Action(1, game));
 
 			return true;
 	    }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Innovation.Actions;
 using Innovation.Models;
 using Innovation.Models.Enums;
 namespace Innovation.Cards
@@ -22,6 +23,43 @@ namespace Innovation.Cards
                 };
             }
         }
-        bool Action1(object[] parameters) { throw new NotImplementedException(); }
+		bool Action1(object[] parameters)
+		{
+			Game game = null;
+			Player targetPlayer = null;
+			Player activePlayer = null;
+			CardHelper.GetParameters(parameters, out game, out targetPlayer, out activePlayer);
+
+			if (targetPlayer.Tableau.GetSymbolCount(Symbol.Tower) >= 4)
+			{
+				List<ICard> topCardsWithTowers = new List<ICard>();
+				foreach (Stack stack in targetPlayer.Tableau.Stacks.Values)
+				{
+					ICard card = stack.GetTopCard();
+					if (card != null)
+					{
+						if (CardHelper.CardHasSymbol(card, Symbol.Tower))
+							topCardsWithTowers.Add(card);
+					}
+				}
+				if (topCardsWithTowers.Count > 0)
+				{
+					ICard cardToMove = targetPlayer.PickCardFromHand(topCardsWithTowers);
+					
+					// remove from targetPlayer's board
+					targetPlayer.Tableau.Stacks[cardToMove.Color].Cards.Remove(cardToMove);
+					
+					// add to currentPlayer's board - doesn't say meld, so just add it
+					activePlayer.Tableau.Stacks[cardToMove.Color].AddCardToTop(cardToMove);
+
+					// if you do, draw a 1
+					targetPlayer.Hand.Add(Draw.Action(1, game));
+
+					return true;
+				}
+			}
+
+			return false;
+		}
     }
 }

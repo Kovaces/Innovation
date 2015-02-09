@@ -39,6 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CardHelper.cs" />
     <Compile Include="Age01\Agriculture.cs" />
     <Compile Include="Age01\Archery.cs" />
     <Compile Include="Age01\CityStates.cs" />

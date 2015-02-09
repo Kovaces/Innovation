@@ -20,6 +20,12 @@ namespace Innovation.Models
 			return Cards.Any() ? Cards.Last() : null;
 		}
 
+		// put implementation in here so if we change it later, no other classes need to know details
+		public void AddCardToTop(ICard card)
+		{
+			Cards.Add(card);
+		}
+
 		public int GetSymbolCount(Symbol symbol)
 		{
 			return GetSymbolCounts()[symbol];

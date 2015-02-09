@@ -6,7 +6,7 @@ namespace Innovation.Actions
 	{
 		public static void Action(ICard card, Player player)
 		{
-			player.Tableau.Stacks[card.Color].Cards.Add(card);
+			player.Tableau.Stacks[card.Color].AddCardToTop(card);
 		}
 	}
 }

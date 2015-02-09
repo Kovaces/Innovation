@@ -26,20 +26,10 @@ namespace Innovation.Cards
 		}
 		bool Action1(object[] parameters)
 		{
-			if (parameters.Length < 3)
-				throw new ArgumentOutOfRangeException("parameters", "Parameter list must include TargetPlayer, Game and CurrentPlayer");
-
-			var targetPlayer = parameters[0] as Player;
-			if (targetPlayer == null)
-				throw new NullReferenceException("Target player cannot be null");
-
-			var game = parameters[1] as Game;
-			if (game == null)
-				throw new NullReferenceException("Game cannot be null");
-
-			var currentPlayer = parameters[2] as Player;
-			if (currentPlayer == null)
-				throw new NullReferenceException("Current player cannot be null");
+			Game game = null;
+			Player targetPlayer = null;
+			Player activePlayer = null;
+			CardHelper.GetParameters(parameters, out game, out targetPlayer, out activePlayer);
 
 			targetPlayer.Hand.Add(Draw.Action(1, game));
 
@@ -49,7 +39,7 @@ namespace Innovation.Cards
 			ICard selectedCard = targetPlayer.PickCardFromHand(highestCards);
 
 			targetPlayer.Hand.Remove(selectedCard);
-			currentPlayer.Hand.Add(selectedCard);
+			activePlayer.Hand.Add(selectedCard);
 
 			return true;
 		}

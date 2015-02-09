@@ -14,9 +14,13 @@ namespace Innovation.Models
 		{
 			return PickCardFromHand(Hand);
 		}
-        public ICard PickCardFromHand(IEnumerable<ICard> cardsToSelectFrom)
-        {
-            throw new System.NotImplementedException();
-        }
-    }
+		public ICard PickCardFromHand(IEnumerable<ICard> cardsToSelectFrom)
+		{
+			throw new System.NotImplementedException();
+		}
+		public bool AskToParticipate(CardAction action)
+		{
+			return true;  // participation is fun!
+		}
+	}
 }
