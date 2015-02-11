@@ -25,6 +25,13 @@ namespace Innovation.Models
 		{
 			Cards.Add(card);
 		}
+		public void RemoveCard(ICard card)
+		{
+			Cards.Remove(card);
+
+			if (Cards.Count <= 1)
+				SplayedDirection = SplayDirection.None;
+		}
 		public void AddCardToBottom(ICard card)
 		{
 			List<ICard> tempList = new List<ICard>();

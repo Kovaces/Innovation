@@ -39,7 +39,10 @@ namespace Innovation.Cards
 			{
 				List<ICard> selectedCards = targetPlayer.PickMultipleCardsFromHand(cardsWithTowers, 0, cardsWithTowers.Count);
 				foreach (ICard card in selectedCards)
+				{
+					targetPlayer.Hand.Remove(card);
 					Meld.Action(card, targetPlayer);
+				}
 
 				if (selectedCards.Count > 4)
 					"hi".ToString();        // TODO::achieve Monument.  Special achievements need a larger framework and some discussion

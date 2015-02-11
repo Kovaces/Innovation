@@ -6,7 +6,7 @@ using Innovation.Models.Enums;
 using Innovation.Actions;
 namespace Innovation.Cards
 {
-    public class CodeofLaws : ICard
+    public class CodeOfLaws : ICard
     {
         public string Name { get { return "Code of Laws"; } }
         public int Age { get { return 1; } }
@@ -37,6 +37,7 @@ namespace Innovation.Cards
 			{
 				ICard cardToTuck = targetPlayer.PickCardFromHand(cardsMatchingBoardColor);
 
+				targetPlayer.Hand.Remove(cardToTuck);
 				Tuck.Action(cardToTuck, targetPlayer);
 
 				if (targetPlayer.AskToSplay(cardToTuck.Color, SplayDirection.Left))

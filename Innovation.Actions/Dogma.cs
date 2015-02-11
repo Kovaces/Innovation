@@ -17,8 +17,9 @@ namespace Innovation.Actions
 				foreach (var targetPlayer in GetPlayersInPlayerOrder(game.Players, game.Players.IndexOf(activePlayer)))
 				{
 					var activePlayerSymbolCount = activePlayer.Tableau.GetSymbolCount(action.Symbol);
+					var targetPlayerSymbolCount = targetPlayer.Tableau.GetSymbolCount(action.Symbol);
 					if ((targetPlayer.Equals(activePlayer) && action.ActionType != ActionType.Demand)
-							|| DeterminePlayerEligability(targetPlayer.Tableau.GetSymbolCount(action.Symbol), activePlayerSymbolCount, action.ActionType == ActionType.Demand))
+							|| DeterminePlayerEligability(activePlayerSymbolCount, targetPlayerSymbolCount, action.ActionType == ActionType.Demand))
 					{
 						bool actionTaken = false;
 						if (action.ActionType == ActionType.Demand)
@@ -48,9 +49,9 @@ namespace Innovation.Actions
 			game.ClearPropertyBag();
 		}
 
-		private static bool DeterminePlayerEligability(int activePlayerSymbolCount, int playerSymbolCount, bool isDemand)
+		private static bool DeterminePlayerEligability(int activePlayerSymbolCount, int targetPlayerSymbolCount, bool isDemand)
 		{
-			return isDemand ? (activePlayerSymbolCount < playerSymbolCount) : (playerSymbolCount >= activePlayerSymbolCount);
+			return isDemand ? (activePlayerSymbolCount > targetPlayerSymbolCount) : (targetPlayerSymbolCount >= activePlayerSymbolCount);
 		}
 
 		private static List<Player> GetPlayersInPlayerOrder(List<Player> playerList, int startingIndex)

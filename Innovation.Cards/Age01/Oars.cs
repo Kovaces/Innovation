@@ -53,7 +53,7 @@ namespace Innovation.Cards
 			Player targetPlayer = null;
 			CardHelper.GetParameters(parameters, out game, out targetPlayer);
 
-			if (game.GetPropertyBagValue("OarsAction1Taken") == "true")
+			if (game.GetPropertyBagValue("OarsAction1Taken").ToString() == "true")
 			{
 				targetPlayer.Hand.Add(Draw.Action(1, game));
 

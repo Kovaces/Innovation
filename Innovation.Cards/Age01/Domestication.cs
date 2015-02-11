@@ -37,7 +37,9 @@ namespace Innovation.Cards
 				var lowestAgeInHand = targetPlayer.Hand.Min(c => c.Age);
 				var lowestCards = targetPlayer.Hand.Where(c => c.Age.Equals(lowestAgeInHand)).ToList();
 
-				Meld.Action((lowestCards.Count() == 1) ? lowestCards[0] : targetPlayer.PickCardFromHand(lowestCards), targetPlayer);
+				ICard cardToMeld = targetPlayer.PickCardFromHand(lowestCards);
+				targetPlayer.Hand.Remove(cardToMeld);
+				Meld.Action(cardToMeld, targetPlayer);
 			}
 
 			targetPlayer.Hand.Add(Draw.Action(1, game));

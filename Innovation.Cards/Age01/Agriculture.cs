@@ -20,8 +20,9 @@ namespace Innovation.Cards
 		{
 			get
 			{
-				return new List<CardAction>(){
-                    new CardAction(ActionType.Optional,Symbol.Leaf,"You may return a card from your hand. If you do, draw and score a card of value one higher than the card you returned.", Action1)
+				return new List<CardAction>() 
+				{
+                    new CardAction(ActionType.Optional, Symbol.Leaf, "You may return a card from your hand. If you do, draw and score a card of value one higher than the card you returned.", Action1)
                 };
 			}
 		}

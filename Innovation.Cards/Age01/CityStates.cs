@@ -47,7 +47,7 @@ namespace Innovation.Cards
 					ICard cardToMove = targetPlayer.PickCardFromHand(topCardsWithTowers);
 					
 					// remove from targetPlayer's board
-					targetPlayer.Tableau.Stacks[cardToMove.Color].Cards.Remove(cardToMove);
+					targetPlayer.Tableau.Stacks[cardToMove.Color].RemoveCard(cardToMove);
 					
 					// add to currentPlayer's board - doesn't say meld, so just add it
 					activePlayer.Tableau.Stacks[cardToMove.Color].AddCardToTop(cardToMove);

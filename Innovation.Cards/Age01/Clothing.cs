@@ -31,19 +31,14 @@ namespace Innovation.Cards
 			Player targetPlayer = null;
 			CardHelper.GetParameters(parameters, out game, out targetPlayer);
 
-			List<Color> topCardColors = new List<Color>();
-			foreach (Stack stack in targetPlayer.Tableau.Stacks.Values)
-			{
-				ICard card = stack.GetTopCard();
-				if (card != null)
-					topCardColors.Add(card.Color);
-			}
+			List<Color> topCardColors = targetPlayer.Tableau.GetStackColors();
 			List<ICard> cardsToMeld = targetPlayer.Hand.Where(x => !topCardColors.Contains(x.Color)).ToList();
 
-			if (cardsToMeld != null)
+			if (cardsToMeld.Count > 0)
 			{
 				ICard card = targetPlayer.PickCardFromHand(cardsToMeld);
 
+				targetPlayer.Hand.Remove(card);
 				Meld.Action(card, targetPlayer);
 
 				return true;
@@ -58,7 +53,7 @@ namespace Innovation.Cards
 			CardHelper.GetParameters(parameters, out game, out targetPlayer);
 
 			List<Color> currentPlayerTopCardColors = null;
-			List<Color> otherPlayerTopCardColors = null;
+			List<Color> otherPlayerTopCardColors = new List<Color>();
 
 			foreach (Player player in game.Players)
 			{

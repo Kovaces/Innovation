@@ -21,11 +21,11 @@ namespace Innovation.Actions.Tests
 		public void Setup()
 		{
 			Dictionary<Color, Stack> stackPlayer1 = new Dictionary<Color, Stack>();
-			stackPlayer1.Add(Color.Red, new Stack
+			stackPlayer1.Add(Color.Blue, new Stack
 			{
 				Cards = new List<ICard>()
 					{
-						 new Card { Name = "Test Red Card", Color = Color.Blue, Age = 1, Top = Symbol.Blank, Left = Symbol.Crown, Center = Symbol.Crown, Right = Symbol.Tower }
+						 new Card { Name = "Test Blue Card", Color = Color.Blue, Age = 1, Top = Symbol.Blank, Left = Symbol.Crown, Center = Symbol.Crown, Right = Symbol.Tower }
 					},
 				SplayedDirection = SplayDirection.None
 			});
@@ -34,7 +34,7 @@ namespace Innovation.Actions.Tests
 			{
 				Cards = new List<ICard>()
 					{
-						 new Card { Name = "Test Red Card", Color = Color.Blue, Age = 1, Top = Symbol.Blank, Left = Symbol.Crown, Center = Symbol.Crown, Right = Symbol.Tower }
+						 new Card { Name = "Test Red Card", Color = Color.Red, Age = 1, Top = Symbol.Blank, Left = Symbol.Crown, Center = Symbol.Crown, Right = Symbol.Tower }
 					},
 				SplayedDirection = SplayDirection.None
 			});
@@ -70,7 +70,7 @@ namespace Innovation.Actions.Tests
 						},
 						Hand = new List<ICard>() 
 						{
-							 new Card { Name = "Test Yellow Card", Color = Color.Red, Age = 1, Top = Symbol.Blank, Left = Symbol.Crown, Center = Symbol.Tower, Right = Symbol.Tower },
+							 new Card { Name = "Test Yellow Card", Color = Color.Yellow, Age = 1, Top = Symbol.Blank, Left = Symbol.Crown, Center = Symbol.Tower, Right = Symbol.Tower },
 							 new Card { Name = "Test Blue Card", Color = Color.Blue, Age = 1, Top = Symbol.Blank, Left = Symbol.Tower, Center = Symbol.Tower, Right = Symbol.Tower }
 						}
 					}
@@ -82,9 +82,9 @@ namespace Innovation.Actions.Tests
 						Age = 1,
 						Cards = new List<ICard>() 
 						{
-							new Card { Name = "Test Yellow Card", Color = Color.Red, Age = 1, Top = Symbol.Blank, Left = Symbol.Crown, Center = Symbol.Tower, Right = Symbol.Tower },
-							new Card { Name = "Test Yellow Card", Color = Color.Red, Age = 1, Top = Symbol.Blank, Left = Symbol.Crown, Center = Symbol.Tower, Right = Symbol.Tower },
-							new Card { Name = "Test Yellow Card", Color = Color.Red, Age = 1, Top = Symbol.Blank, Left = Symbol.Crown, Center = Symbol.Tower, Right = Symbol.Tower }
+							new Card { Name = "Test Yellow Card", Color = Color.Yellow, Age = 1, Top = Symbol.Blank, Left = Symbol.Crown, Center = Symbol.Tower, Right = Symbol.Tower },
+							new Card { Name = "Test Yellow Card", Color = Color.Yellow, Age = 1, Top = Symbol.Blank, Left = Symbol.Crown, Center = Symbol.Tower, Right = Symbol.Tower },
+							new Card { Name = "Test Yellow Card", Color = Color.Yellow, Age = 1, Top = Symbol.Blank, Left = Symbol.Crown, Center = Symbol.Tower, Right = Symbol.Tower }
 						}
 					}
 				}
