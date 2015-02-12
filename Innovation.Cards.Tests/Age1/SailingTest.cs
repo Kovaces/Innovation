@@ -10,7 +10,7 @@ using Innovation.Actions;
 namespace Innovation.Cards.Tests
 {
 	[TestClass]
-	public class AgricultureTest
+	public class SailingTest
 	{
 		private Game testGame;
 
@@ -89,29 +89,28 @@ namespace Innovation.Cards.Tests
 			);
 		}
 
-		//ActionType.Optional, Symbol.Leaf, "You may return a card from your hand. If you do, draw and score a card of value one higher than the card you returned."
+		//ActionType.Required, Symbol.Crown, "Draw and meld a [1]."
 
 		[TestMethod]
-		public void Card_AgricultureAction1()
+		public void Card_SailingAction1()
 		{
 			testGame.Players[0].AlwaysParticipates = true;
 			testGame.Players[0].SelectsCards = new List<int>() { 0 };
 
-			new Agriculture().Actions.ToList()[0].ActionHandler(new object[] { testGame.Players[0], testGame });
+			new Sailing().Actions.ToList()[0].ActionHandler(new object[] { testGame.Players[0], testGame });
 
-			Assert.AreEqual(2, testGame.Players[0].Hand.Count);
-			Assert.AreEqual(4, testGame.AgeDecks.Where(x => x.Age == 1).FirstOrDefault().Cards.Count);
-			Assert.AreEqual(2, testGame.AgeDecks.Where(x => x.Age == 2).FirstOrDefault().Cards.Count);
+			Assert.AreEqual(3, testGame.Players[0].Hand.Count);
+			Assert.AreEqual(2, testGame.AgeDecks.Where(x => x.Age == 1).FirstOrDefault().Cards.Count);
+			Assert.AreEqual(3, testGame.AgeDecks.Where(x => x.Age == 2).FirstOrDefault().Cards.Count);
 
-			Assert.AreEqual(1, testGame.Players[0].Tableau.ScorePile.Count);
-			Assert.AreEqual(2, testGame.Players[0].Tableau.GetScore());
+			Assert.AreEqual(0, testGame.Players[0].Tableau.ScorePile.Count);
 			Assert.AreEqual(0, testGame.Players[1].Tableau.ScorePile.Count);
 
 			Assert.AreEqual(1, testGame.Players[0].Tableau.Stacks[Color.Blue].Cards.Count);
 			Assert.AreEqual(0, testGame.Players[0].Tableau.Stacks[Color.Green].Cards.Count);
 			Assert.AreEqual(1, testGame.Players[0].Tableau.Stacks[Color.Red].Cards.Count);
 			Assert.AreEqual(0, testGame.Players[0].Tableau.Stacks[Color.Purple].Cards.Count);
-			Assert.AreEqual(0, testGame.Players[0].Tableau.Stacks[Color.Yellow].Cards.Count);
+			Assert.AreEqual(1, testGame.Players[0].Tableau.Stacks[Color.Yellow].Cards.Count);
 		}
 	}
 }

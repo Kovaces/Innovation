@@ -116,12 +116,18 @@ namespace Innovation.Cards.Tests
 			new CityStates().Actions.ToList()[0].ActionHandler(new object[] { testGame.Players[1], testGame, testGame.Players[0] });
 
 			Assert.AreEqual(1, testGame.Players[0].Tableau.Stacks[Color.Blue].Cards.Count);
-			Assert.AreEqual(1, testGame.Players[0].Tableau.Stacks[Color.Yellow].Cards.Count);
+			Assert.AreEqual(0, testGame.Players[0].Tableau.Stacks[Color.Green].Cards.Count);
 			Assert.AreEqual(2, testGame.Players[0].Tableau.Stacks[Color.Red].Cards.Count);
+			Assert.AreEqual(0, testGame.Players[0].Tableau.Stacks[Color.Purple].Cards.Count);
+			Assert.AreEqual(1, testGame.Players[0].Tableau.Stacks[Color.Yellow].Cards.Count);
 
 			Assert.AreEqual(0, testGame.Players[1].Tableau.Stacks[Color.Red].Cards.Count);
 			Assert.AreEqual(1, testGame.Players[1].Tableau.Stacks[Color.Yellow].Cards.Count);
 			Assert.AreEqual(3, testGame.Players[1].Hand.Count);
+
+			Assert.AreEqual(0, testGame.Players[0].Tableau.ScorePile.Count);
+			Assert.AreEqual(0, testGame.Players[1].Tableau.ScorePile.Count);
+
 		}
 	}
 }

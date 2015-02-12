@@ -36,6 +36,7 @@ namespace Innovation.Cards
 			if (cardsWithCrowns.Count > 0)
 			{
 				ICard card = targetPlayer.PickCardFromHand(cardsWithCrowns);
+				targetPlayer.Hand.Remove(card);
 				Score.Action(card, activePlayer);
 
 				targetPlayer.Hand.Add(Draw.Action(1, game));
@@ -53,7 +54,7 @@ namespace Innovation.Cards
 			Player targetPlayer = null;
 			CardHelper.GetParameters(parameters, out game, out targetPlayer);
 
-			if (game.GetPropertyBagValue("OarsAction1Taken").ToString() == "true")
+			if (game.GetPropertyBagValue("OarsAction1Taken").ToString() != "true")
 			{
 				targetPlayer.Hand.Add(Draw.Action(1, game));
 

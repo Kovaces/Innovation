@@ -81,9 +81,6 @@ namespace Innovation.Cards.Tests
 			testGame.Players[0].Tableau.Stacks[Color.Red].AddCardToTop(
 				new Card { Name = "Test Red Card", Color = Color.Red, Age = 1, Top = Symbol.Blank, Left = Symbol.Crown, Center = Symbol.Crown, Right = Symbol.Leaf }
 			);
-			testGame.Players[0].Tableau.Stacks[Color.Yellow].AddCardToTop(
-				new Card { Name = "Test Yellow Card", Color = Color.Yellow, Age = 1, Top = Symbol.Blank, Left = Symbol.Tower, Center = Symbol.Tower, Right = Symbol.Tower }
-			);
 
 			testGame.Players[1].Tableau.Stacks[Color.Red].AddCardToTop(
 				new Card { Name = "Test Red Card", Color = Color.Red, Age = 1, Top = Symbol.Blank, Left = Symbol.Crown, Center = Symbol.Crown, Right = Symbol.Leaf }
@@ -99,9 +96,18 @@ namespace Innovation.Cards.Tests
 
 			new Domestication().Actions.ToList()[0].ActionHandler(new object[] { testGame.Players[0], testGame });
 
-			Assert.AreEqual(2, testGame.Players[0].Tableau.Stacks[Color.Blue].Cards.Count);
 			Assert.AreEqual(3, testGame.Players[0].Hand.Count);
 			Assert.AreEqual(2, testGame.AgeDecks.Where(x => x.Age == 1).First().Cards.Count());
+
+			Assert.AreEqual(0, testGame.Players[0].Tableau.ScorePile.Count);
+			Assert.AreEqual(0, testGame.Players[1].Tableau.ScorePile.Count);
+
+			Assert.AreEqual(2, testGame.Players[0].Tableau.Stacks[Color.Blue].Cards.Count);
+			Assert.AreEqual(0, testGame.Players[0].Tableau.Stacks[Color.Green].Cards.Count);
+			Assert.AreEqual(1, testGame.Players[0].Tableau.Stacks[Color.Red].Cards.Count);
+			Assert.AreEqual(0, testGame.Players[0].Tableau.Stacks[Color.Purple].Cards.Count);
+			Assert.AreEqual(0, testGame.Players[0].Tableau.Stacks[Color.Yellow].Cards.Count);
+
 		}
 	}
 }

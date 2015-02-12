@@ -55,6 +55,11 @@
     <Compile Include="Age1\CityStatesTest.cs" />
     <Compile Include="Age1\ClothingTest.cs" />
     <Compile Include="Age1\CodeOfLawsTest.cs" />
+    <Compile Include="Age1\ToolsTest.cs" />
+    <Compile Include="Age1\TheWheelTest.cs" />
+    <Compile Include="Age1\SailingTest.cs" />
+    <Compile Include="Age1\PotteryTest.cs" />
+    <Compile Include="Age1\OarsTest.cs" />
     <Compile Include="Age1\Mysticism.cs" />
     <Compile Include="Age1\MetalworkingTest.cs" />
     <Compile Include="Age1\MasonryTest.cs" />

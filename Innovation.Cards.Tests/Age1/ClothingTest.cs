@@ -129,7 +129,17 @@ namespace Innovation.Cards.Tests
 
 			new Clothing().Actions.ToList()[1].ActionHandler(new object[] { testGame.Players[0], testGame });
 
+			Assert.AreEqual(3, testGame.Players[0].Hand.Count);
+
 			Assert.AreEqual(2, testGame.Players[0].Tableau.ScorePile.Count);
+			Assert.AreEqual(2, testGame.Players[0].Tableau.GetScore());
+			Assert.AreEqual(0, testGame.Players[1].Tableau.ScorePile.Count);
+
+			Assert.AreEqual(1, testGame.Players[0].Tableau.Stacks[Color.Blue].Cards.Count);
+			Assert.AreEqual(0, testGame.Players[0].Tableau.Stacks[Color.Green].Cards.Count);
+			Assert.AreEqual(1, testGame.Players[0].Tableau.Stacks[Color.Red].Cards.Count);
+			Assert.AreEqual(0, testGame.Players[0].Tableau.Stacks[Color.Purple].Cards.Count);
+			Assert.AreEqual(0, testGame.Players[1].Tableau.Stacks[Color.Yellow].Cards.Count);
 		}
 
 		[TestMethod]
@@ -141,9 +151,16 @@ namespace Innovation.Cards.Tests
 
 			new Clothing().Actions.ToList()[1].ActionHandler(new object[] { testGame.Players[1], testGame });
 
+			Assert.AreEqual(1, testGame.Players[1].Hand.Count);
+			
+			Assert.AreEqual(0, testGame.Players[0].Tableau.ScorePile.Count);
 			Assert.AreEqual(0, testGame.Players[1].Tableau.ScorePile.Count);
+
+			Assert.AreEqual(1, testGame.Players[0].Tableau.Stacks[Color.Blue].Cards.Count);
+			Assert.AreEqual(0, testGame.Players[0].Tableau.Stacks[Color.Green].Cards.Count);
+			Assert.AreEqual(1, testGame.Players[0].Tableau.Stacks[Color.Red].Cards.Count);
+			Assert.AreEqual(0, testGame.Players[0].Tableau.Stacks[Color.Purple].Cards.Count);
+			Assert.AreEqual(0, testGame.Players[1].Tableau.Stacks[Color.Yellow].Cards.Count);
 		}
-
-
 	}
 }
