@@ -19,9 +19,10 @@ namespace Innovation.Cards
         {
             get
             {
-                return new List<CardAction>(){
-                    new CardAction(ActionType.Demand,Symbol.Tower,"I demand you transfer a card with a [CROWN] from your hand to my score pile! If you do, draw a [1]!", Action1)
-                    ,new CardAction(ActionType.Required,Symbol.Tower,"If no cards were transfered due to this demand, draw a [1].", Action2)
+                return new List<CardAction>()
+				{
+                    new CardAction(ActionType.Demand, Symbol.Tower, "I demand you transfer a card with a [CROWN] from your hand to my score pile! If you do, draw a [1]!", Action1)
+                    ,new CardAction(ActionType.Required, Symbol.Tower, "If no cards were transfered due to this demand, draw a [1].", Action2)
                 };
             }
         }
@@ -35,7 +36,7 @@ namespace Innovation.Cards
 			List<ICard> cardsWithCrowns = targetPlayer.Hand.Where(x => x.Top == Symbol.Crown || x.Left == Symbol.Crown || x.Center == Symbol.Crown || x.Right == Symbol.Crown).ToList();
 			if (cardsWithCrowns.Count > 0)
 			{
-				ICard card = targetPlayer.PickCardFromHand(cardsWithCrowns);
+				ICard card = targetPlayer.PickFromMultipleCards(cardsWithCrowns, 1, 1).First();
 				targetPlayer.Hand.Remove(card);
 				Score.Action(card, activePlayer);
 

@@ -18,8 +18,9 @@ namespace Innovation.Cards
 		{
 			get
 			{
-				return new List<CardAction>(){
-                    new CardAction(ActionType.Required,Symbol.Tower,"Draw and reveal a [1]. If it is the same color as any card on your board, meld it and draw a [1].", Action1)
+				return new List<CardAction>()
+				{
+                    new CardAction(ActionType.Required, Symbol.Tower, "Draw and reveal a [1]. If it is the same color as any card on your board, meld it and draw a [1].", Action1)
                 };
 			}
 		}

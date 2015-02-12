@@ -19,9 +19,10 @@ namespace Innovation.Cards
         {
             get
             {
-                return new List<CardAction>(){
-                    new CardAction(ActionType.Optional,Symbol.Lightbulb,"You may return three cards from your hand. If you do, draw and meld a [3].", Action1)
-                    ,new CardAction(ActionType.Optional,Symbol.Lightbulb,"You may return a [3] from your hand. If you do, draw three [1].", Action2)
+                return new List<CardAction>()
+				{
+                    new CardAction(ActionType.Optional, Symbol.Lightbulb, "You may return three cards from your hand. If you do, draw and meld a [3].", Action1)
+                    ,new CardAction(ActionType.Optional, Symbol.Lightbulb, "You may return a [3] from your hand. If you do, draw three [1].", Action2)
                 };
             }
         }
@@ -33,7 +34,7 @@ namespace Innovation.Cards
 
 			if (targetPlayer.Hand.Count >= 3)
 			{
-				List<ICard> cardsToReturn = targetPlayer.PickMultipleCardsFromHand(targetPlayer.Hand, 3, 3);
+				List<ICard> cardsToReturn = targetPlayer.PickFromMultipleCards(targetPlayer.Hand, 3, 3);
 				foreach (ICard card in cardsToReturn)
 				{
 					targetPlayer.Hand.Remove(card);
@@ -55,7 +56,7 @@ namespace Innovation.Cards
 			List<ICard> ageThreeCardsInHand = targetPlayer.Hand.Where(x => x.Age == 3).ToList();
 			if (ageThreeCardsInHand.Count > 0)
 			{
-				ICard cardToReturn = targetPlayer.PickCardFromHand(ageThreeCardsInHand);
+				ICard cardToReturn = targetPlayer.PickFromMultipleCards(ageThreeCardsInHand, 1, 1).First();
 
 				targetPlayer.Hand.Remove(cardToReturn);
 				Return.Action(cardToReturn, game);

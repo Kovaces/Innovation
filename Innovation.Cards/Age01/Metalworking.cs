@@ -18,8 +18,9 @@ namespace Innovation.Cards
         {
             get
             {
-                return new List<CardAction>(){
-                    new CardAction(ActionType.Required,Symbol.Tower,"Draw and reveal a [1]. If it has a [TOWER], score it and repeat this dogma effect. Otherwise, keep it.", Action1)
+                return new List<CardAction>()
+				{
+                    new CardAction(ActionType.Required, Symbol.Tower, "Draw and reveal a [1]. If it has a [TOWER], score it and repeat this dogma effect. Otherwise, keep it.", Action1)
                 };
             }
         }

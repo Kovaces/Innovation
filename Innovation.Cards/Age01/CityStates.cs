@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using Innovation.Actions;
 using Innovation.Models;
@@ -18,8 +19,9 @@ namespace Innovation.Cards
         {
             get
             {
-                return new List<CardAction>(){
-                    new CardAction(ActionType.Demand,Symbol.Crown,"I demand you transfer a top card with a [TOWER] from your board to my board if you have at least four [TOWER] on your board! If you do, draw a [1]!", Action1)
+                return new List<CardAction>()
+				{
+                    new CardAction(ActionType.Demand, Symbol.Crown, "I demand you transfer a top card with a [TOWER] from your board to my board if you have at least four [TOWER] on your board! If you do, draw a [1]!", Action1)
                 };
             }
         }
@@ -32,19 +34,10 @@ namespace Innovation.Cards
 
 			if (targetPlayer.Tableau.GetSymbolCount(Symbol.Tower) >= 4)
 			{
-				List<ICard> topCardsWithTowers = new List<ICard>();
-				foreach (Stack stack in targetPlayer.Tableau.Stacks.Values)
-				{
-					ICard card = stack.GetTopCard();
-					if (card != null)
-					{
-						if (CardHelper.CardHasSymbol(card, Symbol.Tower))
-							topCardsWithTowers.Add(card);
-					}
-				}
+				List<ICard> topCardsWithTowers = targetPlayer.Tableau.GetTopCards().Where(x => CardHelper.CardHasSymbol(x, Symbol.Tower)).ToList();
 				if (topCardsWithTowers.Count > 0)
 				{
-					ICard cardToMove = targetPlayer.PickCardFromHand(topCardsWithTowers);
+					ICard cardToMove = targetPlayer.PickFromMultipleCards(topCardsWithTowers, 1, 1).First();
 					
 					// remove from targetPlayer's board
 					targetPlayer.Tableau.Stacks[cardToMove.Color].RemoveCard(cardToMove);

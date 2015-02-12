@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Innovation.Actions;
 using Innovation.Models;
 using Innovation.Models.Enums;
 namespace Innovation.Cards
@@ -17,13 +18,59 @@ namespace Innovation.Cards
         {
             get
             {
-                return new List<CardAction>(){
-                    new CardAction(ActionType.Demand,Symbol.Tower,"I demand you transfer two cards from your hand to my hand! Draw a [2]!", Action1)
-                    ,new CardAction(ActionType.Required,Symbol.Tower,"If you are the only player with five top cards, claim the Empire achievement.", Action2)
+                return new List<CardAction>()
+				{
+                    new CardAction(ActionType.Demand, Symbol.Tower, "I demand you transfer two cards from your hand to my hand! Draw a [2]!", Action1)
+                    ,new CardAction(ActionType.Required, Symbol.Tower, "If you are the only player with five top cards, claim the Empire achievement.", Action2)
                 };
             }
         }
-        bool Action1(object[] parameters) { throw new NotImplementedException(); }
-        bool Action2(object[] parameters) { throw new NotImplementedException(); }
+		bool Action1(object[] parameters)
+		{
+			Game game = null;
+			Player targetPlayer = null;
+			Player activePlayer = null;
+			CardHelper.GetParameters(parameters, out game, out targetPlayer, out activePlayer);
+
+			int numberOfCardsToTransfer = Math.Min(targetPlayer.Hand.Count, 2);
+			if (numberOfCardsToTransfer > 0)
+			{
+				List<ICard> cardsToTransfer = targetPlayer.PickFromMultipleCards(targetPlayer.Hand, numberOfCardsToTransfer, numberOfCardsToTransfer);
+
+				foreach (ICard card in cardsToTransfer)
+				{
+					targetPlayer.Hand.Remove(card);
+					activePlayer.Hand.Add(card);
+				}
+			}
+
+			targetPlayer.Hand.Add(Draw.Action(2, game));
+
+			return true;
+		}
+        bool Action2(object[] parameters) 
+		{
+			Game game = null;
+			Player targetPlayer = null;
+			CardHelper.GetParameters(parameters, out game, out targetPlayer);
+
+			int numberTopCardsActivePlayer = 0;
+			int maxNumberTopCardsOtherPlayers = 0;
+			foreach (Player player in game.Players)
+			{
+				if (player == targetPlayer)
+					numberTopCardsActivePlayer = targetPlayer.Tableau.GetStackColors().Count;
+				else
+					maxNumberTopCardsOtherPlayers = Math.Max(maxNumberTopCardsOtherPlayers, targetPlayer.Tableau.GetStackColors().Count);
+			}
+
+			if (numberTopCardsActivePlayer == 5 && maxNumberTopCardsOtherPlayers < 5)
+			{
+				// TODO::achieve Empire.  Special achievements need a larger framework and some discussion
+				return true;
+			}
+
+			return false;
+		}
     }
 }

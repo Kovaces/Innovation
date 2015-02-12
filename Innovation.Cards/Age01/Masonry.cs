@@ -18,8 +18,9 @@ namespace Innovation.Cards
         {
             get
             {
-                return new List<CardAction>(){
-                    new CardAction(ActionType.Optional,Symbol.Tower,"You may meld any number of cards from your hand, each with a [TOWER]. If you melded four or more cards in this way, claim the Monument achievement.", Action1)
+                return new List<CardAction>()
+				{
+                    new CardAction(ActionType.Optional, Symbol.Tower, "You may meld any number of cards from your hand, each with a [TOWER]. If you melded four or more cards in this way, claim the Monument achievement.", Action1)
                 };
             }
         }
@@ -37,7 +38,7 @@ namespace Innovation.Cards
 			}
 			if (cardsWithTowers.Count > 0)
 			{
-				List<ICard> selectedCards = targetPlayer.PickMultipleCardsFromHand(cardsWithTowers, 0, cardsWithTowers.Count);
+				List<ICard> selectedCards = targetPlayer.PickFromMultipleCards(cardsWithTowers, 0, cardsWithTowers.Count);
 				foreach (ICard card in selectedCards)
 				{
 					targetPlayer.Hand.Remove(card);

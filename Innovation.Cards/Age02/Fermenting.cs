@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Innovation.Actions;
 using Innovation.Models;
 using Innovation.Models.Enums;
 namespace Innovation.Cards
@@ -17,11 +18,23 @@ namespace Innovation.Cards
         {
             get
             {
-                return new List<CardAction>(){
-                    new CardAction(ActionType.Required,Symbol.Leaf,"Draw a [2] for every two [LEAF] icons on your board.", Action1)
+                return new List<CardAction>()
+				{
+                    new CardAction(ActionType.Required, Symbol.Leaf, "Draw a [2] for every two [LEAF] icons on your board.", Action1)
                 };
             }
         }
-        bool Action1(object[] parameters) { throw new NotImplementedException(); }
+        bool Action1(object[] parameters) 
+		{
+			Game game = null;
+			Player targetPlayer = null;
+			CardHelper.GetParameters(parameters, out game, out targetPlayer);
+
+			int numberOfLeafs = targetPlayer.Tableau.GetSymbolCount(Symbol.Leaf);
+			for (int i = 0; i < numberOfLeafs / 2; i++)
+				targetPlayer.Hand.Add(Draw.Action(2, game));
+
+			return numberOfLeafs >= 2;
+		}
     }
 }

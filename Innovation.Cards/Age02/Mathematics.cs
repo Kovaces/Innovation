@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Innovation.Actions;
 using Innovation.Models;
 using Innovation.Models.Enums;
 namespace Innovation.Cards
@@ -17,11 +18,30 @@ namespace Innovation.Cards
         {
             get
             {
-                return new List<CardAction>(){
-                    new CardAction(ActionType.Optional,Symbol.Lightbulb,"You may return a card from your hand. If you do, draw and meld a card of value one higher than the card you returned.", Action1)
+                return new List<CardAction>()
+				{
+                    new CardAction(ActionType.Optional, Symbol.Lightbulb, "You may return a card from your hand. If you do, draw and meld a card of value one higher than the card you returned.", Action1)
                 };
             }
         }
-        bool Action1(object[] parameters) { throw new NotImplementedException(); }
+        bool Action1(object[] parameters) 
+		{
+			Game game = null;
+			Player targetPlayer = null;
+			CardHelper.GetParameters(parameters, out game, out targetPlayer);
+
+			ICard card = targetPlayer.PickCardFromHand();
+			if (card != null)
+			{
+				targetPlayer.Hand.Remove(card);
+				Return.Action(card, game);
+
+				Meld.Action(Draw.Action(card.Age + 1, game), targetPlayer);
+
+				return true;
+			}
+
+			return false;
+		}
     }
 }

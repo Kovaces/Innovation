@@ -94,5 +94,11 @@ namespace Innovation.Models
 			}
 			
 		}
+
+		public void Splay(SplayDirection direction)
+		{
+			if (Cards.Count > 1)
+				SplayedDirection = direction;
+		}
 	}
 }

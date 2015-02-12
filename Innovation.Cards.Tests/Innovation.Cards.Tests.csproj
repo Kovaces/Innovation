@@ -50,20 +50,28 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="Age1\AgricultureTest.cs" />
-    <Compile Include="Age1\ArcheryTest.cs" />
-    <Compile Include="Age1\CityStatesTest.cs" />
-    <Compile Include="Age1\ClothingTest.cs" />
-    <Compile Include="Age1\CodeOfLawsTest.cs" />
-    <Compile Include="Age1\ToolsTest.cs" />
-    <Compile Include="Age1\TheWheelTest.cs" />
-    <Compile Include="Age1\SailingTest.cs" />
-    <Compile Include="Age1\PotteryTest.cs" />
-    <Compile Include="Age1\OarsTest.cs" />
-    <Compile Include="Age1\Mysticism.cs" />
-    <Compile Include="Age1\MetalworkingTest.cs" />
-    <Compile Include="Age1\MasonryTest.cs" />
-    <Compile Include="Age1\DomesticationTest.cs" />
+    <Compile Include="Age01\AgricultureTest.cs" />
+    <Compile Include="Age01\ArcheryTest.cs" />
+    <Compile Include="Age01\CityStatesTest.cs" />
+    <Compile Include="Age01\ClothingTest.cs" />
+    <Compile Include="Age01\CodeOfLawsTest.cs" />
+    <Compile Include="Age01\ToolsTest.cs" />
+    <Compile Include="Age01\TheWheelTest.cs" />
+    <Compile Include="Age01\SailingTest.cs" />
+    <Compile Include="Age01\PotteryTest.cs" />
+    <Compile Include="Age01\OarsTest.cs" />
+    <Compile Include="Age01\Mysticism.cs" />
+    <Compile Include="Age01\MetalworkingTest.cs" />
+    <Compile Include="Age01\MasonryTest.cs" />
+    <Compile Include="Age01\DomesticationTest.cs" />
+    <Compile Include="Age02\MonotheismTest.cs" />
+    <Compile Include="Age02\MathematicsTest.cs" />
+    <Compile Include="Age02\MapmakingTest.cs" />
+    <Compile Include="Age02\FermentingTest.cs" />
+    <Compile Include="Age02\CurrencyTest.cs" />
+    <Compile Include="Age02\ConstructionTest.cs" />
+    <Compile Include="Age02\CanalBuildingTest.cs" />
+    <Compile Include="Age02\CalendarTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -18,8 +18,9 @@ namespace Innovation.Cards
         {
             get
             {
-                return new List<CardAction>(){
-                    new CardAction(ActionType.Required,Symbol.Crown,"Draw and meld a [1].", Action1)
+                return new List<CardAction>()
+				{
+                    new CardAction(ActionType.Required, Symbol.Crown, "Draw and meld a [1].", Action1)
                 };
             }
         }

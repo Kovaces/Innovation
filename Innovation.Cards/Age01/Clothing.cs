@@ -19,9 +19,10 @@ namespace Innovation.Cards
 		{
 			get
 			{
-				return new List<CardAction>(){
-                    new CardAction(ActionType.Required,Symbol.Leaf,"Meld a card from your hand of different color from any card on your board.", Action1)
-                    ,new CardAction(ActionType.Required,Symbol.Leaf,"Draw and score a [1] for each color present on your board not present on any other player's board.", Action2)
+				return new List<CardAction>()
+				{
+                    new CardAction(ActionType.Required, Symbol.Leaf, "Meld a card from your hand of different color from any card on your board.", Action1)
+                    ,new CardAction(ActionType.Required, Symbol.Leaf, "Draw and score a [1] for each color present on your board not present on any other player's board.", Action2)
                 };
 			}
 		}
@@ -36,7 +37,7 @@ namespace Innovation.Cards
 
 			if (cardsToMeld.Count > 0)
 			{
-				ICard card = targetPlayer.PickCardFromHand(cardsToMeld);
+				ICard card = targetPlayer.PickFromMultipleCards(cardsToMeld, 1, 1).First();
 
 				targetPlayer.Hand.Remove(card);
 				Meld.Action(card, targetPlayer);

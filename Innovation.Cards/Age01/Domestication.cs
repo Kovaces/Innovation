@@ -20,8 +20,9 @@ namespace Innovation.Cards
         {
             get
             {
-                return new List<CardAction>(){
-                    new CardAction(ActionType.Required,Symbol.Tower,"Meld the lowest card in your hand. Draw a [1].", Action1)
+                return new List<CardAction>()
+				{
+                    new CardAction(ActionType.Required, Symbol.Tower, "Meld the lowest card in your hand. Draw a [1].", Action1)
                 };
             }
         }
@@ -37,7 +38,7 @@ namespace Innovation.Cards
 				var lowestAgeInHand = targetPlayer.Hand.Min(c => c.Age);
 				var lowestCards = targetPlayer.Hand.Where(c => c.Age.Equals(lowestAgeInHand)).ToList();
 
-				ICard cardToMeld = targetPlayer.PickCardFromHand(lowestCards);
+				ICard cardToMeld = targetPlayer.PickFromMultipleCards(lowestCards, 1, 1).First();
 				targetPlayer.Hand.Remove(cardToMeld);
 				Meld.Action(cardToMeld, targetPlayer);
 			}

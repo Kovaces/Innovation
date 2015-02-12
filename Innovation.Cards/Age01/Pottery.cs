@@ -18,9 +18,10 @@ namespace Innovation.Cards
         {
             get
             {
-                return new List<CardAction>(){
-                    new CardAction(ActionType.Optional,Symbol.Leaf,"You may return up to three cards from your hand. If you returned any cards, draw and score a card of value equal to the number of cards you returned.", Action1)
-                    ,new CardAction(ActionType.Required,Symbol.Leaf,"Draw a [1].", Action2)
+                return new List<CardAction>()
+				{
+                    new CardAction(ActionType.Optional, Symbol.Leaf, "You may return up to three cards from your hand. If you returned any cards, draw and score a card of value equal to the number of cards you returned.", Action1)
+                    ,new CardAction(ActionType.Required, Symbol.Leaf, "Draw a [1].", Action2)
                 };
             }
         }
@@ -30,7 +31,7 @@ namespace Innovation.Cards
 			Player targetPlayer = null;
 			CardHelper.GetParameters(parameters, out game, out targetPlayer);
 
-			List<ICard> selectedCards = targetPlayer.PickMultipleCardsFromHand(targetPlayer.Hand, 0, 3);
+			List<ICard> selectedCards = targetPlayer.PickFromMultipleCards(targetPlayer.Hand, 0, 3);
 			foreach (ICard card in selectedCards)
 			{
 				targetPlayer.Hand.Remove(card);

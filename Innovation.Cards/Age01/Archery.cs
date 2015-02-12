@@ -19,8 +19,9 @@ namespace Innovation.Cards
 		{
 			get
 			{
-				return new List<CardAction>(){
-                    new CardAction(ActionType.Demand,Symbol.Tower,"I demand you draw a [1], then transfer the highest card in your hand to my hand!", Action1)
+				return new List<CardAction>()
+				{
+                    new CardAction(ActionType.Demand, Symbol.Tower, "I demand you draw a [1], then transfer the highest card in your hand to my hand!", Action1)
                 };
 			}
 		}
@@ -36,7 +37,7 @@ namespace Innovation.Cards
 			var highestAgeInHand = targetPlayer.Hand.Max(c => c.Age);
 			var highestCards = targetPlayer.Hand.Where(c => c.Age.Equals(highestAgeInHand)).ToList();
 
-			ICard selectedCard = targetPlayer.PickCardFromHand(highestCards);
+			ICard selectedCard = targetPlayer.PickFromMultipleCards(highestCards, 1, 1).First();
 
 			targetPlayer.Hand.Remove(selectedCard);
 			activePlayer.Hand.Add(selectedCard);

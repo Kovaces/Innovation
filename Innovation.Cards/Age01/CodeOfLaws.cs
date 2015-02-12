@@ -19,8 +19,9 @@ namespace Innovation.Cards
         {
             get
             {
-                return new List<CardAction>(){
-                    new CardAction(ActionType.Optional,Symbol.Crown,"You may tuck a card from your hand of the same color as any card on your board. If you do, you may splay that color of your cards left.", Action1)
+                return new List<CardAction>()
+				{
+                    new CardAction(ActionType.Optional, Symbol.Crown, "You may tuck a card from your hand of the same color as any card on your board. If you do, you may splay that color of your cards left.", Action1)
                 };
             }
         }
@@ -35,13 +36,13 @@ namespace Innovation.Cards
 
 			if (cardsMatchingBoardColor.Count > 0)
 			{
-				ICard cardToTuck = targetPlayer.PickCardFromHand(cardsMatchingBoardColor);
+				ICard cardToTuck = targetPlayer.PickFromMultipleCards(cardsMatchingBoardColor, 1, 1).First();
 
 				targetPlayer.Hand.Remove(cardToTuck);
 				Tuck.Action(cardToTuck, targetPlayer);
 
 				if (targetPlayer.AskToSplay(cardToTuck.Color, SplayDirection.Left))
-					targetPlayer.Tableau.Stacks[cardToTuck.Color].SplayedDirection = SplayDirection.Left;
+					targetPlayer.Tableau.Stacks[cardToTuck.Color].Splay(SplayDirection.Left);
 
 				return true;
 			}
