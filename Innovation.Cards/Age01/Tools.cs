@@ -26,6 +26,7 @@ namespace Innovation.Cards
                 };
             }
         }
+
         bool Action1(CardActionParameters parameters) 
 		{
 			ValidateParameters(parameters);
@@ -34,6 +35,7 @@ namespace Innovation.Cards
 				return false;
 
 			List<ICard> cardsToReturn = parameters.TargetPlayer.PickMultipleCards(parameters.TargetPlayer.Hand, 3, 3).ToList();
+			
 			if (cardsToReturn.Count == 0)
 				return false;
 

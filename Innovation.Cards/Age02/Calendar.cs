@@ -31,15 +31,13 @@ namespace Innovation.Cards
 			int cardsInScorePile = parameters.TargetPlayer.Tableau.ScorePile.Count;
 			int cardsInHand = parameters.TargetPlayer.Hand.Count;
 
-			if (cardsInScorePile > cardsInHand)
-			{
-				parameters.TargetPlayer.Hand.Add(Draw.Action(3, parameters.Game));
-				parameters.TargetPlayer.Hand.Add(Draw.Action(3, parameters.Game));
+			if (cardsInScorePile <= cardsInHand)
+				return false;
+			
+			parameters.TargetPlayer.Hand.Add(Draw.Action(3, parameters.Game));
+			parameters.TargetPlayer.Hand.Add(Draw.Action(3, parameters.Game));
 
-				return true;
-			}
-
-			return false;
+			return true;
 		}
     }
 }

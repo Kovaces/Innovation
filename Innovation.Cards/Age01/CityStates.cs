@@ -29,35 +29,36 @@ namespace Innovation.Cards
 		{
 			ValidateParameters(parameters);
 
-			if (parameters.TargetPlayer.Tableau.GetSymbolCount(Symbol.Tower) >= 4)
+			if (parameters.TargetPlayer.Tableau.GetSymbolCount(Symbol.Tower) < 4)
+				return false;
+			
+			List<ICard> topCardsWithTowers = new List<ICard>();
+			
+			foreach (Stack stack in parameters.TargetPlayer.Tableau.Stacks.Values)
 			{
-				List<ICard> topCardsWithTowers = new List<ICard>();
-				foreach (Stack stack in parameters.TargetPlayer.Tableau.Stacks.Values)
+				ICard card = stack.GetTopCard();
+				if (card != null)
 				{
-					ICard card = stack.GetTopCard();
-					if (card != null)
-					{
-						if (card.HasSymbol(Symbol.Tower))
-							topCardsWithTowers.Add(card);
-					}
-				}
-				if (topCardsWithTowers.Count > 0)
-				{
-					ICard cardToMove = parameters.TargetPlayer.PickCard(topCardsWithTowers);
-					
-					// remove from parameters.TargetPlayer's board
-					parameters.TargetPlayer.Tableau.Stacks[cardToMove.Color].RemoveCard(cardToMove);
-					
-					// add to parameters.ActivePlayer's board - doesn't say meld, so just add it
-					parameters.ActivePlayer.Tableau.Stacks[cardToMove.Color].AddCardToTop(cardToMove);
-
-					// if you do, draw a 1
-					parameters.TargetPlayer.Hand.Add(Draw.Action(1, parameters.Game));
-
-					return true;
+					if (card.HasSymbol(Symbol.Tower))
+						topCardsWithTowers.Add(card);
 				}
 			}
 
+			if (topCardsWithTowers.Count == 0)
+				return false;
+			
+			
+			ICard cardToMove = parameters.TargetPlayer.PickCard(topCardsWithTowers);
+					
+			// remove from TargetPlayer's board
+			parameters.TargetPlayer.Tableau.Stacks[cardToMove.Color].RemoveCard(cardToMove);
+					
+			// add to ActivePlayer's board - doesn't say meld, so just add it
+			parameters.ActivePlayer.Tableau.Stacks[cardToMove.Color].AddCardToTop(cardToMove);
+
+			// if you do, draw a 1
+			parameters.TargetPlayer.Hand.Add(Draw.Action(1, parameters.Game));
+			
 			return false;
 		}
     }

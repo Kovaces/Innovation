@@ -35,27 +35,25 @@ namespace Innovation.Cards
 			List<Color> topCardColors = parameters.TargetPlayer.Tableau.GetStackColors();
 			List<ICard> cardsToMeld = parameters.TargetPlayer.Hand.Where(x => !topCardColors.Contains(x.Color)).ToList();
 
-			if (cardsToMeld.Count > 0)
-			{
-				ICard card = parameters.TargetPlayer.PickCard(cardsToMeld);
+			if (cardsToMeld.Count == 0)
+				return false;
+			
+			ICard card = parameters.TargetPlayer.PickCard(cardsToMeld);
 
-				parameters.TargetPlayer.Hand.Remove(card);
-				Meld.Action(card, parameters.TargetPlayer);
+			parameters.TargetPlayer.Hand.Remove(card);
+			Meld.Action(card, parameters.TargetPlayer);
 
-				return true;
-			}
-
-			return false;
+			return true;	
 		}
 
 		bool Action2(CardActionParameters parameters)
 		{
 			ValidateParameters(parameters);
 
-			List<Color> ActivePlayerTopCardColors = parameters.TargetPlayer.Tableau.GetStackColors();
+			List<Color> targetPlayerTopCardColors = parameters.TargetPlayer.Tableau.GetStackColors();
 			List<Color> otherPlayerTopCardColors = parameters.Game.Players.Where(p => p != parameters.TargetPlayer).SelectMany(r => r.Tableau.GetStackColors()).Distinct().ToList();
 
-			var numberOfCardsToDraw = ActivePlayerTopCardColors.Count(x => !otherPlayerTopCardColors.Contains(x));
+			var numberOfCardsToDraw = targetPlayerTopCardColors.Count(x => !otherPlayerTopCardColors.Contains(x));
 			for (var i = 0; i < numberOfCardsToDraw; i++)
 				Score.Action(Draw.Action(1, parameters.Game), parameters.TargetPlayer);
 

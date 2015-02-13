@@ -39,7 +39,7 @@ namespace Innovation.Cards
 			parameters.TargetPlayer.Hand.Remove(selectedCard);
 			parameters.ActivePlayer.Hand.Add(selectedCard);
 
-			return true;
+			return false;
 		}
 	}
 }

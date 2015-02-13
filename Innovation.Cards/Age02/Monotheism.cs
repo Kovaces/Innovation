@@ -29,19 +29,17 @@ namespace Innovation.Cards
 		{
 			ValidateParameters(parameters);
 
-			List<Color> ActivePlayerTopColors = parameters.ActivePlayer.Tableau.GetStackColors();
-			List<ICard> possibleTransferCards = parameters.TargetPlayer.Tableau.GetTopCards().Where(x => !ActivePlayerTopColors.Contains(x.Color)).ToList();
+			List<Color> activePlayerTopColors = parameters.ActivePlayer.Tableau.GetStackColors();
+			List<ICard> possibleTransferCards = parameters.TargetPlayer.Tableau.GetTopCards().Where(x => !activePlayerTopColors.Contains(x.Color)).ToList();
 
-			if (possibleTransferCards.Count > 0)
-			{
-				ICard cardToTransfer = parameters.TargetPlayer.PickCard(possibleTransferCards);
-				parameters.TargetPlayer.Tableau.Stacks[cardToTransfer.Color].RemoveCard(cardToTransfer);
-				parameters.ActivePlayer.Tableau.ScorePile.Add(cardToTransfer);
+			if (possibleTransferCards.Count == 0)
+				return false;
+			
+			ICard cardToTransfer = parameters.TargetPlayer.PickCard(possibleTransferCards);
+			parameters.TargetPlayer.Tableau.Stacks[cardToTransfer.Color].RemoveCard(cardToTransfer);
+			parameters.ActivePlayer.Tableau.ScorePile.Add(cardToTransfer);
 
-				Tuck.Action(Draw.Action(1, parameters.Game), parameters.TargetPlayer);
-
-				return true;
-			}
+			Tuck.Action(Draw.Action(1, parameters.Game), parameters.TargetPlayer);
 
 			return false;
 		}

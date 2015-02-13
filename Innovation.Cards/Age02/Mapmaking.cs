@@ -31,29 +31,28 @@ namespace Innovation.Cards
 			ValidateParameters(parameters);
 
 			List<ICard> cardsToTransfer = parameters.TargetPlayer.Tableau.ScorePile.Where(x => x.Age == 1).ToList();
-			if (cardsToTransfer.Count > 0)
-			{
-				ICard card = parameters.TargetPlayer.PickMultipleCards(cardsToTransfer, 1, 1).First();
-				parameters.TargetPlayer.Tableau.ScorePile.Remove(card);
-				parameters.ActivePlayer.Tableau.ScorePile.Add(card);
+			
+			if (cardsToTransfer.Count == 0)
+				return false;
+			
+			ICard card = parameters.TargetPlayer.PickCard(cardsToTransfer);
+			parameters.TargetPlayer.Tableau.ScorePile.Remove(card);
+			parameters.ActivePlayer.Tableau.ScorePile.Add(card);
 
-				parameters.Game.StashPropertyBagValue("MapmakingAction1Taken", "true");
-
-				return true;
-			}
+			parameters.Game.StashPropertyBagValue("MapmakingAction1Taken", true);
+			
 			return false;
 		}
 		bool Action2(CardActionParameters parameters)
 		{
 			ValidateParameters(parameters);
 
-			if (parameters.Game.GetPropertyBagValue("MapmakingAction1Taken").ToString() == "true")
-			{
-				Score.Action(Draw.Action(1, parameters.Game), parameters.TargetPlayer);
-				return true;
-			}
-
-			return false;
+			if (!(bool)parameters.Game.GetPropertyBagValue("MapmakingAction1Taken"))
+				return false;
+			
+			Score.Action(Draw.Action(1, parameters.Game), parameters.TargetPlayer);
+			
+			return true;
 		}
     }
 }

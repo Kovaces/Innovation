@@ -29,17 +29,17 @@ namespace Innovation.Cards
 			ValidateParameters(parameters);
 
 			ICard card = parameters.TargetPlayer.PickCardFromHand();
-			if (card != null)
-			{
-				parameters.TargetPlayer.Hand.Remove(card);
-				Return.Action(card, parameters.Game);
+	        
+			if (card == null)
+		        return false;
 
-				Meld.Action(Draw.Action(card.Age + 1, parameters.Game), parameters.TargetPlayer);
-
-				return true;
-			}
-
-			return false;
+			parameters.TargetPlayer.Hand.Remove(card);
+			
+			Return.Action(card, parameters.Game);
+			
+			Meld.Action(Draw.Action(card.Age + 1, parameters.Game), parameters.TargetPlayer);
+			
+			return true;
 		}
     }
 }

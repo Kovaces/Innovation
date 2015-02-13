@@ -32,18 +32,19 @@ namespace Innovation.Cards
 			ValidateParameters(parameters);
 
 			var selectedCards = parameters.TargetPlayer.PickMultipleCards(parameters.TargetPlayer.Hand, 0, 3).ToList();
+
+			if (selectedCards.Count == 0)
+				return false;
+
 			foreach (ICard card in selectedCards)
 			{
 				parameters.TargetPlayer.Hand.Remove(card);
 				Return.Action(card, parameters.Game);
 			}
-			if (selectedCards.Count > 0)
-			{
-				Score.Action(Draw.Action(selectedCards.Count, parameters.Game), parameters.TargetPlayer);
-				return true;
-			}
-
-			return false;
+			
+			Score.Action(Draw.Action(selectedCards.Count, parameters.Game), parameters.TargetPlayer);
+			
+			return true;
 		}
 
 		bool Action2(CardActionParameters parameters)

@@ -64,8 +64,7 @@ namespace Innovation.Cards
 
 			if (numberTopCardsActivePlayer == 5 && maxNumberTopCardsOtherPlayers < 5)
 			{
-				// TODO::achieve Empire.  Special achievements need a larger framework and some discussion
-				return true;
+				throw new NotImplementedException("Empire Achievement"); // TODO::achieve Empire.  Special achievements need a larger framework and some discussion
 			}
 
 			return false;

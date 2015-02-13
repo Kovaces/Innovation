@@ -28,35 +28,31 @@ namespace Innovation.Cards
 		{
 			ValidateParameters(parameters);
 
-			List<ICard> cardsInPileToTransfer = new List<ICard>();
-			List<ICard> cardsInHandToTransfer = new List<ICard>();
+			if (!parameters.TargetPlayer.AskQuestion(this.Actions.ElementAt(0).ActionText))
+				return false;
+			
+			int maxAgeInHand = parameters.TargetPlayer.Hand.Any() ? parameters.TargetPlayer.Hand.Max(x => x.Age) : 0;
+			var cardsInHandToTransfer = parameters.TargetPlayer.Hand.Where(x => x.Age == maxAgeInHand).ToList();
 
-			if (parameters.TargetPlayer.Hand.Count > 0)
-			{
-				int maxAgeInHand = parameters.TargetPlayer.Hand.Max(x => x.Age);
-				cardsInHandToTransfer = parameters.TargetPlayer.Hand.Where(x => x.Age == maxAgeInHand).ToList();
-			}
-			if (parameters.TargetPlayer.Tableau.ScorePile.Count > 0)
-			{
-				int maxAgeInPile = parameters.TargetPlayer.Tableau.ScorePile.Max(x => x.Age);
-				cardsInPileToTransfer = parameters.TargetPlayer.Tableau.ScorePile.Where(x => x.Age == maxAgeInPile).ToList();
-			}
+			int maxAgeInPile = parameters.TargetPlayer.Tableau.ScorePile.Any() ? parameters.TargetPlayer.Tableau.ScorePile.Max(x => x.Age) : 0;
+			var cardsInPileToTransfer = parameters.TargetPlayer.Tableau.ScorePile.Where(x => x.Age == maxAgeInPile).ToList();
+
+			if (!cardsInHandToTransfer.Any() && !cardsInPileToTransfer.Any())
+				return false; //no game state change regardless of player opting in
 
 			foreach (ICard card in cardsInHandToTransfer)
 			{
 				parameters.TargetPlayer.Hand.Remove(card);
 				parameters.TargetPlayer.Tableau.ScorePile.Add(card);
 			}
+
 			foreach (ICard card in cardsInPileToTransfer)
 			{
 				parameters.TargetPlayer.Tableau.ScorePile.Remove(card);
 				parameters.TargetPlayer.Hand.Add(card);
 			}
 			
-			if (cardsInHandToTransfer.Count + cardsInPileToTransfer.Count > 0)
-				return true;
-
-			return false;
+			return true;
 		}
     }
 }
