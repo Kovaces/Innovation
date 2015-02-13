@@ -28,49 +28,49 @@ namespace Innovation.Cards
             }
         }
 
-	    bool Action1(object[] parameters)
+	    bool Action1(CardActionParameters parameters)
 	    {
-			ParseParameters(parameters, 2);
+			ValidateParameters(parameters);
 
 			//Draw and reveal a [4] for every three [TOWER] on your board.
 		    var cardsDrawn = new List<ICard>();
-		    var numberOfCardsToDraw = TargetPlayer.Tableau.GetSymbolCount(Symbol.Tower) / 3;
+		    var numberOfCardsToDraw = parameters.TargetPlayer.Tableau.GetSymbolCount(Symbol.Tower) / 3;
 
 		    if (numberOfCardsToDraw == 0)
 			    return false;
 
 		    for (int i = 0; i < numberOfCardsToDraw; i++)
 		    {
-			    ICard card = Draw.Action(4, Game);
-				TargetPlayer.RevealCard(card);
-				TargetPlayer.Hand.Add(card);
+			    ICard card = Draw.Action(4, parameters.Game);
+				parameters.TargetPlayer.RevealCard(card);
+				parameters.TargetPlayer.Hand.Add(card);
 				cardsDrawn.Add(card);
 		    }
 			
 			//If any of the drawn cards are red, return the cards drawn and return all cards in your hand. Otherwise, keep them.
 		    if (cardsDrawn.Any(c => c.Color == Color.Red))
 		    {
-			    TargetPlayer.Hand.ForEach(c => Return.Action(c, Game));
-			    TargetPlayer.Hand.RemoveRange(0, TargetPlayer.Hand.Count());
+			    parameters.TargetPlayer.Hand.ForEach(c => Return.Action(c, parameters.Game));
+			    parameters.TargetPlayer.Hand.RemoveRange(0, parameters.TargetPlayer.Hand.Count());
 		    }
 
 		    return true;
 	    }
 
-	    bool Action2(object[] parameters)
+	    bool Action2(CardActionParameters parameters)
 	    {
-		    ParseParameters(parameters, 2);
+		    ValidateParameters(parameters);
 
-			if (!TargetPlayer.Hand.Any())
+			if (!parameters.TargetPlayer.Hand.Any())
 				return false;
 
-		    var cardChosen = TargetPlayer.PickCardFromHand();
-			Meld.Action(cardChosen, TargetPlayer);
-		    TargetPlayer.Hand.Remove(cardChosen);
+		    var cardChosen = parameters.TargetPlayer.PickCardFromHand();
+			Meld.Action(cardChosen, parameters.TargetPlayer);
+		    parameters.TargetPlayer.Hand.Remove(cardChosen);
 
-			cardChosen = TargetPlayer.PickCardFromHand();
-			Score.Action(cardChosen, TargetPlayer);
-			TargetPlayer.Hand.Remove(cardChosen);
+			cardChosen = parameters.TargetPlayer.PickCardFromHand();
+			Score.Action(cardChosen, parameters.TargetPlayer);
+			parameters.TargetPlayer.Hand.Remove(cardChosen);
 
 			return true;
 	    }

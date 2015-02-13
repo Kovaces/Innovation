@@ -98,7 +98,7 @@ namespace Innovation.Cards.Tests
 			testGame.Players[0].Tableau.ScorePile = testGame.Players[0].Hand;
 			testGame.Players[0].Hand = new List<ICard>();
 
-			bool result = new Calendar().Actions.ToList()[0].ActionHandler(new object[] { testGame.Players[0], testGame });
+			bool result = new Calendar().Actions.ToList()[0].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[0], Game = testGame, ActivePlayer = testGame.Players[0], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
 
 			Assert.AreEqual(true, result);
 
@@ -120,7 +120,7 @@ namespace Innovation.Cards.Tests
 		[TestMethod]
 		public void Card_CalendarAction1_MoreHandThanScore()
 		{
-			bool result = new Calendar().Actions.ToList()[0].ActionHandler(new object[] { testGame.Players[0], testGame });
+			bool result = new Calendar().Actions.ToList()[0].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[0], Game = testGame, ActivePlayer = testGame.Players[0], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
 
 			Assert.AreEqual(false, result);
 

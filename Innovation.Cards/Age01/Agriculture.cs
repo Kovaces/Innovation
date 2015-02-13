@@ -27,21 +27,21 @@ namespace Innovation.Cards
 			}
 		}
 
-		private bool Action1(object[] parameters)
+		private bool Action1(CardActionParameters parameters)
 		{
-			ParseParameters(parameters, 2);
+			ValidateParameters(parameters);
 
-			ICard selectedCard = TargetPlayer.PickCardFromHand();
+			ICard selectedCard = parameters.TargetPlayer.PickCardFromHand();
 			
 			if (selectedCard == null)
 				return false;
 
-			TargetPlayer.Hand.Remove(selectedCard);
-			Return.Action(selectedCard, Game);
+			parameters.TargetPlayer.Hand.Remove(selectedCard);
+			Return.Action(selectedCard, parameters.Game);
 
 			int ageToDraw = selectedCard.Age + 1;
-			var cardToScore = Draw.Action(ageToDraw, Game);
-			Score.Action(cardToScore, TargetPlayer);
+			var cardToScore = Draw.Action(ageToDraw, parameters.Game);
+			Score.Action(cardToScore, parameters.TargetPlayer);
 
 			return true;
 		}

@@ -26,33 +26,33 @@ namespace Innovation.Cards
                 };
             }
         }
-        bool Action1(object[] parameters)
+        bool Action1(CardActionParameters parameters)
 		{
-			ParseParameters(parameters, 3);
+			ValidateParameters(parameters);
 
-			List<ICard> cardsWithCrowns = TargetPlayer.Hand.Where(x => x.HasSymbol(Symbol.Crown)).ToList();
+			List<ICard> cardsWithCrowns = parameters.TargetPlayer.Hand.Where(x => x.HasSymbol(Symbol.Crown)).ToList();
 			if (cardsWithCrowns.Count > 0)
 			{
-				ICard card = TargetPlayer.PickCard(cardsWithCrowns);
-				TargetPlayer.Hand.Remove(card);
-				Score.Action(card, CurrentPlayer);
+				ICard card = parameters.TargetPlayer.PickCard(cardsWithCrowns);
+				parameters.TargetPlayer.Hand.Remove(card);
+				Score.Action(card, parameters.ActivePlayer);
 
-				TargetPlayer.Hand.Add(Draw.Action(1, Game));
+				parameters.TargetPlayer.Hand.Add(Draw.Action(1, parameters.Game));
 
-				Game.StashPropertyBagValue("OarsAction1Taken", "true");
+				parameters.Game.StashPropertyBagValue("OarsAction1Taken", "true");
 
 				return true;
 			}
 
 			return false;
 		}
-		bool Action2(object[] parameters)
+		bool Action2(CardActionParameters parameters)
 		{
-			ParseParameters(parameters, 2);
+			ValidateParameters(parameters);
 
-			if (Game.GetPropertyBagValue("OarsAction1Taken").ToString() != "true")
+			if (parameters.Game.GetPropertyBagValue("OarsAction1Taken").ToString() != "true")
 			{
-				TargetPlayer.Hand.Add(Draw.Action(1, Game));
+				parameters.TargetPlayer.Hand.Add(Draw.Action(1, parameters.Game));
 
 				return true;
 			}

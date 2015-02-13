@@ -24,17 +24,17 @@ namespace Innovation.Cards
                 };
             }
         }
-        bool Action1(object[] parameters) 
+        bool Action1(CardActionParameters parameters) 
 		{
-			ParseParameters(parameters, 2);
+			ValidateParameters(parameters);
 
-			ICard card = TargetPlayer.PickCardFromHand();
+			ICard card = parameters.TargetPlayer.PickCardFromHand();
 			if (card != null)
 			{
-				TargetPlayer.Hand.Remove(card);
-				Return.Action(card, Game);
+				parameters.TargetPlayer.Hand.Remove(card);
+				Return.Action(card, parameters.Game);
 
-				Meld.Action(Draw.Action(card.Age + 1, Game), TargetPlayer);
+				Meld.Action(Draw.Action(card.Age + 1, parameters.Game), parameters.TargetPlayer);
 
 				return true;
 			}

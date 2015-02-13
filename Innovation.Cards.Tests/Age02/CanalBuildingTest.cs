@@ -95,7 +95,7 @@ namespace Innovation.Cards.Tests
 		[TestMethod]
 		public void Card_CanalBuildingAction1_HandCardsScoreEmpty()
 		{
-			bool result = new CanalBuilding().Actions.ToList()[0].ActionHandler(new object[] { testGame.Players[0], testGame });
+			bool result = new CanalBuilding().Actions.ToList()[0].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[0], Game = testGame, ActivePlayer = testGame.Players[0], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
 
 			Assert.AreEqual(true, result);
 
@@ -120,7 +120,7 @@ namespace Innovation.Cards.Tests
 			testGame.Players[0].Tableau.ScorePile = testGame.Players[0].Hand;
 			testGame.Players[0].Hand = new List<ICard>();
 
-			bool result = new CanalBuilding().Actions.ToList()[0].ActionHandler(new object[] { testGame.Players[0], testGame });
+			bool result = new CanalBuilding().Actions.ToList()[0].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[0], Game = testGame, ActivePlayer = testGame.Players[0], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
 
 			Assert.AreEqual(true, result);
 
@@ -149,7 +149,7 @@ namespace Innovation.Cards.Tests
 				new Card { Name = "Test Green Card", Color = Color.Green, Age = 2, Top = Symbol.Blank, Left = Symbol.Crown, Center = Symbol.Tower, Right = Symbol.Tower }
 			};
 
-			bool result = new CanalBuilding().Actions.ToList()[0].ActionHandler(new object[] { testGame.Players[0], testGame });
+			bool result = new CanalBuilding().Actions.ToList()[0].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[0], Game = testGame, ActivePlayer = testGame.Players[0], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
 
 			Assert.AreEqual(true, result);
 

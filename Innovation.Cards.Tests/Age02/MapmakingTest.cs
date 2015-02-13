@@ -95,7 +95,7 @@ namespace Innovation.Cards.Tests
 		[TestMethod]
 		public void Card_MapmakingAction1_NoAction()
 		{
-			bool result = new Mapmaking().Actions.ToList()[0].ActionHandler(new object[] { testGame.Players[1], testGame, testGame.Players[0] });
+			bool result = new Mapmaking().Actions.ToList()[0].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[1], Game = testGame, ActivePlayer = testGame.Players[0], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
 
 			Assert.AreEqual(false, result);
 

@@ -4,6 +4,8 @@ using System.Linq;
 using Innovation.Actions;
 using Innovation.Models;
 using Innovation.Models.Enums;
+using Innovation.Models.Interfaces;
+
 namespace Innovation.Cards
 {
     public class Construction : CardBase
@@ -26,38 +28,38 @@ namespace Innovation.Cards
                 };
             }
         }
-		bool Action1(object[] parameters)
+		bool Action1(CardActionParameters parameters)
 		{
-			ParseParameters(parameters, 3);
+			ValidateParameters(parameters);
 
-			int numberOfCardsToTransfer = Math.Min(TargetPlayer.Hand.Count, 2);
+			int numberOfCardsToTransfer = Math.Min(parameters.TargetPlayer.Hand.Count, 2);
 			if (numberOfCardsToTransfer > 0)
 			{
-				List<ICard> cardsToTransfer = TargetPlayer.PickMultipleCards(TargetPlayer.Hand, numberOfCardsToTransfer, numberOfCardsToTransfer).ToList();
+				List<ICard> cardsToTransfer = parameters.TargetPlayer.PickMultipleCards(parameters.TargetPlayer.Hand, numberOfCardsToTransfer, numberOfCardsToTransfer).ToList();
 
 				foreach (ICard card in cardsToTransfer)
 				{
-					TargetPlayer.Hand.Remove(card);
-					CurrentPlayer.Hand.Add(card);
+					parameters.TargetPlayer.Hand.Remove(card);
+					parameters.ActivePlayer.Hand.Add(card);
 				}
 			}
 
-			TargetPlayer.Hand.Add(Draw.Action(2, Game));
+			parameters.TargetPlayer.Hand.Add(Draw.Action(2, parameters.Game));
 
 			return true;
 		}
-        bool Action2(object[] parameters) 
+        bool Action2(CardActionParameters parameters) 
 		{
-			ParseParameters(parameters, 2);
+			ValidateParameters(parameters);
 
 			int numberTopCardsActivePlayer = 0;
 			int maxNumberTopCardsOtherPlayers = 0;
-			foreach (Player player in Game.Players)
+			foreach (var player in parameters.Game.Players)
 			{
-				if (player == TargetPlayer)
-					numberTopCardsActivePlayer = TargetPlayer.Tableau.GetStackColors().Count;
+				if (player == parameters.TargetPlayer)
+					numberTopCardsActivePlayer = parameters.TargetPlayer.Tableau.GetStackColors().Count;
 				else
-					maxNumberTopCardsOtherPlayers = Math.Max(maxNumberTopCardsOtherPlayers, TargetPlayer.Tableau.GetStackColors().Count);
+					maxNumberTopCardsOtherPlayers = Math.Max(maxNumberTopCardsOtherPlayers, parameters.TargetPlayer.Tableau.GetStackColors().Count);
 			}
 
 			if (numberTopCardsActivePlayer == 5 && maxNumberTopCardsOtherPlayers < 5)

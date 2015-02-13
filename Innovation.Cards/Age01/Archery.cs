@@ -25,19 +25,19 @@ namespace Innovation.Cards
                 };
 			}
 		}
-		bool Action1(object[] parameters)
+		bool Action1(CardActionParameters parameters)
 		{
-			ParseParameters(parameters, 3);
+			ValidateParameters(parameters);
 
-			TargetPlayer.Hand.Add(Draw.Action(1, Game));
+			parameters.TargetPlayer.Hand.Add(Draw.Action(1, parameters.Game));
 
-			var highestAgeInHand = TargetPlayer.Hand.Max(c => c.Age);
-			var highestCards = TargetPlayer.Hand.Where(c => c.Age.Equals(highestAgeInHand)).ToList();
+			var highestAgeInHand = parameters.TargetPlayer.Hand.Max(c => c.Age);
+			var highestCards = parameters.TargetPlayer.Hand.Where(c => c.Age.Equals(highestAgeInHand)).ToList();
 
-			ICard selectedCard = TargetPlayer.PickCard(highestCards);
+			ICard selectedCard = parameters.TargetPlayer.PickCard(highestCards);
 
-			TargetPlayer.Hand.Remove(selectedCard);
-			CurrentPlayer.Hand.Add(selectedCard);
+			parameters.TargetPlayer.Hand.Remove(selectedCard);
+			parameters.ActivePlayer.Hand.Add(selectedCard);
 
 			return true;
 		}

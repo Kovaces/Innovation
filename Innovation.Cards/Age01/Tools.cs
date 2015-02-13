@@ -26,48 +26,48 @@ namespace Innovation.Cards
                 };
             }
         }
-        bool Action1(object[] parameters) 
+        bool Action1(CardActionParameters parameters) 
 		{
-			ParseParameters(parameters, 2);
+			ValidateParameters(parameters);
 
-			if (TargetPlayer.Hand.Count < 3)
+			if (parameters.TargetPlayer.Hand.Count < 3)
 				return false;
 
-			List<ICard> cardsToReturn = TargetPlayer.PickMultipleCards(TargetPlayer.Hand, 3, 3).ToList();
+			List<ICard> cardsToReturn = parameters.TargetPlayer.PickMultipleCards(parameters.TargetPlayer.Hand, 3, 3).ToList();
 			if (cardsToReturn.Count == 0)
 				return false;
 
 			foreach (ICard card in cardsToReturn)
 			{
-				TargetPlayer.Hand.Remove(card);
-				Return.Action(card, Game);
+				parameters.TargetPlayer.Hand.Remove(card);
+				Return.Action(card, parameters.Game);
 			}
 
-			Meld.Action(Draw.Action(3, Game), TargetPlayer);
+			Meld.Action(Draw.Action(3, parameters.Game), parameters.TargetPlayer);
 
 			return true;
 		}
 
-        bool Action2(object[] parameters) 
+        bool Action2(CardActionParameters parameters) 
 		{
-			ParseParameters(parameters, 2);
+			ValidateParameters(parameters);
 
-			List<ICard> ageThreeCardsInHand = TargetPlayer.Hand.Where(x => x.Age == 3).ToList();
+			List<ICard> ageThreeCardsInHand = parameters.TargetPlayer.Hand.Where(x => x.Age == 3).ToList();
 
 			if (ageThreeCardsInHand.Count == 0)
 				return false;
 
-			ICard cardToReturn = TargetPlayer.PickCard(ageThreeCardsInHand);
+			ICard cardToReturn = parameters.TargetPlayer.PickCard(ageThreeCardsInHand);
 
 	        if (cardToReturn == null)
 		        return false;
 
-			TargetPlayer.Hand.Remove(cardToReturn);
-			Return.Action(cardToReturn, Game);
+			parameters.TargetPlayer.Hand.Remove(cardToReturn);
+			Return.Action(cardToReturn, parameters.Game);
 
-			TargetPlayer.Hand.Add(Draw.Action(1, Game));
-			TargetPlayer.Hand.Add(Draw.Action(1, Game));
-			TargetPlayer.Hand.Add(Draw.Action(1, Game));
+			parameters.TargetPlayer.Hand.Add(Draw.Action(1, parameters.Game));
+			parameters.TargetPlayer.Hand.Add(Draw.Action(1, parameters.Game));
+			parameters.TargetPlayer.Hand.Add(Draw.Action(1, parameters.Game));
 
 			return true;
 		}

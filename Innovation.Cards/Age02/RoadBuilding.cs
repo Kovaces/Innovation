@@ -27,33 +27,33 @@ namespace Innovation.Cards
                 };
             }
         }
-        bool Action1(object[] parameters) 
+        bool Action1(CardActionParameters parameters) 
 		{
-			ParseParameters(parameters, 2);
+			ValidateParameters(parameters);
 
-			if (TargetPlayer.Hand.Count > 0)
+			if (parameters.TargetPlayer.Hand.Count > 0)
 			{
-				List<ICard> cardsToMeld = TargetPlayer.PickMultipleCards(TargetPlayer.Hand, 1, 2).ToList();
+				List<ICard> cardsToMeld = parameters.TargetPlayer.PickMultipleCards(parameters.TargetPlayer.Hand, 1, 2).ToList();
 				foreach (ICard card in cardsToMeld)
-					Meld.Action(card, TargetPlayer);
+					Meld.Action(card, parameters.TargetPlayer);
 
 				if (cardsToMeld.Count == 2)
 				{
-					if (TargetPlayer.AskQuestion("Do you want to transfer your top red card to another player's board? If you do, transfer that player's top green card to your board."))
+					if (parameters.TargetPlayer.AskQuestion("Do you want to transfer your top red card to another player's board? If you do, transfer that player's top green card to your board."))
 					{
-						ICard topRedCard = TargetPlayer.Tableau.GetTopCards().Where(x => x.Color == Color.Red).FirstOrDefault();
+						ICard topRedCard = parameters.TargetPlayer.Tableau.GetTopCards().Where(x => x.Color == Color.Red).FirstOrDefault();
 						if (topRedCard != null)
 						{
-							IPlayer playerToTransferTo = TargetPlayer.PickPlayer(Game.Players);
+							IPlayer playerToTransferTo = parameters.TargetPlayer.PickPlayer(parameters.Game.Players);
 
-							TargetPlayer.Tableau.Stacks[Color.Red].Cards.Remove(topRedCard);
+							parameters.TargetPlayer.Tableau.Stacks[Color.Red].Cards.Remove(topRedCard);
 							playerToTransferTo.Tableau.Stacks[Color.Red].AddCardToTop(topRedCard);
 
 							ICard topGreenCard = playerToTransferTo.Tableau.GetTopCards().Where(x => x.Color == Color.Green).FirstOrDefault();
 							if (topGreenCard != null)
 							{
 								playerToTransferTo.Tableau.Stacks[Color.Green].Cards.Remove(topGreenCard);
-								TargetPlayer.Tableau.Stacks[Color.Green].AddCardToTop(topGreenCard);
+								parameters.TargetPlayer.Tableau.Stacks[Color.Green].AddCardToTop(topGreenCard);
 							}
 						}
 					}

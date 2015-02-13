@@ -28,19 +28,19 @@ namespace Innovation.Cards
 			}
 		}
 
-		bool Action1(object[] parameters)
+		bool Action1(CardActionParameters parameters)
 		{
-			ParseParameters(parameters, 2);
+			ValidateParameters(parameters);
 
-			List<Color> topCardColors = TargetPlayer.Tableau.GetStackColors();
-			List<ICard> cardsToMeld = TargetPlayer.Hand.Where(x => !topCardColors.Contains(x.Color)).ToList();
+			List<Color> topCardColors = parameters.TargetPlayer.Tableau.GetStackColors();
+			List<ICard> cardsToMeld = parameters.TargetPlayer.Hand.Where(x => !topCardColors.Contains(x.Color)).ToList();
 
 			if (cardsToMeld.Count > 0)
 			{
-				ICard card = TargetPlayer.PickCard(cardsToMeld);
+				ICard card = parameters.TargetPlayer.PickCard(cardsToMeld);
 
-				TargetPlayer.Hand.Remove(card);
-				Meld.Action(card, TargetPlayer);
+				parameters.TargetPlayer.Hand.Remove(card);
+				Meld.Action(card, parameters.TargetPlayer);
 
 				return true;
 			}
@@ -48,16 +48,16 @@ namespace Innovation.Cards
 			return false;
 		}
 
-		bool Action2(object[] parameters)
+		bool Action2(CardActionParameters parameters)
 		{
-			ParseParameters(parameters, 2);
+			ValidateParameters(parameters);
 
-			List<Color> currentPlayerTopCardColors = TargetPlayer.Tableau.GetStackColors();
-			List<Color> otherPlayerTopCardColors = Game.Players.Where(p => p != TargetPlayer).SelectMany(r => r.Tableau.GetStackColors()).Distinct().ToList();
+			List<Color> ActivePlayerTopCardColors = parameters.TargetPlayer.Tableau.GetStackColors();
+			List<Color> otherPlayerTopCardColors = parameters.Game.Players.Where(p => p != parameters.TargetPlayer).SelectMany(r => r.Tableau.GetStackColors()).Distinct().ToList();
 
-			var numberOfCardsToDraw = currentPlayerTopCardColors.Count(x => !otherPlayerTopCardColors.Contains(x));
+			var numberOfCardsToDraw = ActivePlayerTopCardColors.Count(x => !otherPlayerTopCardColors.Contains(x));
 			for (var i = 0; i < numberOfCardsToDraw; i++)
-				Score.Action(Draw.Action(1, Game), TargetPlayer);
+				Score.Action(Draw.Action(1, parameters.Game), parameters.TargetPlayer);
 
 			return (numberOfCardsToDraw > 0);
 		}

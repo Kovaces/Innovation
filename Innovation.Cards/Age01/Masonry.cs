@@ -26,20 +26,20 @@ namespace Innovation.Cards
             }
         }
 
-        bool Action1(object[] parameters) 
+        bool Action1(CardActionParameters parameters) 
 		{
-			ParseParameters(parameters, 2);
+			ValidateParameters(parameters);
 
-	        var cardsWithTowers = TargetPlayer.Hand.Where(c => c.HasSymbol(Symbol.Tower)).ToList();
+	        var cardsWithTowers = parameters.TargetPlayer.Hand.Where(c => c.HasSymbol(Symbol.Tower)).ToList();
 			
 			if (cardsWithTowers.Count == 0)
 				return false;
 			
-			var selectedCards = TargetPlayer.PickMultipleCards(cardsWithTowers, 0, cardsWithTowers.Count).ToList();
+			var selectedCards = parameters.TargetPlayer.PickMultipleCards(cardsWithTowers, 0, cardsWithTowers.Count).ToList();
 			foreach (var card in selectedCards)
 			{
-				TargetPlayer.Hand.Remove(card);
-				Meld.Action(card, TargetPlayer);
+				parameters.TargetPlayer.Hand.Remove(card);
+				Meld.Action(card, parameters.TargetPlayer);
 			}
 
 			if (selectedCards.Count > 4)

@@ -24,33 +24,33 @@ namespace Innovation.Cards
                 };
             }
         }
-		bool Action1(object[] parameters)
+		bool Action1(CardActionParameters parameters)
 		{
-			ParseParameters(parameters, 2);
+			ValidateParameters(parameters);
 
 			List<ICard> cardsInPileToTransfer = new List<ICard>();
 			List<ICard> cardsInHandToTransfer = new List<ICard>();
 
-			if (TargetPlayer.Hand.Count > 0)
+			if (parameters.TargetPlayer.Hand.Count > 0)
 			{
-				int maxAgeInHand = TargetPlayer.Hand.Max(x => x.Age);
-				cardsInHandToTransfer = TargetPlayer.Hand.Where(x => x.Age == maxAgeInHand).ToList();
+				int maxAgeInHand = parameters.TargetPlayer.Hand.Max(x => x.Age);
+				cardsInHandToTransfer = parameters.TargetPlayer.Hand.Where(x => x.Age == maxAgeInHand).ToList();
 			}
-			if (TargetPlayer.Tableau.ScorePile.Count > 0)
+			if (parameters.TargetPlayer.Tableau.ScorePile.Count > 0)
 			{
-				int maxAgeInPile = TargetPlayer.Tableau.ScorePile.Max(x => x.Age);
-				cardsInPileToTransfer = TargetPlayer.Tableau.ScorePile.Where(x => x.Age == maxAgeInPile).ToList();
+				int maxAgeInPile = parameters.TargetPlayer.Tableau.ScorePile.Max(x => x.Age);
+				cardsInPileToTransfer = parameters.TargetPlayer.Tableau.ScorePile.Where(x => x.Age == maxAgeInPile).ToList();
 			}
 
 			foreach (ICard card in cardsInHandToTransfer)
 			{
-				TargetPlayer.Hand.Remove(card);
-				TargetPlayer.Tableau.ScorePile.Add(card);
+				parameters.TargetPlayer.Hand.Remove(card);
+				parameters.TargetPlayer.Tableau.ScorePile.Add(card);
 			}
 			foreach (ICard card in cardsInPileToTransfer)
 			{
-				TargetPlayer.Tableau.ScorePile.Remove(card);
-				TargetPlayer.Hand.Add(card);
+				parameters.TargetPlayer.Tableau.ScorePile.Remove(card);
+				parameters.TargetPlayer.Hand.Add(card);
 			}
 			
 			if (cardsInHandToTransfer.Count + cardsInPileToTransfer.Count > 0)

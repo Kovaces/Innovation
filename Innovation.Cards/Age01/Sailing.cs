@@ -24,11 +24,11 @@ namespace Innovation.Cards
                 };
             }
         }
-		bool Action1(object[] parameters)
+		bool Action1(CardActionParameters parameters)
 		{
-			ParseParameters(parameters, 2);
+			ValidateParameters(parameters);
 
-			Meld.Action(Draw.Action(1, Game), TargetPlayer);
+			Meld.Action(Draw.Action(1, parameters.Game), parameters.TargetPlayer);
 
 			return true;
 		}

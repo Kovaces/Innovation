@@ -24,13 +24,13 @@ namespace Innovation.Cards
                 };
             }
         }
-        bool Action1(object[] parameters) 
+        bool Action1(CardActionParameters parameters) 
 		{
-			ParseParameters(parameters, 2);
+			ValidateParameters(parameters);
 
-			int numberOfLeafs = TargetPlayer.Tableau.GetSymbolCount(Symbol.Leaf);
+			int numberOfLeafs = parameters.TargetPlayer.Tableau.GetSymbolCount(Symbol.Leaf);
 			for (int i = 0; i < numberOfLeafs / 2; i++)
-				TargetPlayer.Hand.Add(Draw.Action(2, Game));
+				parameters.TargetPlayer.Hand.Add(Draw.Action(2, parameters.Game));
 
 			return numberOfLeafs >= 2;
 		}

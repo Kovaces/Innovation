@@ -97,7 +97,7 @@ namespace Innovation.Cards.Tests
 			//testGame.Players[0].AlwaysParticipates = true;
 			//testGame.Players[0].SelectsCards = new List<int>() { 0 };
 
-			new CodeOfLaws().Actions.ToList()[0].ActionHandler(new object[] { testGame.Players[0], testGame });
+			new CodeOfLaws().Actions.ToList()[0].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[0], Game = testGame, ActivePlayer = testGame.Players[0], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
 
 			Assert.AreEqual(2, testGame.Players[0].Tableau.Stacks[Color.Red].Cards.Count);
 			Assert.AreEqual(2, testGame.Players[0].Hand.Count);
@@ -112,7 +112,7 @@ namespace Innovation.Cards.Tests
 			//testGame.Players[0].AlwaysParticipates = true;
 			//testGame.Players[0].SelectsCards = new List<int>() { 0 };
 
-			new Clothing().Actions.ToList()[0].ActionHandler(new object[] { testGame.Players[1], testGame });
+			new Clothing().Actions.ToList()[0].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[1], Game = testGame, ActivePlayer = testGame.Players[1], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
 			Assert.AreEqual(1, testGame.Players[1].Tableau.Stacks[Color.Red].Cards.Count);
 			Assert.AreEqual(SplayDirection.None, testGame.Players[1].Tableau.Stacks[Color.Red].SplayedDirection);
 			Assert.AreEqual(1, testGame.Players[1].Hand.Count);

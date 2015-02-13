@@ -98,7 +98,7 @@ namespace Innovation.Cards.Tests
 			//testGame.Players[0].AlwaysParticipates = true;
 			//testGame.Players[0].SelectsCards = new List<int>() { 0, 1 };
 
-			new Pottery().Actions.ToList()[0].ActionHandler(new object[] { testGame.Players[0], testGame });
+			new Pottery().Actions.ToList()[0].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[0], Game = testGame, ActivePlayer = testGame.Players[0], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
 
 			Assert.AreEqual(1, testGame.Players[0].Hand.Count);
 			Assert.AreEqual(5, testGame.AgeDecks.Where(x => x.Age == 1).FirstOrDefault().Cards.Count);
@@ -123,7 +123,7 @@ namespace Innovation.Cards.Tests
 			//testGame.Players[0].AlwaysParticipates = true;
 			//testGame.Players[0].SelectsCards = new List<int>() { 0, 1 };
 
-			new Pottery().Actions.ToList()[1].ActionHandler(new object[] { testGame.Players[0], testGame });
+			new Pottery().Actions.ToList()[1].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[0], Game = testGame, ActivePlayer = testGame.Players[0], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
 
 			Assert.AreEqual(4, testGame.Players[0].Hand.Count);
 			Assert.AreEqual(2, testGame.AgeDecks.Where(x => x.Age == 1).FirstOrDefault().Cards.Count);

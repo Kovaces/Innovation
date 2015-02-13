@@ -25,31 +25,31 @@ namespace Innovation.Cards
                 };
             }
         }
-        bool Action1(object[] parameters)
+        bool Action1(CardActionParameters parameters)
 		{
-			ParseParameters(parameters, 3);
+			ValidateParameters(parameters);
 
-			List<Color> activePlayerTopColors = CurrentPlayer.Tableau.GetStackColors();
-			List<ICard> possibleTransferCards = TargetPlayer.Tableau.GetTopCards().Where(x => !activePlayerTopColors.Contains(x.Color)).ToList();
+			List<Color> ActivePlayerTopColors = parameters.ActivePlayer.Tableau.GetStackColors();
+			List<ICard> possibleTransferCards = parameters.TargetPlayer.Tableau.GetTopCards().Where(x => !ActivePlayerTopColors.Contains(x.Color)).ToList();
 
 			if (possibleTransferCards.Count > 0)
 			{
-				ICard cardToTransfer = TargetPlayer.PickCard(possibleTransferCards);
-				TargetPlayer.Tableau.Stacks[cardToTransfer.Color].RemoveCard(cardToTransfer);
-				CurrentPlayer.Tableau.ScorePile.Add(cardToTransfer);
+				ICard cardToTransfer = parameters.TargetPlayer.PickCard(possibleTransferCards);
+				parameters.TargetPlayer.Tableau.Stacks[cardToTransfer.Color].RemoveCard(cardToTransfer);
+				parameters.ActivePlayer.Tableau.ScorePile.Add(cardToTransfer);
 
-				Tuck.Action(Draw.Action(1, Game), TargetPlayer);
+				Tuck.Action(Draw.Action(1, parameters.Game), parameters.TargetPlayer);
 
 				return true;
 			}
 
 			return false;
 		}
-        bool Action2(object[] parameters) 
+        bool Action2(CardActionParameters parameters) 
 		{
-			ParseParameters(parameters, 2);
+			ValidateParameters(parameters);
 
-			Tuck.Action(Draw.Action(1, Game), TargetPlayer);
+			Tuck.Action(Draw.Action(1, parameters.Game), parameters.TargetPlayer);
 
 			return true;
 		}

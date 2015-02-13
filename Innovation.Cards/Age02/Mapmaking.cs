@@ -26,30 +26,30 @@ namespace Innovation.Cards
                 };
             }
         }
-		bool Action1(object[] parameters)
+		bool Action1(CardActionParameters parameters)
 		{
-			ParseParameters(parameters, 3);
+			ValidateParameters(parameters);
 
-			List<ICard> cardsToTransfer = TargetPlayer.Tableau.ScorePile.Where(x => x.Age == 1).ToList();
+			List<ICard> cardsToTransfer = parameters.TargetPlayer.Tableau.ScorePile.Where(x => x.Age == 1).ToList();
 			if (cardsToTransfer.Count > 0)
 			{
-				ICard card = TargetPlayer.PickMultipleCards(cardsToTransfer, 1, 1).First();
-				TargetPlayer.Tableau.ScorePile.Remove(card);
-				CurrentPlayer.Tableau.ScorePile.Add(card);
+				ICard card = parameters.TargetPlayer.PickMultipleCards(cardsToTransfer, 1, 1).First();
+				parameters.TargetPlayer.Tableau.ScorePile.Remove(card);
+				parameters.ActivePlayer.Tableau.ScorePile.Add(card);
 
-				Game.StashPropertyBagValue("MapmakingAction1Taken", "true");
+				parameters.Game.StashPropertyBagValue("MapmakingAction1Taken", "true");
 
 				return true;
 			}
 			return false;
 		}
-		bool Action2(object[] parameters)
+		bool Action2(CardActionParameters parameters)
 		{
-			ParseParameters(parameters, 2);
+			ValidateParameters(parameters);
 
-			if (Game.GetPropertyBagValue("MapmakingAction1Taken").ToString() == "true")
+			if (parameters.Game.GetPropertyBagValue("MapmakingAction1Taken").ToString() == "true")
 			{
-				Score.Action(Draw.Action(1, Game), TargetPlayer);
+				Score.Action(Draw.Action(1, parameters.Game), parameters.TargetPlayer);
 				return true;
 			}
 

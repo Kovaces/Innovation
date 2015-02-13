@@ -25,12 +25,12 @@ namespace Innovation.Cards
                 };
             }
         }
-		bool Action1(object[] parameters)
+		bool Action1(CardActionParameters parameters)
 		{
-			ParseParameters(parameters, 2);
+			ValidateParameters(parameters);
 
-			TargetPlayer.Hand.Add(Draw.Action(1, Game));
-			TargetPlayer.Hand.Add(Draw.Action(1, Game));
+			parameters.TargetPlayer.Hand.Add(Draw.Action(1, parameters.Game));
+			parameters.TargetPlayer.Hand.Add(Draw.Action(1, parameters.Game));
 
 			return true;
 		}

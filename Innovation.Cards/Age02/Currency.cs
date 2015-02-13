@@ -25,22 +25,22 @@ namespace Innovation.Cards
                 };
 			}
 		}
-		bool Action1(object[] parameters)
+		bool Action1(CardActionParameters parameters)
 		{
-			ParseParameters(parameters, 2);
+			ValidateParameters(parameters);
 
-			List<ICard> cardsToReturn = TargetPlayer.PickMultipleCards(TargetPlayer.Hand, 0, TargetPlayer.Hand.Count).ToList();
+			List<ICard> cardsToReturn = parameters.TargetPlayer.PickMultipleCards(parameters.TargetPlayer.Hand, 0, parameters.TargetPlayer.Hand.Count).ToList();
 			if (cardsToReturn.Count > 0)
 			{
 				foreach (ICard card in cardsToReturn)
 				{
-					TargetPlayer.Hand.Remove(card);
-					Return.Action(card, Game);
+					parameters.TargetPlayer.Hand.Remove(card);
+					Return.Action(card, parameters.Game);
 				}
 
 				int differentAges = cardsToReturn.Select(x => x.Age).Distinct().Count();
 				for (int i = 0; i < differentAges; i++)
-					Score.Action(Draw.Action(2, Game), TargetPlayer);
+					Score.Action(Draw.Action(2, parameters.Game), parameters.TargetPlayer);
 
 				return true;
 			}

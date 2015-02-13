@@ -25,14 +25,14 @@ namespace Innovation.Cards
                 };
             }
         }
-		bool Action1(object[] parameters)
+		bool Action1(CardActionParameters parameters)
 		{
-			ParseParameters(parameters, 3);
+			ValidateParameters(parameters);
 
-			if (TargetPlayer.Tableau.GetSymbolCount(Symbol.Tower) >= 4)
+			if (parameters.TargetPlayer.Tableau.GetSymbolCount(Symbol.Tower) >= 4)
 			{
 				List<ICard> topCardsWithTowers = new List<ICard>();
-				foreach (Stack stack in TargetPlayer.Tableau.Stacks.Values)
+				foreach (Stack stack in parameters.TargetPlayer.Tableau.Stacks.Values)
 				{
 					ICard card = stack.GetTopCard();
 					if (card != null)
@@ -43,16 +43,16 @@ namespace Innovation.Cards
 				}
 				if (topCardsWithTowers.Count > 0)
 				{
-					ICard cardToMove = TargetPlayer.PickCard(topCardsWithTowers);
+					ICard cardToMove = parameters.TargetPlayer.PickCard(topCardsWithTowers);
 					
-					// remove from targetPlayer's board
-					TargetPlayer.Tableau.Stacks[cardToMove.Color].RemoveCard(cardToMove);
+					// remove from parameters.TargetPlayer's board
+					parameters.TargetPlayer.Tableau.Stacks[cardToMove.Color].RemoveCard(cardToMove);
 					
-					// add to currentPlayer's board - doesn't say meld, so just add it
-					CurrentPlayer.Tableau.Stacks[cardToMove.Color].AddCardToTop(cardToMove);
+					// add to parameters.ActivePlayer's board - doesn't say meld, so just add it
+					parameters.ActivePlayer.Tableau.Stacks[cardToMove.Color].AddCardToTop(cardToMove);
 
 					// if you do, draw a 1
-					TargetPlayer.Hand.Add(Draw.Action(1, Game));
+					parameters.TargetPlayer.Hand.Add(Draw.Action(1, parameters.Game));
 
 					return true;
 				}

@@ -94,8 +94,8 @@ namespace Innovation.Cards.Tests
 		public void Card_ArcheryAction1()
 		{
 			//testGame.Players[1].SelectsCards = new List<int>() { 0 };
-
-			new Archery().Actions.ToList()[0].ActionHandler(new object[] { testGame.Players[1], testGame, testGame.Players[0] });
+			
+			new Archery().Actions.ToList()[0].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[1], Game = testGame, ActivePlayer = testGame.Players[0], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
 
 			Assert.AreEqual(4, testGame.Players[0].Hand.Count);
 			Assert.AreEqual(1, testGame.Players[0].Hand.Where(x => x.Age == 2).Count());

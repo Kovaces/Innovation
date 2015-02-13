@@ -24,21 +24,21 @@ namespace Innovation.Cards
                 };
 			}
 		}
-		bool Action1(object[] parameters)
+		bool Action1(CardActionParameters parameters)
 		{
-			ParseParameters(parameters, 2);
+			ValidateParameters(parameters);
 
-			ICard card = Draw.Action(1, Game);
+			ICard card = Draw.Action(1, parameters.Game);
 
-			TargetPlayer.RevealCard(card);
+			parameters.TargetPlayer.RevealCard(card);
 
-			if (TargetPlayer.Tableau.GetStackColors().Contains(card.Color))
+			if (parameters.TargetPlayer.Tableau.GetStackColors().Contains(card.Color))
 			{
-				Meld.Action(card, TargetPlayer);
-				TargetPlayer.Hand.Add(Draw.Action(1, Game));
+				Meld.Action(card, parameters.TargetPlayer);
+				parameters.TargetPlayer.Hand.Add(Draw.Action(1, parameters.Game));
 			}
 			else
-				TargetPlayer.Hand.Add(card);
+				parameters.TargetPlayer.Hand.Add(card);
 
 			return true;
 		}

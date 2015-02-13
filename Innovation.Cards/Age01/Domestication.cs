@@ -27,21 +27,21 @@ namespace Innovation.Cards
             }
         }
 
-	    bool Action1(object[] parameters)
+	    bool Action1(CardActionParameters parameters)
 	    {
-			ParseParameters(parameters, 2);
+			ValidateParameters(parameters);
 
-			if (TargetPlayer.Hand.Any())
+			if (parameters.TargetPlayer.Hand.Any())
 			{
-				var lowestAgeInHand = TargetPlayer.Hand.Min(c => c.Age);
-				var lowestCards = TargetPlayer.Hand.Where(c => c.Age.Equals(lowestAgeInHand)).ToList();
+				var lowestAgeInHand = parameters.TargetPlayer.Hand.Min(c => c.Age);
+				var lowestCards = parameters.TargetPlayer.Hand.Where(c => c.Age.Equals(lowestAgeInHand)).ToList();
 
-				ICard cardToMeld = TargetPlayer.PickCard(lowestCards);
-				TargetPlayer.Hand.Remove(cardToMeld);
-				Meld.Action(cardToMeld, TargetPlayer);
+				ICard cardToMeld = parameters.TargetPlayer.PickCard(lowestCards);
+				parameters.TargetPlayer.Hand.Remove(cardToMeld);
+				Meld.Action(cardToMeld, parameters.TargetPlayer);
 			}
 
-			TargetPlayer.Hand.Add(Draw.Action(1, Game));
+			parameters.TargetPlayer.Hand.Add(Draw.Action(1, parameters.Game));
 
 			return true;
 	    }

@@ -27,30 +27,30 @@ namespace Innovation.Cards
             }
         }
 
-        bool Action1(object[] parameters) 
+        bool Action1(CardActionParameters parameters) 
 		{
-			ParseParameters(parameters, 2);
+			ValidateParameters(parameters);
 
-			var selectedCards = TargetPlayer.PickMultipleCards(TargetPlayer.Hand, 0, 3).ToList();
+			var selectedCards = parameters.TargetPlayer.PickMultipleCards(parameters.TargetPlayer.Hand, 0, 3).ToList();
 			foreach (ICard card in selectedCards)
 			{
-				TargetPlayer.Hand.Remove(card);
-				Return.Action(card, Game);
+				parameters.TargetPlayer.Hand.Remove(card);
+				Return.Action(card, parameters.Game);
 			}
 			if (selectedCards.Count > 0)
 			{
-				Score.Action(Draw.Action(selectedCards.Count, Game), TargetPlayer);
+				Score.Action(Draw.Action(selectedCards.Count, parameters.Game), parameters.TargetPlayer);
 				return true;
 			}
 
 			return false;
 		}
 
-		bool Action2(object[] parameters)
+		bool Action2(CardActionParameters parameters)
 		{
-			ParseParameters(parameters, 2);
+			ValidateParameters(parameters);
 
-			TargetPlayer.Hand.Add(Draw.Action(1, Game));
+			parameters.TargetPlayer.Hand.Add(Draw.Action(1, parameters.Game));
 
 			return true;
 		}

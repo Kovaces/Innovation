@@ -25,26 +25,26 @@ namespace Innovation.Cards
                 };
             }
         }
-		bool Action1(object[] parameters)
+		bool Action1(CardActionParameters parameters)
 		{
-			ParseParameters(parameters, 2);
+			ValidateParameters(parameters);
 
-			List<Color> topCardColors = TargetPlayer.Tableau.GetStackColors();
-			List<ICard> cardsMatchingBoardColor = TargetPlayer.Hand.Where(x => topCardColors.Contains(x.Color)).ToList();
+			List<Color> topCardColors = parameters.TargetPlayer.Tableau.GetStackColors();
+			List<ICard> cardsMatchingBoardColor = parameters.TargetPlayer.Hand.Where(x => topCardColors.Contains(x.Color)).ToList();
 
 			if (cardsMatchingBoardColor.Count == 0)
 				return false;
 
-			ICard cardToTuck = TargetPlayer.PickCard(cardsMatchingBoardColor);
+			ICard cardToTuck = parameters.TargetPlayer.PickCard(cardsMatchingBoardColor);
 
 			if (cardToTuck == null)
 				return false;
 				
-			TargetPlayer.Hand.Remove(cardToTuck);
-			Tuck.Action(cardToTuck, TargetPlayer);
+			parameters.TargetPlayer.Hand.Remove(cardToTuck);
+			Tuck.Action(cardToTuck, parameters.TargetPlayer);
 
-			if (TargetPlayer.AskToSplay(cardToTuck.Color, SplayDirection.Left))
-				TargetPlayer.Tableau.Stacks[cardToTuck.Color].SplayedDirection = SplayDirection.Left;
+			if (parameters.TargetPlayer.AskToSplay(cardToTuck.Color, SplayDirection.Left))
+				parameters.TargetPlayer.Tableau.Stacks[cardToTuck.Color].SplayedDirection = SplayDirection.Left;
 
 			return true;	
 		}

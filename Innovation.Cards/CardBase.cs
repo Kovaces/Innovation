@@ -27,35 +27,19 @@ namespace Innovation.Cards
 		}
 
 		//Protected Properties and Methods
-		protected IPlayer TargetPlayer { get; set; }
-		protected IPlayer CurrentPlayer { get; set; }
-		protected Game Game { get; set; }
-
-		public void ParseParameters(object[] parameters, int expectedLength)
+		protected void ValidateParameters(CardActionParameters parameters)
 		{
-			if (parameters.Length >= 1)
-			{
-				TargetPlayer = parameters[0] as IPlayer;
-				if (TargetPlayer == null)
-					throw new NullReferenceException("Target player cannot be null");
-			}
-
-			if (parameters.Length >= 2)
-			{
-				Game = parameters[1] as Game;
-				if (Game == null)
-					throw new NullReferenceException("Game cannot be null");
-			}
-
-			if (parameters.Length >= 3)
-			{
-				CurrentPlayer = parameters[2] as Player;
-				if (CurrentPlayer == null)
-					throw new NullReferenceException("Active player cannot be null");
-			}
+			if (parameters.TargetPlayer == null)
+				throw new ArgumentOutOfRangeException("parameters", "Target player cannot be null");
 			
+			if (parameters.Game == null)
+				throw new ArgumentOutOfRangeException("parameters", "Game cannot be null");
 
+			if (parameters.ActivePlayer == null)
+				throw new ArgumentOutOfRangeException("parameters", "Active player cannot be null");
 			
+			if (parameters.PlayerSymbolCounts == null)
+				throw new ArgumentOutOfRangeException("parameters", "Player Symbol Counts cannot be null");
 		}
 	}
 }

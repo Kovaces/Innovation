@@ -97,7 +97,7 @@ namespace Innovation.Cards.Tests
 		{
 			//testGame.Players[1].SelectsCards = new List<int>() { 0, 1 };
 
-			bool result = new Construction().Actions.ToList()[0].ActionHandler(new object[] { testGame.Players[1], testGame, testGame.Players[0] });
+			bool result = new Construction().Actions.ToList()[0].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[1], Game = testGame, ActivePlayer = testGame.Players[0], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
 
 			Assert.AreEqual(true, result);
 
@@ -121,7 +121,7 @@ namespace Innovation.Cards.Tests
 		{
 			testGame.Players[1].Hand = new List<ICard>();
 
-			bool result = new Construction().Actions.ToList()[0].ActionHandler(new object[] { testGame.Players[1], testGame, testGame.Players[0] });
+			bool result = new Construction().Actions.ToList()[0].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[1], Game = testGame, ActivePlayer = testGame.Players[0], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
 
 			Assert.AreEqual(true, result);  // still draws a 2 
 

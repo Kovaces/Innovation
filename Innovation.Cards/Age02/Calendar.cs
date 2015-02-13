@@ -24,17 +24,17 @@ namespace Innovation.Cards
                 };
             }
         }
-		bool Action1(object[] parameters)
+		bool Action1(CardActionParameters parameters)
 		{
-			ParseParameters(parameters, 2);
+			ValidateParameters(parameters);
 
-			int cardsInScorePile = TargetPlayer.Tableau.ScorePile.Count;
-			int cardsInHand = TargetPlayer.Hand.Count;
+			int cardsInScorePile = parameters.TargetPlayer.Tableau.ScorePile.Count;
+			int cardsInHand = parameters.TargetPlayer.Hand.Count;
 
 			if (cardsInScorePile > cardsInHand)
 			{
-				TargetPlayer.Hand.Add(Draw.Action(3, Game));
-				TargetPlayer.Hand.Add(Draw.Action(3, Game));
+				parameters.TargetPlayer.Hand.Add(Draw.Action(3, parameters.Game));
+				parameters.TargetPlayer.Hand.Add(Draw.Action(3, parameters.Game));
 
 				return true;
 			}

@@ -26,31 +26,31 @@ namespace Innovation.Cards
                 };
             }
         }
-        bool Action1(object[] parameters) 
+        bool Action1(CardActionParameters parameters) 
 		{
-			ParseParameters(parameters, 2);
+			ValidateParameters(parameters);
 
 			// pick color vs pick card?
-			List<ICard> cardsToSelectFrom = TargetPlayer.Tableau.GetTopCards();
+			List<ICard> cardsToSelectFrom = parameters.TargetPlayer.Tableau.GetTopCards();
 			if (cardsToSelectFrom.Count > 0)
 			{
-				Color chosenColor = TargetPlayer.PickMultipleCards(cardsToSelectFrom, 1, 1).First().Color;
+				Color chosenColor = parameters.TargetPlayer.PickMultipleCards(cardsToSelectFrom, 1, 1).First().Color;
 
-				TargetPlayer.Tableau.Stacks[chosenColor].Splay(SplayDirection.Left);
+				parameters.TargetPlayer.Tableau.Stacks[chosenColor].Splay(SplayDirection.Left);
 				return true;
 			}
 
 			return false;
 		}
-		bool Action2(object[] parameters)
+		bool Action2(CardActionParameters parameters)
 		{
-			ParseParameters(parameters, 2);
+			ValidateParameters(parameters);
 
-			if (TargetPlayer.Hand.Count > 0)
+			if (parameters.TargetPlayer.Hand.Count > 0)
 			{
-				ICard card = TargetPlayer.PickCardFromHand();
-				TargetPlayer.Hand.Remove(card);
-				Score.Action(card, TargetPlayer);
+				ICard card = parameters.TargetPlayer.PickCardFromHand();
+				parameters.TargetPlayer.Hand.Remove(card);
+				Score.Action(card, parameters.TargetPlayer);
 			}
 
 			return false;
