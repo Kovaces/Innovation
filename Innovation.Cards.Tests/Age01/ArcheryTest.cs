@@ -4,6 +4,7 @@ using Innovation.Models;
 using Innovation.Models.Enums;
 using Innovation.Tests.Helpers;
 using Innovation.Actions;
+using Innovation.Models.Interfaces;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Innovation.Cards.Tests
@@ -18,7 +19,7 @@ namespace Innovation.Cards.Tests
 		{
 			testGame = new Game
 			{
-				Players = new List<Player>()
+				Players = new List<IPlayer>()
 				{
 					new Player
 					{
@@ -92,7 +93,7 @@ namespace Innovation.Cards.Tests
 		[TestMethod]
 		public void Card_ArcheryAction1()
 		{
-			testGame.Players[1].SelectsCards = new List<int>() { 0 };
+			//testGame.Players[1].SelectsCards = new List<int>() { 0 };
 
 			new Archery().Actions.ToList()[0].ActionHandler(new object[] { testGame.Players[1], testGame, testGame.Players[0] });
 

@@ -4,6 +4,7 @@ using Innovation.Models;
 using Innovation.Models.Enums;
 using Innovation.Tests.Helpers;
 using Innovation.Actions;
+using Innovation.Models.Interfaces;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Innovation.Cards.Tests
@@ -18,7 +19,7 @@ namespace Innovation.Cards.Tests
 		{
 			testGame = new Game
 			{
-				Players = new List<Player>()
+				Players = new List<IPlayer>()
 				{
 					new Player
 					{
@@ -97,8 +98,8 @@ namespace Innovation.Cards.Tests
 		[TestMethod]
 		public void Card_MasonryAction1()
 		{
-			testGame.Players[0].AlwaysParticipates = true;
-			testGame.Players[0].SelectsCards = new List<int>() { 0, 1, 2, 3 };
+			//testGame.Players[0].AlwaysParticipates = true;
+			//testGame.Players[0].SelectsCards = new List<int>() { 0, 1, 2, 3 };
 
 			new Masonry().Actions.ToList()[0].ActionHandler(new object[] { testGame.Players[0], testGame });
 
@@ -113,8 +114,8 @@ namespace Innovation.Cards.Tests
 		[TestMethod]
 		public void Card_MasonryAction1_Meld1()
 		{
-			testGame.Players[0].AlwaysParticipates = true;
-			testGame.Players[0].SelectsCards = new List<int>() { 0 };
+			//testGame.Players[0].AlwaysParticipates = true;
+			//testGame.Players[0].SelectsCards = new List<int>() { 0 };
 
 			new Masonry().Actions.ToList()[0].ActionHandler(new object[] { testGame.Players[0], testGame });
 

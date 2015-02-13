@@ -6,6 +6,7 @@ using Innovation.Models.Enums;
 using Innovation.Tests.Helpers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Innovation.Actions;
+using Innovation.Models.Interfaces;
 
 namespace Innovation.Cards.Tests
 {
@@ -19,7 +20,7 @@ namespace Innovation.Cards.Tests
 		{
 			testGame = new Game
 			{
-				Players = new List<Player>()
+				Players = new List<IPlayer>()
 				{
 					new Player
 					{
@@ -94,8 +95,8 @@ namespace Innovation.Cards.Tests
 		[TestMethod]
 		public void Card_AgricultureAction1()
 		{
-			testGame.Players[0].AlwaysParticipates = true;
-			testGame.Players[0].SelectsCards = new List<int>() { 0 };
+			//testGame.Players[0].AlwaysParticipates = true;
+			//testGame.Players[0].SelectsCards = new List<int>() { 0 };
 
 			new Agriculture().Actions.ToList()[0].ActionHandler(new object[] { testGame.Players[0], testGame });
 

@@ -14,5 +14,7 @@ namespace Innovation.Models
 		int Age { get; }
 		Color Color { get; }
 		IEnumerable<CardAction> Actions { get; }
+
+		bool HasSymbol(Symbol symbol);
 	}
 }

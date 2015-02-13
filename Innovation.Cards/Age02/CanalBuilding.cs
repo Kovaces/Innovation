@@ -5,16 +5,16 @@ using Innovation.Models;
 using Innovation.Models.Enums;
 namespace Innovation.Cards
 {
-    public class CanalBuilding : ICard
+    public class CanalBuilding : CardBase
     {
-        public string Name { get { return "Canal Building"; } }
-        public int Age { get { return 2; } }
-        public Color Color { get { return Color.Yellow; } }
-        public Symbol Top { get { return Symbol.Blank; } }
-        public Symbol Left { get { return Symbol.Crown; } }
-        public Symbol Center { get { return Symbol.Leaf; } }
-        public Symbol Right { get { return Symbol.Crown; } }
-        public IEnumerable<CardAction> Actions
+        public override string Name { get { return "Canal Building"; } }
+        public override int Age { get { return 2; } }
+        public override Color Color { get { return Color.Yellow; } }
+        public override Symbol Top { get { return Symbol.Blank; } }
+        public override Symbol Left { get { return Symbol.Crown; } }
+        public override Symbol Center { get { return Symbol.Leaf; } }
+        public override Symbol Right { get { return Symbol.Crown; } }
+        public override IEnumerable<CardAction> Actions
         {
             get
             {
@@ -26,33 +26,31 @@ namespace Innovation.Cards
         }
 		bool Action1(object[] parameters)
 		{
-			Game game = null;
-			Player targetPlayer = null;
-			CardHelper.GetParameters(parameters, out game, out targetPlayer);
+			ParseParameters(parameters, 2);
 
 			List<ICard> cardsInPileToTransfer = new List<ICard>();
 			List<ICard> cardsInHandToTransfer = new List<ICard>();
 
-			if (targetPlayer.Hand.Count > 0)
+			if (TargetPlayer.Hand.Count > 0)
 			{
-				int maxAgeInHand = targetPlayer.Hand.Max(x => x.Age);
-				cardsInHandToTransfer = targetPlayer.Hand.Where(x => x.Age == maxAgeInHand).ToList();
+				int maxAgeInHand = TargetPlayer.Hand.Max(x => x.Age);
+				cardsInHandToTransfer = TargetPlayer.Hand.Where(x => x.Age == maxAgeInHand).ToList();
 			}
-			if (targetPlayer.Tableau.ScorePile.Count > 0)
+			if (TargetPlayer.Tableau.ScorePile.Count > 0)
 			{
-				int maxAgeInPile = targetPlayer.Tableau.ScorePile.Max(x => x.Age);
-				cardsInPileToTransfer = targetPlayer.Tableau.ScorePile.Where(x => x.Age == maxAgeInPile).ToList();
+				int maxAgeInPile = TargetPlayer.Tableau.ScorePile.Max(x => x.Age);
+				cardsInPileToTransfer = TargetPlayer.Tableau.ScorePile.Where(x => x.Age == maxAgeInPile).ToList();
 			}
 
 			foreach (ICard card in cardsInHandToTransfer)
 			{
-				targetPlayer.Hand.Remove(card);
-				targetPlayer.Tableau.ScorePile.Add(card);
+				TargetPlayer.Hand.Remove(card);
+				TargetPlayer.Tableau.ScorePile.Add(card);
 			}
 			foreach (ICard card in cardsInPileToTransfer)
 			{
-				targetPlayer.Tableau.ScorePile.Remove(card);
-				targetPlayer.Hand.Add(card);
+				TargetPlayer.Tableau.ScorePile.Remove(card);
+				TargetPlayer.Hand.Add(card);
 			}
 			
 			if (cardsInHandToTransfer.Count + cardsInPileToTransfer.Count > 0)

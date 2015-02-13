@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Innovation.Models;
 using Innovation.Models.Enums;
+using Innovation.Models.Interfaces;
 using Innovation.Tests.Helpers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -20,7 +21,7 @@ namespace Innovation.Actions.Tests
 		{
 			testGame = new Game
 			{
-				Players = new List<Player>()
+				Players = new List<IPlayer>()
 				{
 					new Player
 					{
@@ -122,8 +123,8 @@ namespace Innovation.Actions.Tests
 		[TestMethod]
 		public void DogmaAction_Required_Shares()
 		{
-			testGame.Players[0].AlwaysParticipates = false;
-			testGame.Players[1].AlwaysParticipates = false;
+			//testGame.Players[0].AlwaysParticipates = false;
+			//testGame.Players[1].AlwaysParticipates = false;
 			
 			var testCard = new Card
 			{
@@ -148,8 +149,8 @@ namespace Innovation.Actions.Tests
 		[TestMethod]
 		public void DogmaAction_Required_DoesNotShare()
 		{
-			testGame.Players[0].AlwaysParticipates = false;
-			testGame.Players[1].AlwaysParticipates = false;
+			//testGame.Players[0].AlwaysParticipates = false;
+			//testGame.Players[1].AlwaysParticipates = false;
 
 			testGame.Players[0].Tableau.Stacks[Color.Yellow].AddCardToTop(
 				 new Card { Name = "Test Yellow Card", Color = Color.Yellow, Age = 1, Top = Symbol.Blank, Left = Symbol.Crown, Center = Symbol.Crown, Right = Symbol.Tower }
@@ -178,8 +179,8 @@ namespace Innovation.Actions.Tests
 		[TestMethod]
 		public void DogmaAction_Demand_Player2Affected()
 		{
-			testGame.Players[0].AlwaysParticipates = false;
-			testGame.Players[1].AlwaysParticipates = false;
+			//testGame.Players[0].AlwaysParticipates = false;
+			//testGame.Players[1].AlwaysParticipates = false;
 
 			testGame.Players[0].Tableau.Stacks[Color.Red].AddCardToTop(
 				 new Card { Name = "Test Red Card", Color = Color.Red, Age = 1, Top = Symbol.Blank, Left = Symbol.Crown, Center = Symbol.Crown, Right = Symbol.Tower }
@@ -208,8 +209,8 @@ namespace Innovation.Actions.Tests
 		[TestMethod]
 		public void DogmaAction_Demand_Player2Unaffected()
 		{
-			testGame.Players[0].AlwaysParticipates = false;
-			testGame.Players[1].AlwaysParticipates = false;
+			//testGame.Players[0].AlwaysParticipates = false;
+			//testGame.Players[1].AlwaysParticipates = false;
 			
 			var testCard = new Card
 			{
@@ -236,8 +237,8 @@ namespace Innovation.Actions.Tests
 		[TestMethod]
 		public void DogmaAction_Optional_BothTakePart()
 		{
-			testGame.Players[0].AlwaysParticipates = true;
-			testGame.Players[1].AlwaysParticipates = true;
+			//testGame.Players[0].AlwaysParticipates = true;
+			//testGame.Players[1].AlwaysParticipates = true;
 
 			var testCard = new Card
 			{
@@ -262,8 +263,8 @@ namespace Innovation.Actions.Tests
 		[TestMethod]
 		public void DogmaAction_Optional_BothAbdicate()
 		{
-			testGame.Players[0].AlwaysParticipates = false;
-			testGame.Players[1].AlwaysParticipates = false;
+			//testGame.Players[0].AlwaysParticipates = false;
+			//testGame.Players[1].AlwaysParticipates = false;
 
 			var testCard = new Card
 			{
@@ -288,8 +289,8 @@ namespace Innovation.Actions.Tests
 		[TestMethod]
 		public void DogmaAction_Optional_Player2Abdicates()
 		{
-			testGame.Players[0].AlwaysParticipates = true;
-			testGame.Players[1].AlwaysParticipates = false;
+			//testGame.Players[0].AlwaysParticipates = true;
+			//testGame.Players[1].AlwaysParticipates = false;
 
 			var testCard = new Card
 			{

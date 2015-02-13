@@ -39,7 +39,7 @@ namespace Innovation.Models
 			tempList.AddRange(Cards);
 			Cards = tempList;
 		}
-
+		
 		public int GetSymbolCount(Symbol symbol)
 		{
 			return GetSymbolCounts()[symbol];

@@ -4,16 +4,16 @@ using Innovation.Models;
 using Innovation.Models.Enums;
 namespace Innovation.Cards
 {
-    public class Feudalism : ICard
+    public class Feudalism : CardBase
     {
-        public string Name { get { return "Feudalism"; } }
-        public int Age { get { return 3; } }
-        public Color Color { get { return Color.Purple; } }
-        public Symbol Top { get { return Symbol.Blank; } }
-        public Symbol Left { get { return Symbol.Tower; } }
-        public Symbol Center { get { return Symbol.Leaf; } }
-        public Symbol Right { get { return Symbol.Tower; } }
-        public IEnumerable<CardAction> Actions
+        public override string Name { get { return "Feudalism"; } }
+        public override int Age { get { return 3; } }
+        public override Color Color { get { return Color.Purple; } }
+        public override Symbol Top { get { return Symbol.Blank; } }
+        public override Symbol Left { get { return Symbol.Tower; } }
+        public override Symbol Center { get { return Symbol.Leaf; } }
+        public override Symbol Right { get { return Symbol.Tower; } }
+        public override IEnumerable<CardAction> Actions
         {
             get
             {

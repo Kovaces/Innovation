@@ -6,16 +6,16 @@ using Innovation.Models.Enums;
 using Innovation.Actions;
 namespace Innovation.Cards
 {
-    public class CodeOfLaws : ICard
+    public class CodeOfLaws : CardBase
     {
-        public string Name { get { return "Code of Laws"; } }
-        public int Age { get { return 1; } }
-        public Color Color { get { return Color.Purple; } }
-        public Symbol Top { get { return Symbol.Blank; } }
-        public Symbol Left { get { return Symbol.Crown; } }
-        public Symbol Center { get { return Symbol.Crown; } }
-        public Symbol Right { get { return Symbol.Leaf; } }
-        public IEnumerable<CardAction> Actions
+        public override string Name { get { return "Code of Laws"; } }
+        public override int Age { get { return 1; } }
+        public override Color Color { get { return Color.Purple; } }
+        public override Symbol Top { get { return Symbol.Blank; } }
+        public override Symbol Left { get { return Symbol.Crown; } }
+        public override Symbol Center { get { return Symbol.Crown; } }
+        public override Symbol Right { get { return Symbol.Leaf; } }
+        public override IEnumerable<CardAction> Actions
         {
             get
             {
@@ -27,27 +27,26 @@ namespace Innovation.Cards
         }
 		bool Action1(object[] parameters)
 		{
-			Game game = null;
-			Player targetPlayer = null;
-			CardHelper.GetParameters(parameters, out game, out targetPlayer);
+			ParseParameters(parameters, 2);
 
-			List<Color> topCardColors = targetPlayer.Tableau.GetStackColors();
-			List<ICard> cardsMatchingBoardColor = targetPlayer.Hand.Where(x => topCardColors.Contains(x.Color)).ToList();
+			List<Color> topCardColors = TargetPlayer.Tableau.GetStackColors();
+			List<ICard> cardsMatchingBoardColor = TargetPlayer.Hand.Where(x => topCardColors.Contains(x.Color)).ToList();
 
-			if (cardsMatchingBoardColor.Count > 0)
-			{
-				ICard cardToTuck = targetPlayer.PickFromMultipleCards(cardsMatchingBoardColor, 1, 1).First();
+			if (cardsMatchingBoardColor.Count == 0)
+				return false;
 
-				targetPlayer.Hand.Remove(cardToTuck);
-				Tuck.Action(cardToTuck, targetPlayer);
+			ICard cardToTuck = TargetPlayer.PickCard(cardsMatchingBoardColor);
 
-				if (targetPlayer.AskToSplay(cardToTuck.Color, SplayDirection.Left))
-					targetPlayer.Tableau.Stacks[cardToTuck.Color].Splay(SplayDirection.Left);
+			if (cardToTuck == null)
+				return false;
+				
+			TargetPlayer.Hand.Remove(cardToTuck);
+			Tuck.Action(cardToTuck, TargetPlayer);
 
-				return true;
-			}
+			if (TargetPlayer.AskToSplay(cardToTuck.Color, SplayDirection.Left))
+				TargetPlayer.Tableau.Stacks[cardToTuck.Color].SplayedDirection = SplayDirection.Left;
 
-			return false;
+			return true;	
 		}
     }
 }

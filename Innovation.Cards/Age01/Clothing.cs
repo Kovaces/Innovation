@@ -6,73 +6,60 @@ using Innovation.Models.Enums;
 using Innovation.Actions;
 namespace Innovation.Cards
 {
-	public class Clothing : ICard
+	public class Clothing : CardBase
 	{
-		public string Name { get { return "Clothing"; } }
-		public int Age { get { return 1; } }
-		public Color Color { get { return Color.Green; } }
-		public Symbol Top { get { return Symbol.Blank; } }
-		public Symbol Left { get { return Symbol.Crown; } }
-		public Symbol Center { get { return Symbol.Leaf; } }
-		public Symbol Right { get { return Symbol.Leaf; } }
-		public IEnumerable<CardAction> Actions
+		public override string Name { get { return "Clothing"; } }
+		public override int Age { get { return 1; } }
+		public override Color Color { get { return Color.Green; } }
+		public override Symbol Top { get { return Symbol.Blank; } }
+		public override Symbol Left { get { return Symbol.Crown; } }
+		public override Symbol Center { get { return Symbol.Leaf; } }
+		public override Symbol Right { get { return Symbol.Leaf; } }
+
+		public override IEnumerable<CardAction> Actions
 		{
 			get
 			{
 				return new List<CardAction>()
 				{
-                    new CardAction(ActionType.Required, Symbol.Leaf, "Meld a card from your hand of different color from any card on your board.", Action1)
-                    ,new CardAction(ActionType.Required, Symbol.Leaf, "Draw and score a [1] for each color present on your board not present on any other player's board.", Action2)
-                };
+					new CardAction(ActionType.Required, Symbol.Leaf, "Meld a card from your hand of different color from any card on your board.", Action1),
+					new CardAction(ActionType.Required, Symbol.Leaf, "Draw and score a [1] for each color present on your board not present on any other player's board.", Action2)
+				};
 			}
 		}
+
 		bool Action1(object[] parameters)
 		{
-			Game game = null;
-			Player targetPlayer = null;
-			CardHelper.GetParameters(parameters, out game, out targetPlayer);
+			ParseParameters(parameters, 2);
 
-			List<Color> topCardColors = targetPlayer.Tableau.GetStackColors();
-			List<ICard> cardsToMeld = targetPlayer.Hand.Where(x => !topCardColors.Contains(x.Color)).ToList();
+			List<Color> topCardColors = TargetPlayer.Tableau.GetStackColors();
+			List<ICard> cardsToMeld = TargetPlayer.Hand.Where(x => !topCardColors.Contains(x.Color)).ToList();
 
 			if (cardsToMeld.Count > 0)
 			{
-				ICard card = targetPlayer.PickFromMultipleCards(cardsToMeld, 1, 1).First();
+				ICard card = TargetPlayer.PickCard(cardsToMeld);
 
-				targetPlayer.Hand.Remove(card);
-				Meld.Action(card, targetPlayer);
+				TargetPlayer.Hand.Remove(card);
+				Meld.Action(card, TargetPlayer);
 
 				return true;
 			}
 
 			return false;
 		}
+
 		bool Action2(object[] parameters)
 		{
-			Game game = null;
-			Player targetPlayer = null;
-			CardHelper.GetParameters(parameters, out game, out targetPlayer);
+			ParseParameters(parameters, 2);
 
-			List<Color> currentPlayerTopCardColors = null;
-			List<Color> otherPlayerTopCardColors = new List<Color>();
+			List<Color> currentPlayerTopCardColors = TargetPlayer.Tableau.GetStackColors();
+			List<Color> otherPlayerTopCardColors = Game.Players.Where(p => p != TargetPlayer).SelectMany(r => r.Tableau.GetStackColors()).Distinct().ToList();
 
-			foreach (Player player in game.Players)
-			{
-				if (player == targetPlayer)
-					currentPlayerTopCardColors = player.Tableau.GetStackColors();
-				else
-					otherPlayerTopCardColors.AddRange(player.Tableau.GetStackColors().Where(x => !otherPlayerTopCardColors.Contains(x)));
-			}
+			var numberOfCardsToDraw = currentPlayerTopCardColors.Count(x => !otherPlayerTopCardColors.Contains(x));
+			for (var i = 0; i < numberOfCardsToDraw; i++)
+				Score.Action(Draw.Action(1, Game), TargetPlayer);
 
-			bool didSomething = false;
-			List<Color> exclusiveColors = currentPlayerTopCardColors.Where(x => !otherPlayerTopCardColors.Contains(x)).ToList();
-			foreach (Color color in exclusiveColors)
-			{
-				didSomething = true;
-				Score.Action(Draw.Action(1, game), targetPlayer);
-			}
-
-			return didSomething;
+			return (numberOfCardsToDraw > 0);
 		}
 	}
 }

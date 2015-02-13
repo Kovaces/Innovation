@@ -43,6 +43,8 @@
     <Compile Include="CardAction.cs" />
     <Compile Include="Deck.cs" />
     <Compile Include="Game.cs" />
+    <Compile Include="Interfaces\IPlayer.cs" />
+    <Compile Include="Interfaces\ITableau.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Enums.cs" />

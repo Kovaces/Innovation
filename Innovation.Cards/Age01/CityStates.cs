@@ -6,16 +6,16 @@ using Innovation.Models;
 using Innovation.Models.Enums;
 namespace Innovation.Cards
 {
-    public class CityStates : ICard
+    public class CityStates : CardBase
     {
-        public string Name { get { return "City States"; } }
-        public int Age { get { return 1; } }
-        public Color Color { get { return Color.Purple; } }
-        public Symbol Top { get { return Symbol.Blank; } }
-        public Symbol Left { get { return Symbol.Crown; } }
-        public Symbol Center { get { return Symbol.Crown; } }
-        public Symbol Right { get { return Symbol.Tower; } }
-        public IEnumerable<CardAction> Actions
+        public override string Name { get { return "City States"; } }
+        public override int Age { get { return 1; } }
+        public override Color Color { get { return Color.Purple; } }
+        public override Symbol Top { get { return Symbol.Blank; } }
+        public override Symbol Left { get { return Symbol.Crown; } }
+        public override Symbol Center { get { return Symbol.Crown; } }
+        public override Symbol Right { get { return Symbol.Tower; } }
+        public override IEnumerable<CardAction> Actions
         {
             get
             {
@@ -27,26 +27,32 @@ namespace Innovation.Cards
         }
 		bool Action1(object[] parameters)
 		{
-			Game game = null;
-			Player targetPlayer = null;
-			Player activePlayer = null;
-			CardHelper.GetParameters(parameters, out game, out targetPlayer, out activePlayer);
+			ParseParameters(parameters, 3);
 
-			if (targetPlayer.Tableau.GetSymbolCount(Symbol.Tower) >= 4)
+			if (TargetPlayer.Tableau.GetSymbolCount(Symbol.Tower) >= 4)
 			{
-				List<ICard> topCardsWithTowers = targetPlayer.Tableau.GetTopCards().Where(x => CardHelper.CardHasSymbol(x, Symbol.Tower)).ToList();
+				List<ICard> topCardsWithTowers = new List<ICard>();
+				foreach (Stack stack in TargetPlayer.Tableau.Stacks.Values)
+				{
+					ICard card = stack.GetTopCard();
+					if (card != null)
+					{
+						if (card.HasSymbol(Symbol.Tower))
+							topCardsWithTowers.Add(card);
+					}
+				}
 				if (topCardsWithTowers.Count > 0)
 				{
-					ICard cardToMove = targetPlayer.PickFromMultipleCards(topCardsWithTowers, 1, 1).First();
+					ICard cardToMove = TargetPlayer.PickCard(topCardsWithTowers);
 					
 					// remove from targetPlayer's board
-					targetPlayer.Tableau.Stacks[cardToMove.Color].RemoveCard(cardToMove);
+					TargetPlayer.Tableau.Stacks[cardToMove.Color].RemoveCard(cardToMove);
 					
 					// add to currentPlayer's board - doesn't say meld, so just add it
-					activePlayer.Tableau.Stacks[cardToMove.Color].AddCardToTop(cardToMove);
+					CurrentPlayer.Tableau.Stacks[cardToMove.Color].AddCardToTop(cardToMove);
 
 					// if you do, draw a 1
-					targetPlayer.Hand.Add(Draw.Action(1, game));
+					TargetPlayer.Hand.Add(Draw.Action(1, Game));
 
 					return true;
 				}

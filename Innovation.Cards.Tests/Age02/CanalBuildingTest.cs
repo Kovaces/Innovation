@@ -6,6 +6,7 @@ using Innovation.Models.Enums;
 using Innovation.Tests.Helpers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Innovation.Actions;
+using Innovation.Models.Interfaces;
 
 namespace Innovation.Cards.Tests
 {
@@ -19,7 +20,7 @@ namespace Innovation.Cards.Tests
 		{
 			testGame = new Game
 			{
-				Players = new List<Player>()
+				Players = new List<IPlayer>()
 				{
 					new Player
 					{

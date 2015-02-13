@@ -1,19 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.InteropServices;
+using Innovation.Actions;
 using Innovation.Models;
 using Innovation.Models.Enums;
+
 namespace Innovation.Cards
 {
-    public class Alchemy : ICard
+    public class Alchemy : CardBase
     {
-        public string Name { get { return "Alchemy"; } }
-        public int Age { get { return 3; } }
-        public Color Color { get { return Color.Blue; } }
-        public Symbol Top { get { return Symbol.Blank; } }
-        public Symbol Left { get { return Symbol.Leaf; } }
-        public Symbol Center { get { return Symbol.Tower; } }
-        public Symbol Right { get { return Symbol.Tower; } }
-        public IEnumerable<CardAction> Actions
+        public override string Name { get { return "Alchemy"; } }
+        public override int Age { get { return 3; } }
+        public override Color Color { get { return Color.Blue; } }
+        public override Symbol Top { get { return Symbol.Blank; } }
+        public override Symbol Left { get { return Symbol.Leaf; } }
+        public override Symbol Center { get { return Symbol.Tower; } }
+        public override Symbol Right { get { return Symbol.Tower; } }
+        public override IEnumerable<CardAction> Actions
         {
             get
             {
@@ -23,7 +27,52 @@ namespace Innovation.Cards
                 };
             }
         }
-        bool Action1(object[] parameters) { throw new NotImplementedException(); }
-        bool Action2(object[] parameters) { throw new NotImplementedException(); }
+
+	    bool Action1(object[] parameters)
+	    {
+			ParseParameters(parameters, 2);
+
+			//Draw and reveal a [4] for every three [TOWER] on your board.
+		    var cardsDrawn = new List<ICard>();
+		    var numberOfCardsToDraw = TargetPlayer.Tableau.GetSymbolCount(Symbol.Tower) / 3;
+
+		    if (numberOfCardsToDraw == 0)
+			    return false;
+
+		    for (int i = 0; i < numberOfCardsToDraw; i++)
+		    {
+			    ICard card = Draw.Action(4, Game);
+				TargetPlayer.RevealCard(card);
+				TargetPlayer.Hand.Add(card);
+				cardsDrawn.Add(card);
+		    }
+			
+			//If any of the drawn cards are red, return the cards drawn and return all cards in your hand. Otherwise, keep them.
+		    if (cardsDrawn.Any(c => c.Color == Color.Red))
+		    {
+			    TargetPlayer.Hand.ForEach(c => Return.Action(c, Game));
+			    TargetPlayer.Hand.RemoveRange(0, TargetPlayer.Hand.Count());
+		    }
+
+		    return true;
+	    }
+
+	    bool Action2(object[] parameters)
+	    {
+		    ParseParameters(parameters, 2);
+
+			if (!TargetPlayer.Hand.Any())
+				return false;
+
+		    var cardChosen = TargetPlayer.PickCardFromHand();
+			Meld.Action(cardChosen, TargetPlayer);
+		    TargetPlayer.Hand.Remove(cardChosen);
+
+			cardChosen = TargetPlayer.PickCardFromHand();
+			Score.Action(cardChosen, TargetPlayer);
+			TargetPlayer.Hand.Remove(cardChosen);
+
+			return true;
+	    }
     }
 }

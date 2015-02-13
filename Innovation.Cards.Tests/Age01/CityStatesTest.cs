@@ -4,6 +4,7 @@ using Innovation.Models;
 using Innovation.Models.Enums;
 using Innovation.Tests.Helpers;
 using Innovation.Actions;
+using Innovation.Models.Interfaces;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Innovation.Cards.Tests
@@ -18,7 +19,7 @@ namespace Innovation.Cards.Tests
 		{
 			testGame = new Game
 			{
-				Players = new List<Player>()
+				Players = new List<IPlayer>()
 				{
 					new Player
 					{
@@ -108,7 +109,7 @@ namespace Innovation.Cards.Tests
 		{
 			// player2 has 4 towers.  transfers red card to player1's tableau.  draws a 1
 
-			testGame.Players[1].SelectsCards = new List<int>() { 0 };
+			//testGame.Players[1].SelectsCards = new List<int>() { 0 };
 			testGame.Players[1].Tableau.Stacks[Color.Yellow].AddCardToTop(
 				new Card { Name = "Test Yellow Card", Color = Color.Yellow, Age = 1, Top = Symbol.Blank, Left = Symbol.Tower, Center = Symbol.Tower, Right = Symbol.Tower }
 			);

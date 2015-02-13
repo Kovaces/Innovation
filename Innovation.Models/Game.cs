@@ -1,6 +1,7 @@
 ﻿using Innovation.Models;
 using System;
 using System.Collections.Generic;
+using Innovation.Models.Interfaces;
 
 namespace Innovation
 {
@@ -8,7 +9,7 @@ namespace Innovation
 	{
 		public Guid Id { get; set; }
 		public string Name { get; set; }
-		public List<Player> Players { get; set; }
+		public List<IPlayer> Players { get; set; }
 		public List<Deck> AgeDecks { get; set; }
 		public Deck AgeAchievementDeck { get; set; }
 
@@ -32,7 +33,7 @@ namespace Innovation
 		{
 			_PropertyBag.Clear();
 		}
-
+		
 		public void TriggerEndOfGame()
 		{
 			throw new NotImplementedException();

@@ -1,10 +1,11 @@
 ﻿using Innovation.Models.Enums;
 using System.Collections.Generic;
 using System.Linq;
+using Innovation.Models.Interfaces;
 
 namespace Innovation.Models
 {
-	public class Tableau
+	public class Tableau : ITableau
 	{
 		public Tableau()
 		{
@@ -39,18 +40,6 @@ namespace Innovation.Models
 			return GetSymbolCounts()[symbol];
 		}
 
-		public List<Color> GetStackColors()
-		{
-			List<Color> topCardColors = new List<Color>();
-			foreach (Stack stack in Stacks.Values)
-			{
-				ICard card = stack.GetTopCard();
-				if (card != null)
-					topCardColors.Add(card.Color);
-			}
-
-			return topCardColors;
-		}
 		public List<ICard> GetTopCards()
 		{
 			List<ICard> topCards = new List<ICard>();
@@ -62,6 +51,11 @@ namespace Innovation.Models
 			}
 
 			return topCards;
+		}
+
+		public List<Color> GetStackColors()
+		{
+			return Stacks.Where(s => s.Value.Cards.Any()).Select(t => t.Key).ToList();
 		}
 
 		public Dictionary<Symbol, int> GetSymbolCounts()

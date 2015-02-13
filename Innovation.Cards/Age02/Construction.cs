@@ -1,20 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Innovation.Actions;
 using Innovation.Models;
 using Innovation.Models.Enums;
 namespace Innovation.Cards
 {
-    public class Construction : ICard
+    public class Construction : CardBase
     {
-        public string Name { get { return "Construction"; } }
-        public int Age { get { return 2; } }
-        public Color Color { get { return Color.Red; } }
-        public Symbol Top { get { return Symbol.Tower; } }
-        public Symbol Left { get { return Symbol.Blank; } }
-        public Symbol Center { get { return Symbol.Tower; } }
-        public Symbol Right { get { return Symbol.Tower; } }
-        public IEnumerable<CardAction> Actions
+        public override string Name { get { return "Construction"; } }
+        public override int Age { get { return 2; } }
+        public override Color Color { get { return Color.Red; } }
+        public override Symbol Top { get { return Symbol.Tower; } }
+        public override Symbol Left { get { return Symbol.Blank; } }
+        public override Symbol Center { get { return Symbol.Tower; } }
+        public override Symbol Right { get { return Symbol.Tower; } }
+        public override IEnumerable<CardAction> Actions
         {
             get
             {
@@ -27,41 +28,36 @@ namespace Innovation.Cards
         }
 		bool Action1(object[] parameters)
 		{
-			Game game = null;
-			Player targetPlayer = null;
-			Player activePlayer = null;
-			CardHelper.GetParameters(parameters, out game, out targetPlayer, out activePlayer);
+			ParseParameters(parameters, 3);
 
-			int numberOfCardsToTransfer = Math.Min(targetPlayer.Hand.Count, 2);
+			int numberOfCardsToTransfer = Math.Min(TargetPlayer.Hand.Count, 2);
 			if (numberOfCardsToTransfer > 0)
 			{
-				List<ICard> cardsToTransfer = targetPlayer.PickFromMultipleCards(targetPlayer.Hand, numberOfCardsToTransfer, numberOfCardsToTransfer);
+				List<ICard> cardsToTransfer = TargetPlayer.PickMultipleCards(TargetPlayer.Hand, numberOfCardsToTransfer, numberOfCardsToTransfer).ToList();
 
 				foreach (ICard card in cardsToTransfer)
 				{
-					targetPlayer.Hand.Remove(card);
-					activePlayer.Hand.Add(card);
+					TargetPlayer.Hand.Remove(card);
+					CurrentPlayer.Hand.Add(card);
 				}
 			}
 
-			targetPlayer.Hand.Add(Draw.Action(2, game));
+			TargetPlayer.Hand.Add(Draw.Action(2, Game));
 
 			return true;
 		}
         bool Action2(object[] parameters) 
 		{
-			Game game = null;
-			Player targetPlayer = null;
-			CardHelper.GetParameters(parameters, out game, out targetPlayer);
+			ParseParameters(parameters, 2);
 
 			int numberTopCardsActivePlayer = 0;
 			int maxNumberTopCardsOtherPlayers = 0;
-			foreach (Player player in game.Players)
+			foreach (Player player in Game.Players)
 			{
-				if (player == targetPlayer)
-					numberTopCardsActivePlayer = targetPlayer.Tableau.GetStackColors().Count;
+				if (player == TargetPlayer)
+					numberTopCardsActivePlayer = TargetPlayer.Tableau.GetStackColors().Count;
 				else
-					maxNumberTopCardsOtherPlayers = Math.Max(maxNumberTopCardsOtherPlayers, targetPlayer.Tableau.GetStackColors().Count);
+					maxNumberTopCardsOtherPlayers = Math.Max(maxNumberTopCardsOtherPlayers, TargetPlayer.Tableau.GetStackColors().Count);
 			}
 
 			if (numberTopCardsActivePlayer == 5 && maxNumberTopCardsOtherPlayers < 5)

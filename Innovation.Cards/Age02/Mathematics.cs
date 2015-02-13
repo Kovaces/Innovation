@@ -5,16 +5,16 @@ using Innovation.Models;
 using Innovation.Models.Enums;
 namespace Innovation.Cards
 {
-    public class Mathematics : ICard
+    public class Mathematics : CardBase
     {
-        public string Name { get { return "Mathematics"; } }
-        public int Age { get { return 2; } }
-        public Color Color { get { return Color.Blue; } }
-        public Symbol Top { get { return Symbol.Blank; } }
-        public Symbol Left { get { return Symbol.Lightbulb; } }
-        public Symbol Center { get { return Symbol.Crown; } }
-        public Symbol Right { get { return Symbol.Lightbulb; } }
-        public IEnumerable<CardAction> Actions
+        public override string Name { get { return "Mathematics"; } }
+        public override int Age { get { return 2; } }
+        public override Color Color { get { return Color.Blue; } }
+        public override Symbol Top { get { return Symbol.Blank; } }
+        public override Symbol Left { get { return Symbol.Lightbulb; } }
+        public override Symbol Center { get { return Symbol.Crown; } }
+        public override Symbol Right { get { return Symbol.Lightbulb; } }
+        public override IEnumerable<CardAction> Actions
         {
             get
             {
@@ -26,17 +26,15 @@ namespace Innovation.Cards
         }
         bool Action1(object[] parameters) 
 		{
-			Game game = null;
-			Player targetPlayer = null;
-			CardHelper.GetParameters(parameters, out game, out targetPlayer);
+			ParseParameters(parameters, 2);
 
-			ICard card = targetPlayer.PickCardFromHand();
+			ICard card = TargetPlayer.PickCardFromHand();
 			if (card != null)
 			{
-				targetPlayer.Hand.Remove(card);
-				Return.Action(card, game);
+				TargetPlayer.Hand.Remove(card);
+				Return.Action(card, Game);
 
-				Meld.Action(Draw.Action(card.Age + 1, game), targetPlayer);
+				Meld.Action(Draw.Action(card.Age + 1, Game), TargetPlayer);
 
 				return true;
 			}

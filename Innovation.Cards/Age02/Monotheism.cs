@@ -6,16 +6,16 @@ using Innovation.Models.Enums;
 using Innovation.Actions;
 namespace Innovation.Cards
 {
-    public class Monotheism : ICard
+    public class Monotheism : CardBase
     {
-        public string Name { get { return "Monotheism"; } }
-        public int Age { get { return 2; } }
-        public Color Color { get { return Color.Purple; } }
-        public Symbol Top { get { return Symbol.Blank; } }
-        public Symbol Left { get { return Symbol.Tower; } }
-        public Symbol Center { get { return Symbol.Tower; } }
-        public Symbol Right { get { return Symbol.Tower; } }
-        public IEnumerable<CardAction> Actions
+        public override string Name { get { return "Monotheism"; } }
+        public override int Age { get { return 2; } }
+        public override Color Color { get { return Color.Purple; } }
+        public override Symbol Top { get { return Symbol.Blank; } }
+        public override Symbol Left { get { return Symbol.Tower; } }
+        public override Symbol Center { get { return Symbol.Tower; } }
+        public override Symbol Right { get { return Symbol.Tower; } }
+        public override IEnumerable<CardAction> Actions
         {
             get
             {
@@ -27,21 +27,18 @@ namespace Innovation.Cards
         }
         bool Action1(object[] parameters)
 		{
-			Game game = null;
-			Player targetPlayer = null;
-			Player activePlayer = null;
-			CardHelper.GetParameters(parameters, out game, out targetPlayer, out activePlayer);
+			ParseParameters(parameters, 3);
 
-			List<Color> activePlayerTopColors = activePlayer.Tableau.GetStackColors();
-			List<ICard> possibleTransferCards = targetPlayer.Tableau.GetTopCards().Where(x => !activePlayerTopColors.Contains(x.Color)).ToList();
+			List<Color> activePlayerTopColors = CurrentPlayer.Tableau.GetStackColors();
+			List<ICard> possibleTransferCards = TargetPlayer.Tableau.GetTopCards().Where(x => !activePlayerTopColors.Contains(x.Color)).ToList();
 
 			if (possibleTransferCards.Count > 0)
 			{
-				ICard cardToTransfer = targetPlayer.PickFromMultipleCards(possibleTransferCards, 1, 1).First();
-				targetPlayer.Tableau.Stacks[cardToTransfer.Color].RemoveCard(cardToTransfer);
-				activePlayer.Tableau.ScorePile.Add(cardToTransfer);
+				ICard cardToTransfer = TargetPlayer.PickCard(possibleTransferCards);
+				TargetPlayer.Tableau.Stacks[cardToTransfer.Color].RemoveCard(cardToTransfer);
+				CurrentPlayer.Tableau.ScorePile.Add(cardToTransfer);
 
-				Tuck.Action(Draw.Action(1, game), targetPlayer);
+				Tuck.Action(Draw.Action(1, Game), TargetPlayer);
 
 				return true;
 			}
@@ -50,11 +47,9 @@ namespace Innovation.Cards
 		}
         bool Action2(object[] parameters) 
 		{
-			Game game = null;
-			Player targetPlayer = null;
-			CardHelper.GetParameters(parameters, out game, out targetPlayer);
+			ParseParameters(parameters, 2);
 
-			Tuck.Action(Draw.Action(1, game), targetPlayer);
+			Tuck.Action(Draw.Action(1, Game), TargetPlayer);
 
 			return true;
 		}

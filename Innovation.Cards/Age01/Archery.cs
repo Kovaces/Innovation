@@ -6,20 +6,20 @@ using Innovation.Models;
 using Innovation.Models.Enums;
 namespace Innovation.Cards
 {
-	public class Archery : ICard
+	public class Archery : CardBase
 	{
-		public string Name { get { return "Archery"; } }
-		public int Age { get { return 1; } }
-		public Color Color { get { return Color.Red; } }
-		public Symbol Top { get { return Symbol.Tower; } }
-		public Symbol Left { get { return Symbol.Lightbulb; } }
-		public Symbol Center { get { return Symbol.Blank; } }
-		public Symbol Right { get { return Symbol.Tower; } }
-		public IEnumerable<CardAction> Actions
+		public override string Name { get { return "Archery"; } }
+		public override int Age { get { return 1; } }
+		public override Color Color { get { return Color.Red; } }
+		public override Symbol Top { get { return Symbol.Tower; } }
+		public override Symbol Left { get { return Symbol.Lightbulb; } }
+		public override Symbol Center { get { return Symbol.Blank; } }
+		public override Symbol Right { get { return Symbol.Tower; } }
+		public override IEnumerable<CardAction> Actions
 		{
 			get
 			{
-				return new List<CardAction>()
+				return new List<CardAction>
 				{
                     new CardAction(ActionType.Demand, Symbol.Tower, "I demand you draw a [1], then transfer the highest card in your hand to my hand!", Action1)
                 };
@@ -27,20 +27,17 @@ namespace Innovation.Cards
 		}
 		bool Action1(object[] parameters)
 		{
-			Game game = null;
-			Player targetPlayer = null;
-			Player activePlayer = null;
-			CardHelper.GetParameters(parameters, out game, out targetPlayer, out activePlayer);
+			ParseParameters(parameters, 3);
 
-			targetPlayer.Hand.Add(Draw.Action(1, game));
+			TargetPlayer.Hand.Add(Draw.Action(1, Game));
 
-			var highestAgeInHand = targetPlayer.Hand.Max(c => c.Age);
-			var highestCards = targetPlayer.Hand.Where(c => c.Age.Equals(highestAgeInHand)).ToList();
+			var highestAgeInHand = TargetPlayer.Hand.Max(c => c.Age);
+			var highestCards = TargetPlayer.Hand.Where(c => c.Age.Equals(highestAgeInHand)).ToList();
 
-			ICard selectedCard = targetPlayer.PickFromMultipleCards(highestCards, 1, 1).First();
+			ICard selectedCard = TargetPlayer.PickCard(highestCards);
 
-			targetPlayer.Hand.Remove(selectedCard);
-			activePlayer.Hand.Add(selectedCard);
+			TargetPlayer.Hand.Remove(selectedCard);
+			CurrentPlayer.Hand.Add(selectedCard);
 
 			return true;
 		}

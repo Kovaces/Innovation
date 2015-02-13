@@ -4,6 +4,7 @@ using Innovation.Models;
 using Innovation.Models.Enums;
 using Innovation.Tests.Helpers;
 using Innovation.Actions;
+using Innovation.Models.Interfaces;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Innovation.Cards.Tests
@@ -18,7 +19,7 @@ namespace Innovation.Cards.Tests
 		{
 			testGame = new Game
 			{
-				Players = new List<Player>()
+				Players = new List<IPlayer>()
 				{
 					new Player
 					{
@@ -97,7 +98,7 @@ namespace Innovation.Cards.Tests
 		{
 			// player1:  blue,red,yellow stack;	red,yellow,green card;	melds green card
 
-			testGame.Players[0].SelectsCards = new List<int>() { 0 };
+			//testGame.Players[0].SelectsCards = new List<int>() { 0 };
 
 			new Clothing().Actions.ToList()[0].ActionHandler(new object[] { testGame.Players[0], testGame });
 
@@ -125,7 +126,7 @@ namespace Innovation.Cards.Tests
 			// player2:	red
 			// player1 -> draws + scores 2 cards
 
-			testGame.Players[0].SelectsCards = new List<int>() { 0 };
+			//testGame.Players[0].SelectsCards = new List<int>() { 0 };
 
 			new Clothing().Actions.ToList()[1].ActionHandler(new object[] { testGame.Players[0], testGame });
 

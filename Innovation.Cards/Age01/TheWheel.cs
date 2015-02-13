@@ -3,18 +3,19 @@ using System.Collections.Generic;
 using Innovation.Actions;
 using Innovation.Models;
 using Innovation.Models.Enums;
+
 namespace Innovation.Cards
 {
-    public class TheWheel : ICard
+    public class TheWheel : CardBase
     {
-        public string Name { get { return "The Wheel"; } }
-        public int Age { get { return 1; } }
-        public Color Color { get { return Color.Green; } }
-        public Symbol Top { get { return Symbol.Blank; } }
-        public Symbol Left { get { return Symbol.Tower; } }
-        public Symbol Center { get { return Symbol.Tower; } }
-        public Symbol Right { get { return Symbol.Tower; } }
-        public IEnumerable<CardAction> Actions
+        public override string Name { get { return "The Wheel"; } }
+        public override int Age { get { return 1; } }
+        public override Color Color { get { return Color.Green; } }
+        public override Symbol Top { get { return Symbol.Blank; } }
+        public override Symbol Left { get { return Symbol.Tower; } }
+        public override Symbol Center { get { return Symbol.Tower; } }
+        public override Symbol Right { get { return Symbol.Tower; } }
+        public override IEnumerable<CardAction> Actions
         {
             get
             {
@@ -26,12 +27,10 @@ namespace Innovation.Cards
         }
 		bool Action1(object[] parameters)
 		{
-			Game game = null;
-			Player targetPlayer = null;
-			CardHelper.GetParameters(parameters, out game, out targetPlayer);
+			ParseParameters(parameters, 2);
 
-			targetPlayer.Hand.Add(Draw.Action(1, game));
-			targetPlayer.Hand.Add(Draw.Action(1, game));
+			TargetPlayer.Hand.Add(Draw.Action(1, Game));
+			TargetPlayer.Hand.Add(Draw.Action(1, Game));
 
 			return true;
 		}

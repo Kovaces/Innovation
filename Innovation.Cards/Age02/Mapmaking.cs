@@ -6,16 +6,16 @@ using Innovation.Models.Enums;
 using Innovation.Actions;
 namespace Innovation.Cards
 {
-    public class Mapmaking : ICard
+    public class Mapmaking : CardBase
     {
-        public string Name { get { return "Mapmaking"; } }
-        public int Age { get { return 2; } }
-        public Color Color { get { return Color.Green; } }
-        public Symbol Top { get { return Symbol.Blank; } }
-        public Symbol Left { get { return Symbol.Crown; } }
-        public Symbol Center { get { return Symbol.Crown; } }
-        public Symbol Right { get { return Symbol.Tower; } }
-        public IEnumerable<CardAction> Actions
+        public override string Name { get { return "Mapmaking"; } }
+        public override int Age { get { return 2; } }
+        public override Color Color { get { return Color.Green; } }
+        public override Symbol Top { get { return Symbol.Blank; } }
+        public override Symbol Left { get { return Symbol.Crown; } }
+        public override Symbol Center { get { return Symbol.Crown; } }
+        public override Symbol Right { get { return Symbol.Tower; } }
+        public override IEnumerable<CardAction> Actions
         {
             get
             {
@@ -28,19 +28,16 @@ namespace Innovation.Cards
         }
 		bool Action1(object[] parameters)
 		{
-			Game game = null;
-			Player targetPlayer = null;
-			Player activePlayer = null;
-			CardHelper.GetParameters(parameters, out game, out targetPlayer, out activePlayer);
+			ParseParameters(parameters, 3);
 
-			List<ICard> cardsToTransfer = targetPlayer.Tableau.ScorePile.Where(x => x.Age == 1).ToList();
+			List<ICard> cardsToTransfer = TargetPlayer.Tableau.ScorePile.Where(x => x.Age == 1).ToList();
 			if (cardsToTransfer.Count > 0)
 			{
-				ICard card = targetPlayer.PickFromMultipleCards(cardsToTransfer, 1, 1).First();
-				targetPlayer.Tableau.ScorePile.Remove(card);
-				activePlayer.Tableau.ScorePile.Add(card);
+				ICard card = TargetPlayer.PickMultipleCards(cardsToTransfer, 1, 1).First();
+				TargetPlayer.Tableau.ScorePile.Remove(card);
+				CurrentPlayer.Tableau.ScorePile.Add(card);
 
-				game.StashPropertyBagValue("MapmakingAction1Taken", "true");
+				Game.StashPropertyBagValue("MapmakingAction1Taken", "true");
 
 				return true;
 			}
@@ -48,13 +45,11 @@ namespace Innovation.Cards
 		}
 		bool Action2(object[] parameters)
 		{
-			Game game = null;
-			Player targetPlayer = null;
-			CardHelper.GetParameters(parameters, out game, out targetPlayer);
+			ParseParameters(parameters, 2);
 
-			if (game.GetPropertyBagValue("MapmakingAction1Taken").ToString() == "true")
+			if (Game.GetPropertyBagValue("MapmakingAction1Taken").ToString() == "true")
 			{
-				Score.Action(Draw.Action(1, game), targetPlayer);
+				Score.Action(Draw.Action(1, Game), TargetPlayer);
 				return true;
 			}
 

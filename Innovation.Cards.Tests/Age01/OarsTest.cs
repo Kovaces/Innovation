@@ -6,6 +6,7 @@ using Innovation.Models.Enums;
 using Innovation.Tests.Helpers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Innovation.Actions;
+using Innovation.Models.Interfaces;
 
 namespace Innovation.Cards.Tests
 {
@@ -19,7 +20,7 @@ namespace Innovation.Cards.Tests
 		{
 			testGame = new Game
 			{
-				Players = new List<Player>()
+				Players = new List<IPlayer>()
 				{
 					new Player
 					{
@@ -94,12 +95,12 @@ namespace Innovation.Cards.Tests
 		[TestMethod]
 		public void Card_OarsAction1()
 		{
-			testGame.Players[0].AlwaysParticipates = true;
-			testGame.Players[0].SelectsCards = new List<int>() { 0 };
+			//testGame.Players[0].AlwaysParticipates = true;
+			//testGame.Players[0].SelectsCards = new List<int>() { 0 };
 
-			testGame.Players[1].SelectsCards = new List<int>() { 0 };
+			//testGame.Players[1].SelectsCards = new List<int>() { 0 };
 
-			string cardName = testGame.Players[1].Hand.Where(x => CardHelper.CardHasSymbol(x, Symbol.Crown)).First().Name;
+			string cardName = testGame.Players[1].Hand.Where(x => x.HasSymbol(Symbol.Crown)).First().Name;
 
 			new Oars().Actions.ToList()[0].ActionHandler(new object[] { testGame.Players[1], testGame, testGame.Players[0] });
 
@@ -118,12 +119,12 @@ namespace Innovation.Cards.Tests
 		[TestMethod]
 		public void Card_OarsAction1_NoCrowns()
 		{
-			testGame.Players[0].AlwaysParticipates = true;
-			testGame.Players[0].SelectsCards = new List<int>() { 0 };
+			//testGame.Players[0].AlwaysParticipates = true;
+			//testGame.Players[0].SelectsCards = new List<int>() { 0 };
 
-			testGame.Players[1].SelectsCards = new List<int>() { 0 };
+			//testGame.Players[1].SelectsCards = new List<int>() { 0 };
 
-			testGame.Players[1].Hand.Remove(testGame.Players[1].Hand.First());
+			//testGame.Players[1].Hand.Remove(testGame.Players[1].Hand.First());
 
 			new Oars().Actions.ToList()[0].ActionHandler(new object[] { testGame.Players[1], testGame, testGame.Players[0] });
 
@@ -145,12 +146,12 @@ namespace Innovation.Cards.Tests
 		[TestMethod]
 		public void Card_OarsAction2_NothingHappens()
 		{
-			testGame.Players[0].AlwaysParticipates = true;
-			testGame.Players[0].SelectsCards = new List<int>() { 0 };
+			//testGame.Players[0].AlwaysParticipates = true;
+			//testGame.Players[0].SelectsCards = new List<int>() { 0 };
 
-			testGame.Players[1].SelectsCards = new List<int>() { 0 };
+			//testGame.Players[1].SelectsCards = new List<int>() { 0 };
 
-			string cardName = testGame.Players[1].Hand.Where(x => CardHelper.CardHasSymbol(x, Symbol.Crown)).First().Name;
+			string cardName = testGame.Players[1].Hand.Where(x => x.HasSymbol(Symbol.Crown)).First().Name;
 
 			new Oars().Actions.ToList()[0].ActionHandler(new object[] { testGame.Players[1], testGame, testGame.Players[0] });
 			new Oars().Actions.ToList()[1].ActionHandler(new object[] { testGame.Players[1], testGame });
@@ -171,10 +172,10 @@ namespace Innovation.Cards.Tests
 		[TestMethod]
 		public void Card_OarsAction2_NoTransfer()
 		{
-			testGame.Players[0].AlwaysParticipates = true;
-			testGame.Players[0].SelectsCards = new List<int>() { 0 };
+			//testGame.Players[0].AlwaysParticipates = true;
+			//testGame.Players[0].SelectsCards = new List<int>() { 0 };
 
-			testGame.Players[1].SelectsCards = new List<int>() { 0 };
+			//testGame.Players[1].SelectsCards = new List<int>() { 0 };
 
 			testGame.Players[1].Hand.Remove(testGame.Players[1].Hand.First());
 

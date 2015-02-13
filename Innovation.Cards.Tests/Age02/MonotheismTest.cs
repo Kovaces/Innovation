@@ -6,6 +6,7 @@ using Innovation.Models.Enums;
 using Innovation.Tests.Helpers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Innovation.Actions;
+using Innovation.Models.Interfaces;
 
 namespace Innovation.Cards.Tests
 {
@@ -19,7 +20,7 @@ namespace Innovation.Cards.Tests
 		{
 			testGame = new Game
 			{
-				Players = new List<Player>()
+				Players = new List<IPlayer>()
 				{
 					new Player
 					{
@@ -116,7 +117,7 @@ namespace Innovation.Cards.Tests
 		[TestMethod]
 		public void Card_MonotheismAction1_Affected()
 		{
-			testGame.Players[1].SelectsCards = new List<int>() { 0 };
+			//testGame.Players[1].SelectsCards = new List<int>() { 0 };
 			testGame.Players[1].Tableau.Stacks[Color.Green].AddCardToTop(
 				 new Card { Name = "Test Green Card", Color = Color.Green, Age = 1, Top = Symbol.Blank, Left = Symbol.Crown, Center = Symbol.Crown, Right = Symbol.Tower }
 			);

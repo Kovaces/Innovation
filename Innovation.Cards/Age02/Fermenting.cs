@@ -5,16 +5,16 @@ using Innovation.Models;
 using Innovation.Models.Enums;
 namespace Innovation.Cards
 {
-    public class Fermenting : ICard
+    public class Fermenting : CardBase
     {
-        public string Name { get { return "Fermenting"; } }
-        public int Age { get { return 2; } }
-        public Color Color { get { return Color.Yellow; } }
-        public Symbol Top { get { return Symbol.Leaf; } }
-        public Symbol Left { get { return Symbol.Leaf; } }
-        public Symbol Center { get { return Symbol.Blank; } }
-        public Symbol Right { get { return Symbol.Tower; } }
-        public IEnumerable<CardAction> Actions
+        public override string Name { get { return "Fermenting"; } }
+        public override int Age { get { return 2; } }
+        public override Color Color { get { return Color.Yellow; } }
+        public override Symbol Top { get { return Symbol.Leaf; } }
+        public override Symbol Left { get { return Symbol.Leaf; } }
+        public override Symbol Center { get { return Symbol.Blank; } }
+        public override Symbol Right { get { return Symbol.Tower; } }
+        public override IEnumerable<CardAction> Actions
         {
             get
             {
@@ -26,13 +26,11 @@ namespace Innovation.Cards
         }
         bool Action1(object[] parameters) 
 		{
-			Game game = null;
-			Player targetPlayer = null;
-			CardHelper.GetParameters(parameters, out game, out targetPlayer);
+			ParseParameters(parameters, 2);
 
-			int numberOfLeafs = targetPlayer.Tableau.GetSymbolCount(Symbol.Leaf);
+			int numberOfLeafs = TargetPlayer.Tableau.GetSymbolCount(Symbol.Leaf);
 			for (int i = 0; i < numberOfLeafs / 2; i++)
-				targetPlayer.Hand.Add(Draw.Action(2, game));
+				TargetPlayer.Hand.Add(Draw.Action(2, Game));
 
 			return numberOfLeafs >= 2;
 		}

@@ -5,16 +5,16 @@ using Innovation.Models;
 using Innovation.Models.Enums;
 namespace Innovation.Cards
 {
-    public class Sailing : ICard
+    public class Sailing : CardBase
     {
-        public string Name { get { return "Sailing"; } }
-        public int Age { get { return 1; } }
-        public Color Color { get { return Color.Green; } }
-        public Symbol Top { get { return Symbol.Crown; } }
-        public Symbol Left { get { return Symbol.Crown; } }
-        public Symbol Center { get { return Symbol.Blank; } }
-        public Symbol Right { get { return Symbol.Leaf; } }
-        public IEnumerable<CardAction> Actions
+        public override string Name { get { return "Sailing"; } }
+        public override int Age { get { return 1; } }
+        public override Color Color { get { return Color.Green; } }
+        public override Symbol Top { get { return Symbol.Crown; } }
+        public override Symbol Left { get { return Symbol.Crown; } }
+        public override Symbol Center { get { return Symbol.Blank; } }
+        public override Symbol Right { get { return Symbol.Leaf; } }
+        public override IEnumerable<CardAction> Actions
         {
             get
             {
@@ -26,11 +26,9 @@ namespace Innovation.Cards
         }
 		bool Action1(object[] parameters)
 		{
-			Game game = null;
-			Player targetPlayer = null;
-			CardHelper.GetParameters(parameters, out game, out targetPlayer);
+			ParseParameters(parameters, 2);
 
-			Meld.Action(Draw.Action(1, game), targetPlayer);
+			Meld.Action(Draw.Action(1, Game), TargetPlayer);
 
 			return true;
 		}

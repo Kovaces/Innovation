@@ -2,12 +2,13 @@
 using System.Linq;
 using Innovation.Models;
 using Innovation.Models.Enums;
+using Innovation.Models.Interfaces;
 
 namespace Innovation.Actions
 {
 	public class Dogma
 	{
-		public static void Action(ICard card, Player activePlayer, Game game)
+		public static void Action(ICard card, IPlayer activePlayer, Game game)
 		{
 			var otherPlayerActed = false;
 
@@ -18,24 +19,11 @@ namespace Innovation.Actions
 				{
 					var activePlayerSymbolCount = activePlayer.Tableau.GetSymbolCount(action.Symbol);
 					var targetPlayerSymbolCount = targetPlayer.Tableau.GetSymbolCount(action.Symbol);
-					if ((targetPlayer.Equals(activePlayer) && action.ActionType != ActionType.Demand)
-							|| DeterminePlayerEligability(activePlayerSymbolCount, targetPlayerSymbolCount, action.ActionType == ActionType.Demand))
-					{
-						bool actionTaken = false;
-						if (action.ActionType == ActionType.Demand)
-						{
-							actionTaken = action.ActionHandler(new object[] { targetPlayer, game, activePlayer });
-						}
-						else if (action.ActionType == ActionType.Required)
-						{
-							actionTaken = action.ActionHandler(new object[] { targetPlayer, game });
-						}
-						else if (action.ActionType == ActionType.Optional)
-						{
-							if (targetPlayer.AskToParticipate(action))
-								actionTaken = action.ActionHandler(new object[] { targetPlayer, game });
-						}
 
+					if (DeterminePlayerEligability(activePlayerSymbolCount, targetPlayerSymbolCount, action.ActionType == ActionType.Demand))
+					{
+						bool actionTaken = action.ActionHandler(new object[] { targetPlayer, game, activePlayer });
+						
 						if (!otherPlayerActed && actionTaken && !targetPlayer.Equals(activePlayer) && action.ActionType != ActionType.Demand)
 							otherPlayerActed = true;
 					}
@@ -54,7 +42,7 @@ namespace Innovation.Actions
 			return isDemand ? (activePlayerSymbolCount > targetPlayerSymbolCount) : (targetPlayerSymbolCount >= activePlayerSymbolCount);
 		}
 
-		private static List<Player> GetPlayersInPlayerOrder(List<Player> playerList, int startingIndex)
+		private static List<IPlayer> GetPlayersInPlayerOrder(List<IPlayer> playerList, int startingIndex)
 		{
 			var players = playerList.GetRange(startingIndex + 1, playerList.Count - startingIndex - 1);
 			if (players.Count < playerList.Count)

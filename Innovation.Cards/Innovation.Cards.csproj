@@ -39,7 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CardHelper.cs" />
+    <Compile Include="CardBase.cs" />
     <Compile Include="Age01\Agriculture.cs" />
     <Compile Include="Age01\Archery.cs" />
     <Compile Include="Age01\CityStates.cs" />
@@ -143,7 +143,6 @@
     <Compile Include="Age10\Software.cs" />
     <Compile Include="Age10\StemCells.cs" />
     <Compile Include="Age10\TheInternet.cs" />
-    <Compile Include="PlaceHolder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />

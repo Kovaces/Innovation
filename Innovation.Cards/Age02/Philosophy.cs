@@ -6,16 +6,16 @@ using Innovation.Models.Enums;
 using Innovation.Actions;
 namespace Innovation.Cards
 {
-    public class Philosophy : ICard
+    public class Philosophy : CardBase
     {
-        public string Name { get { return "Philosophy"; } }
-        public int Age { get { return 2; } }
-        public Color Color { get { return Color.Purple; } }
-        public Symbol Top { get { return Symbol.Blank; } }
-        public Symbol Left { get { return Symbol.Lightbulb; } }
-        public Symbol Center { get { return Symbol.Lightbulb; } }
-        public Symbol Right { get { return Symbol.Lightbulb; } }
-        public IEnumerable<CardAction> Actions
+        public override string Name { get { return "Philosophy"; } }
+        public override int Age { get { return 2; } }
+        public override Color Color { get { return Color.Purple; } }
+        public override Symbol Top { get { return Symbol.Blank; } }
+        public override Symbol Left { get { return Symbol.Lightbulb; } }
+        public override Symbol Center { get { return Symbol.Lightbulb; } }
+        public override Symbol Right { get { return Symbol.Lightbulb; } }
+        public override IEnumerable<CardAction> Actions
         {
             get
             {
@@ -28,17 +28,15 @@ namespace Innovation.Cards
         }
         bool Action1(object[] parameters) 
 		{
-			Game game = null;
-			Player targetPlayer = null;
-			CardHelper.GetParameters(parameters, out game, out targetPlayer);
+			ParseParameters(parameters, 2);
 
 			// pick color vs pick card?
-			List<ICard> cardsToSelectFrom = targetPlayer.Tableau.GetTopCards();
+			List<ICard> cardsToSelectFrom = TargetPlayer.Tableau.GetTopCards();
 			if (cardsToSelectFrom.Count > 0)
 			{
-				Color chosenColor = targetPlayer.PickFromMultipleCards(cardsToSelectFrom, 1, 1).First().Color;
+				Color chosenColor = TargetPlayer.PickMultipleCards(cardsToSelectFrom, 1, 1).First().Color;
 
-				targetPlayer.Tableau.Stacks[chosenColor].Splay(SplayDirection.Left);
+				TargetPlayer.Tableau.Stacks[chosenColor].Splay(SplayDirection.Left);
 				return true;
 			}
 
@@ -46,15 +44,13 @@ namespace Innovation.Cards
 		}
 		bool Action2(object[] parameters)
 		{
-			Game game = null;
-			Player targetPlayer = null;
-			CardHelper.GetParameters(parameters, out game, out targetPlayer);
+			ParseParameters(parameters, 2);
 
-			if (targetPlayer.Hand.Count > 0)
+			if (TargetPlayer.Hand.Count > 0)
 			{
-				ICard card = targetPlayer.PickCardFromHand();
-				targetPlayer.Hand.Remove(card);
-				Score.Action(card, targetPlayer);
+				ICard card = TargetPlayer.PickCardFromHand();
+				TargetPlayer.Hand.Remove(card);
+				Score.Action(card, TargetPlayer);
 			}
 
 			return false;

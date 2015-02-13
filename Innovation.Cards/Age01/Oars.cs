@@ -6,16 +6,16 @@ using Innovation.Models.Enums;
 using Innovation.Actions;
 namespace Innovation.Cards
 {
-    public class Oars : ICard
+    public class Oars : CardBase
     {
-        public string Name { get { return "Oars"; } }
-        public int Age { get { return 1; } }
-        public Color Color { get { return Color.Red; } }
-        public Symbol Top { get { return Symbol.Tower; } }
-        public Symbol Left { get { return Symbol.Crown; } }
-        public Symbol Center { get { return Symbol.Blank; } }
-        public Symbol Right { get { return Symbol.Tower; } }
-        public IEnumerable<CardAction> Actions
+        public override string Name { get { return "Oars"; } }
+        public override int Age { get { return 1; } }
+        public override Color Color { get { return Color.Red; } }
+        public override Symbol Top { get { return Symbol.Tower; } }
+        public override Symbol Left { get { return Symbol.Crown; } }
+        public override Symbol Center { get { return Symbol.Blank; } }
+        public override Symbol Right { get { return Symbol.Tower; } }
+        public override IEnumerable<CardAction> Actions
         {
             get
             {
@@ -28,21 +28,18 @@ namespace Innovation.Cards
         }
         bool Action1(object[] parameters)
 		{
-			Game game = null;
-			Player targetPlayer = null;
-			Player activePlayer = null;
-			CardHelper.GetParameters(parameters, out game, out targetPlayer, out activePlayer);
+			ParseParameters(parameters, 3);
 
-			List<ICard> cardsWithCrowns = targetPlayer.Hand.Where(x => x.Top == Symbol.Crown || x.Left == Symbol.Crown || x.Center == Symbol.Crown || x.Right == Symbol.Crown).ToList();
+			List<ICard> cardsWithCrowns = TargetPlayer.Hand.Where(x => x.HasSymbol(Symbol.Crown)).ToList();
 			if (cardsWithCrowns.Count > 0)
 			{
-				ICard card = targetPlayer.PickFromMultipleCards(cardsWithCrowns, 1, 1).First();
-				targetPlayer.Hand.Remove(card);
-				Score.Action(card, activePlayer);
+				ICard card = TargetPlayer.PickCard(cardsWithCrowns);
+				TargetPlayer.Hand.Remove(card);
+				Score.Action(card, CurrentPlayer);
 
-				targetPlayer.Hand.Add(Draw.Action(1, game));
+				TargetPlayer.Hand.Add(Draw.Action(1, Game));
 
-				game.StashPropertyBagValue("OarsAction1Taken", "true");
+				Game.StashPropertyBagValue("OarsAction1Taken", "true");
 
 				return true;
 			}
@@ -51,13 +48,11 @@ namespace Innovation.Cards
 		}
 		bool Action2(object[] parameters)
 		{
-			Game game = null;
-			Player targetPlayer = null;
-			CardHelper.GetParameters(parameters, out game, out targetPlayer);
+			ParseParameters(parameters, 2);
 
-			if (game.GetPropertyBagValue("OarsAction1Taken").ToString() != "true")
+			if (Game.GetPropertyBagValue("OarsAction1Taken").ToString() != "true")
 			{
-				targetPlayer.Hand.Add(Draw.Action(1, game));
+				TargetPlayer.Hand.Add(Draw.Action(1, Game));
 
 				return true;
 			}

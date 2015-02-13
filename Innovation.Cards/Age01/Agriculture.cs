@@ -7,16 +7,16 @@ using Innovation.Models.Enums;
 
 namespace Innovation.Cards
 {
-	public class Agriculture : ICard
+	public class Agriculture : CardBase
 	{
-		public string Name { get { return "Agriculture"; } }
-		public int Age { get { return 1; } }
-		public Color Color { get { return Color.Yellow; } }
-		public Symbol Top { get { return Symbol.Blank; } }
-		public Symbol Left { get { return Symbol.Leaf; } }
-		public Symbol Center { get { return Symbol.Leaf; } }
-		public Symbol Right { get { return Symbol.Leaf; } }
-		public IEnumerable<CardAction> Actions
+		public override string Name { get { return "Agriculture"; } }
+		public override int Age { get { return 1; } }
+		public override Color Color { get { return Color.Yellow; } }
+		public override Symbol Top { get { return Symbol.Blank; } }
+		public override Symbol Left { get { return Symbol.Leaf; } }
+		public override Symbol Center { get { return Symbol.Leaf; } }
+		public override Symbol Right { get { return Symbol.Leaf; } }
+		public override IEnumerable<CardAction> Actions
 		{
 			get
 			{
@@ -26,26 +26,24 @@ namespace Innovation.Cards
                 };
 			}
 		}
-		bool Action1(object[] parameters)
+
+		private bool Action1(object[] parameters)
 		{
-			Game game = null;
-			Player targetPlayer = null;
-			CardHelper.GetParameters(parameters, out game, out targetPlayer);
+			ParseParameters(parameters, 2);
 
-			if (targetPlayer.Hand.Any())
-			{
-				ICard selectedCard = targetPlayer.PickCardFromHand();
-				targetPlayer.Hand.Remove(selectedCard);
-				Return.Action(selectedCard, game);
-
-				int ageToDraw = selectedCard.Age + 1;
-				var cardToScore = Draw.Action(ageToDraw, game);
-				Score.Action(cardToScore, targetPlayer);
-
-				return true;
-			}
-			else
+			ICard selectedCard = TargetPlayer.PickCardFromHand();
+			
+			if (selectedCard == null)
 				return false;
+
+			TargetPlayer.Hand.Remove(selectedCard);
+			Return.Action(selectedCard, Game);
+
+			int ageToDraw = selectedCard.Age + 1;
+			var cardToScore = Draw.Action(ageToDraw, Game);
+			Score.Action(cardToScore, TargetPlayer);
+
+			return true;
 		}
 	}
 }

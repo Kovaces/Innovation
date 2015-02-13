@@ -19,5 +19,10 @@ namespace Innovation.Tests.Helpers
 		public int Age { get; set; }
 		public Color Color { get; set; }
 		public IEnumerable<CardAction> Actions { get; set; }
+
+		public bool HasSymbol(Symbol symbol)
+		{
+			return ((Top == symbol) || (Left == symbol) || (Center == symbol) || (Right == symbol));
+		}
 	}
 }

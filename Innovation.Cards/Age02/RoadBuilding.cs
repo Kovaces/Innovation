@@ -4,18 +4,20 @@ using System.Collections.Generic;
 using Innovation.Actions;
 using Innovation.Models;
 using Innovation.Models.Enums;
+using Innovation.Models.Interfaces;
+
 namespace Innovation.Cards
 {
-    public class RoadBuilding : ICard
+    public class RoadBuilding : CardBase
     {
-        public string Name { get { return "Road Building"; } }
-        public int Age { get { return 2; } }
-        public Color Color { get { return Color.Red; } }
-        public Symbol Top { get { return Symbol.Tower; } }
-        public Symbol Left { get { return Symbol.Tower; } }
-        public Symbol Center { get { return Symbol.Blank; } }
-        public Symbol Right { get { return Symbol.Tower; } }
-        public IEnumerable<CardAction> Actions
+        public override string Name { get { return "Road Building"; } }
+        public override int Age { get { return 2; } }
+        public override Color Color { get { return Color.Red; } }
+        public override Symbol Top { get { return Symbol.Tower; } }
+        public override Symbol Left { get { return Symbol.Tower; } }
+        public override Symbol Center { get { return Symbol.Blank; } }
+        public override Symbol Right { get { return Symbol.Tower; } }
+        public override IEnumerable<CardAction> Actions
         {
             get
             {
@@ -27,33 +29,31 @@ namespace Innovation.Cards
         }
         bool Action1(object[] parameters) 
 		{
-			Game game = null;
-			Player targetPlayer = null;
-			CardHelper.GetParameters(parameters, out game, out targetPlayer);
+			ParseParameters(parameters, 2);
 
-			if (targetPlayer.Hand.Count > 0)
+			if (TargetPlayer.Hand.Count > 0)
 			{
-				List<ICard> cardsToMeld = targetPlayer.PickFromMultipleCards(targetPlayer.Hand, 1, 2);
+				List<ICard> cardsToMeld = TargetPlayer.PickMultipleCards(TargetPlayer.Hand, 1, 2).ToList();
 				foreach (ICard card in cardsToMeld)
-					Meld.Action(card, targetPlayer);
+					Meld.Action(card, TargetPlayer);
 
 				if (cardsToMeld.Count == 2)
 				{
-					if (targetPlayer.AskQuestion("Do you want to transfer your top red card to another player's board? If you do, transfer that player's top green card to your board."))
+					if (TargetPlayer.AskQuestion("Do you want to transfer your top red card to another player's board? If you do, transfer that player's top green card to your board."))
 					{
-						ICard topRedCard = targetPlayer.Tableau.GetTopCards().Where(x => x.Color == Color.Red).FirstOrDefault();
+						ICard topRedCard = TargetPlayer.Tableau.GetTopCards().Where(x => x.Color == Color.Red).FirstOrDefault();
 						if (topRedCard != null)
 						{
-							Player playerToTransferTo = targetPlayer.PickPlayer(game);
+							IPlayer playerToTransferTo = TargetPlayer.PickPlayer(Game.Players);
 
-							targetPlayer.Tableau.Stacks[Color.Red].Cards.Remove(topRedCard);
+							TargetPlayer.Tableau.Stacks[Color.Red].Cards.Remove(topRedCard);
 							playerToTransferTo.Tableau.Stacks[Color.Red].AddCardToTop(topRedCard);
 
 							ICard topGreenCard = playerToTransferTo.Tableau.GetTopCards().Where(x => x.Color == Color.Green).FirstOrDefault();
 							if (topGreenCard != null)
 							{
 								playerToTransferTo.Tableau.Stacks[Color.Green].Cards.Remove(topGreenCard);
-								targetPlayer.Tableau.Stacks[Color.Green].AddCardToTop(topGreenCard);
+								TargetPlayer.Tableau.Stacks[Color.Green].AddCardToTop(topGreenCard);
 							}
 						}
 					}

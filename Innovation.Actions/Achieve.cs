@@ -1,5 +1,6 @@
 ﻿using Innovation.Models;
 using System.Linq;
+using Innovation.Models.Interfaces;
 
 namespace Innovation.Actions
 {
@@ -13,7 +14,7 @@ namespace Innovation.Actions
 		/// <param name="player">Player performing the action</param>
 		/// <param name="game">Game the action is being performed in</param>
 		/// <returns></returns>
-		public static bool Action(Player player, Game game)
+		public static bool Action(IPlayer player, Game game)
 		{
 			if (!game.AgeAchievementDeck.Cards.Any())
 				return false;

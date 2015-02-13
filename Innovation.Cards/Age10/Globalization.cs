@@ -4,16 +4,16 @@ using Innovation.Models;
 using Innovation.Models.Enums;
 namespace Innovation.Cards
 {
-    public class Globalization : ICard
+    public class Globalization : CardBase
     {
-        public string Name { get { return "Globalization"; } }
-        public int Age { get { return 10; } }
-        public Color Color { get { return Color.Yellow; } }
-        public Symbol Top { get { return Symbol.Blank; } }
-        public Symbol Left { get { return Symbol.Factory; } }
-        public Symbol Center { get { return Symbol.Factory; } }
-        public Symbol Right { get { return Symbol.Factory; } }
-        public IEnumerable<CardAction> Actions
+        public override string Name { get { return "Globalization"; } }
+        public override int Age { get { return 10; } }
+        public override Color Color { get { return Color.Yellow; } }
+        public override Symbol Top { get { return Symbol.Blank; } }
+        public override Symbol Left { get { return Symbol.Factory; } }
+        public override Symbol Center { get { return Symbol.Factory; } }
+        public override Symbol Right { get { return Symbol.Factory; } }
+        public override IEnumerable<CardAction> Actions
         {
             get
             {

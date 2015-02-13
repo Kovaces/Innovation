@@ -6,16 +6,16 @@ using Innovation.Models;
 using Innovation.Models.Enums;
 namespace Innovation.Cards
 {
-    public class Tools : ICard
+    public class Tools : CardBase
     {
-        public string Name { get { return "Tools"; } }
-        public int Age { get { return 1; } }
-        public Color Color { get { return Color.Blue; } }
-        public Symbol Top { get { return Symbol.Blank; } }
-        public Symbol Left { get { return Symbol.Lightbulb; } }
-        public Symbol Center { get { return Symbol.Lightbulb; } }
-        public Symbol Right { get { return Symbol.Tower; } }
-        public IEnumerable<CardAction> Actions
+        public override string Name { get { return "Tools"; } }
+        public override int Age { get { return 1; } }
+        public override Color Color { get { return Color.Blue; } }
+        public override Symbol Top { get { return Symbol.Blank; } }
+        public override Symbol Left { get { return Symbol.Lightbulb; } }
+        public override Symbol Center { get { return Symbol.Lightbulb; } }
+        public override Symbol Right { get { return Symbol.Tower; } }
+        public override IEnumerable<CardAction> Actions
         {
             get
             {
@@ -28,47 +28,48 @@ namespace Innovation.Cards
         }
         bool Action1(object[] parameters) 
 		{
-			Game game = null;
-			Player targetPlayer = null;
-			CardHelper.GetParameters(parameters, out game, out targetPlayer);
+			ParseParameters(parameters, 2);
 
-			if (targetPlayer.Hand.Count >= 3)
+			if (TargetPlayer.Hand.Count < 3)
+				return false;
+
+			List<ICard> cardsToReturn = TargetPlayer.PickMultipleCards(TargetPlayer.Hand, 3, 3).ToList();
+			if (cardsToReturn.Count == 0)
+				return false;
+
+			foreach (ICard card in cardsToReturn)
 			{
-				List<ICard> cardsToReturn = targetPlayer.PickFromMultipleCards(targetPlayer.Hand, 3, 3);
-				foreach (ICard card in cardsToReturn)
-				{
-					targetPlayer.Hand.Remove(card);
-					Return.Action(card, game);
-				}
-
-				Meld.Action(Draw.Action(3, game), targetPlayer);
-
-				return true;
+				TargetPlayer.Hand.Remove(card);
+				Return.Action(card, Game);
 			}
-			return false;
+
+			Meld.Action(Draw.Action(3, Game), TargetPlayer);
+
+			return true;
 		}
+
         bool Action2(object[] parameters) 
 		{
-			Game game = null;
-			Player targetPlayer = null;
-			CardHelper.GetParameters(parameters, out game, out targetPlayer);
+			ParseParameters(parameters, 2);
 
-			List<ICard> ageThreeCardsInHand = targetPlayer.Hand.Where(x => x.Age == 3).ToList();
-			if (ageThreeCardsInHand.Count > 0)
-			{
-				ICard cardToReturn = targetPlayer.PickFromMultipleCards(ageThreeCardsInHand, 1, 1).First();
+			List<ICard> ageThreeCardsInHand = TargetPlayer.Hand.Where(x => x.Age == 3).ToList();
 
-				targetPlayer.Hand.Remove(cardToReturn);
-				Return.Action(cardToReturn, game);
+			if (ageThreeCardsInHand.Count == 0)
+				return false;
 
-				targetPlayer.Hand.Add(Draw.Action(1, game));
-				targetPlayer.Hand.Add(Draw.Action(1, game));
-				targetPlayer.Hand.Add(Draw.Action(1, game));
+			ICard cardToReturn = TargetPlayer.PickCard(ageThreeCardsInHand);
 
-				return true;
-			}
+	        if (cardToReturn == null)
+		        return false;
 
-			return false;
+			TargetPlayer.Hand.Remove(cardToReturn);
+			Return.Action(cardToReturn, Game);
+
+			TargetPlayer.Hand.Add(Draw.Action(1, Game));
+			TargetPlayer.Hand.Add(Draw.Action(1, Game));
+			TargetPlayer.Hand.Add(Draw.Action(1, Game));
+
+			return true;
 		}
     }
 }

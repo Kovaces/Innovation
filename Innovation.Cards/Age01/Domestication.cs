@@ -7,16 +7,16 @@ using Innovation.Models.Enums;
 
 namespace Innovation.Cards
 {
-    public class Domestication : ICard
+    public class Domestication : CardBase
     {
-        public string Name { get { return "Domestication"; } }
-        public int Age { get { return 1; } }
-        public Color Color { get { return Color.Yellow; } }
-        public Symbol Top { get { return Symbol.Tower; } }
-        public Symbol Left { get { return Symbol.Crown; } }
-        public Symbol Center { get { return Symbol.Blank; } }
-        public Symbol Right { get { return Symbol.Tower; } }
-        public IEnumerable<CardAction> Actions
+        public override string Name { get { return "Domestication"; } }
+        public override int Age { get { return 1; } }
+        public override Color Color { get { return Color.Yellow; } }
+        public override Symbol Top { get { return Symbol.Tower; } }
+        public override Symbol Left { get { return Symbol.Crown; } }
+        public override Symbol Center { get { return Symbol.Blank; } }
+        public override Symbol Right { get { return Symbol.Tower; } }
+        public override IEnumerable<CardAction> Actions
         {
             get
             {
@@ -29,21 +29,19 @@ namespace Innovation.Cards
 
 	    bool Action1(object[] parameters)
 	    {
-			Game game = null;
-			Player targetPlayer = null;
-			CardHelper.GetParameters(parameters, out game, out targetPlayer);
+			ParseParameters(parameters, 2);
 
-			if (targetPlayer.Hand.Any())
+			if (TargetPlayer.Hand.Any())
 			{
-				var lowestAgeInHand = targetPlayer.Hand.Min(c => c.Age);
-				var lowestCards = targetPlayer.Hand.Where(c => c.Age.Equals(lowestAgeInHand)).ToList();
+				var lowestAgeInHand = TargetPlayer.Hand.Min(c => c.Age);
+				var lowestCards = TargetPlayer.Hand.Where(c => c.Age.Equals(lowestAgeInHand)).ToList();
 
-				ICard cardToMeld = targetPlayer.PickFromMultipleCards(lowestCards, 1, 1).First();
-				targetPlayer.Hand.Remove(cardToMeld);
-				Meld.Action(cardToMeld, targetPlayer);
+				ICard cardToMeld = TargetPlayer.PickCard(lowestCards);
+				TargetPlayer.Hand.Remove(cardToMeld);
+				Meld.Action(cardToMeld, TargetPlayer);
 			}
 
-			targetPlayer.Hand.Add(Draw.Action(1, game));
+			TargetPlayer.Hand.Add(Draw.Action(1, Game));
 
 			return true;
 	    }
