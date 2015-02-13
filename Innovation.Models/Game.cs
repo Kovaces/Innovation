@@ -38,5 +38,14 @@ namespace Innovation
 		{
 			throw new NotImplementedException();
 		}
+
+		public List<IPlayer> GetPlayersInPlayerOrder(int startingIndex)
+		{
+			var players = Players.GetRange(startingIndex + 1, Players.Count - startingIndex - 1);
+			if (players.Count < Players.Count)
+				players.AddRange(Players.GetRange(0, startingIndex + 1));
+
+			return players;
+		}
 	}
 }

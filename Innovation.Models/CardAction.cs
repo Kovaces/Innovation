@@ -1,8 +1,10 @@
-﻿using Innovation.Models.Enums;
+﻿using System.Collections.Generic;
+using Innovation.Models.Enums;
+using Innovation.Models.Interfaces;
 
 namespace Innovation.Models
 {
-	public delegate bool CardActionDelegate(object[] parameters);
+	public delegate bool CardActionDelegate(CardActionParameters parameters);
 
 	public class CardAction
 	{
@@ -18,5 +20,13 @@ namespace Innovation.Models
 			ActionText = actionText;
 			ActionHandler = actionHandler;
 		}
-	} 
+	}
+
+	public class CardActionParameters
+	{
+		public IPlayer TargetPlayer { get; set; }
+		public IPlayer ActivePlayer { get; set; }
+		public Game Game { get; set; }
+		public Dictionary<IPlayer, Dictionary<Symbol, int>> PlayerSymbolCounts { get; set; }
+	}
 }

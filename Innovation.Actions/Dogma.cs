@@ -12,19 +12,26 @@ namespace Innovation.Actions
 		{
 			var otherPlayerActed = false;
 
+			Dictionary<IPlayer, Dictionary<Symbol, int>> playerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>();
+			game.Players.ForEach(p => playerSymbolCounts.Add(p, p.Tableau.GetSymbolCounts()));
+			
 			foreach (var action in card.Actions)
 			{
+				var activePlayerSymbolCount = playerSymbolCounts[activePlayer][action.Symbol];
+
 				//foreach user in user order (i.e starting with the player to the left of the current player)
-				foreach (var targetPlayer in GetPlayersInPlayerOrder(game.Players, game.Players.IndexOf(activePlayer)))
+				foreach (var targetPlayer in game.GetPlayersInPlayerOrder(game.Players.IndexOf(activePlayer)))
 				{
-					var activePlayerSymbolCount = activePlayer.Tableau.GetSymbolCount(action.Symbol);
-					var targetPlayerSymbolCount = targetPlayer.Tableau.GetSymbolCount(action.Symbol);
+					var targetPlayerSymbolCount = playerSymbolCounts[targetPlayer][action.Symbol];
 
 					if (DeterminePlayerEligability(activePlayerSymbolCount, targetPlayerSymbolCount, action.ActionType == ActionType.Demand))
 					{
-						bool actionTaken = action.ActionHandler(new object[] { targetPlayer, game, activePlayer });
+						bool actionTaken = action.ActionHandler(new CardActionParameters { TargetPlayer = targetPlayer, Game = game, ActivePlayer = activePlayer, PlayerSymbolCounts = playerSymbolCounts });
 						
-						if (!otherPlayerActed && actionTaken && !targetPlayer.Equals(activePlayer) && action.ActionType != ActionType.Demand)
+						if (action.ActionType == ActionType.Demand)
+							continue;
+
+						if (actionTaken && !targetPlayer.Equals(activePlayer))
 							otherPlayerActed = true;
 					}
 				}
@@ -40,15 +47,6 @@ namespace Innovation.Actions
 		private static bool DeterminePlayerEligability(int activePlayerSymbolCount, int targetPlayerSymbolCount, bool isDemand)
 		{
 			return isDemand ? (activePlayerSymbolCount > targetPlayerSymbolCount) : (targetPlayerSymbolCount >= activePlayerSymbolCount);
-		}
-
-		private static List<IPlayer> GetPlayersInPlayerOrder(List<IPlayer> playerList, int startingIndex)
-		{
-			var players = playerList.GetRange(startingIndex + 1, playerList.Count - startingIndex - 1);
-			if (players.Count < playerList.Count)
-				players.AddRange(playerList.GetRange(0, startingIndex + 1));
-
-			return players;
 		}
 	}
 }

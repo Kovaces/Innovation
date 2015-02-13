@@ -8,6 +8,7 @@ using Innovation.Models.Enums;
 using Innovation.Models.Interfaces;
 using Innovation.Tests.Helpers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Rhino.Mocks;
 
 namespace Innovation.Actions.Tests
 {
@@ -16,300 +17,298 @@ namespace Innovation.Actions.Tests
 	{
 		private Game testGame;
 
+		private Dictionary<IPlayer, int> playerActionsTaken;
+		private Dictionary<IPlayer, int> playerActionsCalled;
+
+		private IPlayer targetedPlayer;
+		private IPlayer activePlayer;
+
+		private bool takeAction;
+	
+		private bool TestRequiredActionHandler(CardActionParameters parameters)
+		{
+			targetedPlayer = parameters.TargetPlayer;
+			activePlayer = parameters.ActivePlayer;
+
+			playerActionsCalled[targetedPlayer]++;
+			playerActionsTaken[targetedPlayer]++;
+
+			return true;
+		}
+
+		private bool TestOptionalActionHandler(CardActionParameters parameters)
+		{
+			targetedPlayer = parameters.TargetPlayer;
+			activePlayer = parameters.ActivePlayer;
+
+			playerActionsCalled[targetedPlayer]++;
+			
+			if ((targetedPlayer == activePlayer) || takeAction)
+				playerActionsTaken[targetedPlayer]++;
+
+			return takeAction;
+		}
+
+		private IPlayer GeneratePlayer(int highestAge, Dictionary<Symbol, int> symbolCounts)
+		{
+			var testTableau = MockRepository.GenerateStub<ITableau>();
+			testTableau.Stub(t => t.GetSymbolCounts()).Return(symbolCounts);
+			testTableau.Stub(t => t.GetHighestAge()).Return(highestAge);
+
+			var player = MockRepository.GenerateStub<IPlayer>();
+			player.Tableau = testTableau;
+			player.Hand = new List<ICard>();
+
+			return player;
+		}
+
 		[TestInitialize]
 		public void Setup()
 		{
-			testGame = new Game
-			{
-				Players = new List<IPlayer>()
-				{
-					new Player
-					{
-						Name = "Test Player 1",
-						Tableau = new Tableau
-						{
-							NumberOfAchievements = 0,
-							ScorePile = new List<ICard>(),
-						},
-						Hand = new List<ICard>() 
-						{
-							 new Card { Name = "Test Red Card", Color = Color.Red, Age = 1, Top = Symbol.Blank, Left = Symbol.Crown, Center = Symbol.Tower, Right = Symbol.Tower },
-							 new Card { Name = "Test Green Card", Color = Color.Green, Age = 1, Top = Symbol.Blank, Left = Symbol.Tower, Center = Symbol.Tower, Right = Symbol.Tower },
-							 new Card { Name = "Test Blue Card", Color = Color.Blue, Age = 1, Top = Symbol.Blank, Left = Symbol.Tower, Center = Symbol.Tower, Right = Symbol.Tower }
-						}
-					},
-					new Player
-					{
-						Name = "Test Player 2",
-						Tableau = new Tableau
-						{
-							NumberOfAchievements = 0,
-							ScorePile = new List<ICard>(),
-						},
-						Hand = new List<ICard>() 
-						{
-							 new Card { Name = "Test Yellow Card", Color = Color.Yellow, Age = 1, Top = Symbol.Blank, Left = Symbol.Crown, Center = Symbol.Tower, Right = Symbol.Tower },
-							 new Card { Name = "Test Blue Card", Color = Color.Blue, Age = 1, Top = Symbol.Blank, Left = Symbol.Tower, Center = Symbol.Tower, Right = Symbol.Tower }
-						}
-					}
-				},
-				AgeDecks = new List<Deck>() 
-				{
-					new	Deck 
-					{
-						Age = 1,
-						Cards = new List<ICard>() 
-						{
-							new Card { Name = "Test Yellow Card", Color = Color.Yellow, Age = 1, Top = Symbol.Blank, Left = Symbol.Crown, Center = Symbol.Tower, Right = Symbol.Tower },
-							new Card { Name = "Test Yellow Card", Color = Color.Yellow, Age = 1, Top = Symbol.Blank, Left = Symbol.Crown, Center = Symbol.Tower, Right = Symbol.Tower },
-							new Card { Name = "Test Yellow Card", Color = Color.Yellow, Age = 1, Top = Symbol.Blank, Left = Symbol.Crown, Center = Symbol.Tower, Right = Symbol.Tower }
-						}
-					}
-				}
-			};
-
-			testGame.Players[0].Tableau.Stacks[Color.Blue].AddCardToTop(
-				 new Card { Name = "Test Blue Card", Color = Color.Blue, Age = 1, Top = Symbol.Blank, Left = Symbol.Crown, Center = Symbol.Crown, Right = Symbol.Leaf }
-			);
-
-			testGame.Players[1].Tableau.Stacks[Color.Red].AddCardToTop(
-				 new Card { Name = "Test Red Card", Color = Color.Red, Age = 1, Top = Symbol.Blank, Left = Symbol.Crown, Center = Symbol.Crown, Right = Symbol.Tower }
-			);
-		}
-
-		private bool DrawCardAction(object[] parameters)
-		{
-			if (parameters.Length < 2)
-				throw new ArgumentOutOfRangeException("parameters", "Parameter list must include Player and Game");
-
-			var targetPlayer = parameters[0] as Player;
-			if (targetPlayer == null)
-				throw new NullReferenceException("Player cannot be null");
-
-			var game = parameters[1] as Game;
-			if (game == null)
-				throw new NullReferenceException("Game cannot be null");
-
-			// Draw a [1].
-			targetPlayer.Hand.Add(Draw.Action(1, game));
-
-			return true;
-		}
-		private bool TransferCardAction(object[] parameters)
-		{
-			if (parameters.Length < 2)
-				throw new ArgumentOutOfRangeException("parameters", "Parameter list must include Player and Game");
-
-			var targetPlayer = parameters[0] as Player;
-			if (targetPlayer == null)
-				throw new NullReferenceException("Target Player cannot be null");
-
-			var game = parameters[1] as Game;
-			if (game == null)
-				throw new NullReferenceException("Game cannot be null");
-
-			var activePlayer = parameters[2] as Player;
-			if (activePlayer == null)
-				throw new NullReferenceException("Active Player cannot be null");
-
-			// I demand you transfer a card from your hand to my hand
-			ICard card = targetPlayer.Hand.First();
-			targetPlayer.Hand.Remove(card);
-			activePlayer.Hand.Add(card);
-
-			return true;
+			targetedPlayer = null;
+			activePlayer = null;
 		}
 
 		[TestMethod]
-		public void DogmaAction_Required_Shares()
+		public void Dogma_Action_OnlyActivePlayerQualifies_RequiredAction()
 		{
-			//testGame.Players[0].AlwaysParticipates = false;
-			//testGame.Players[1].AlwaysParticipates = false;
+			IPlayer player1 = GeneratePlayer(1, new Dictionary<Symbol, int>(){{Symbol.Clock, 0},{Symbol.Crown, 0},{Symbol.Factory, 0},{Symbol.Leaf, 0},{Symbol.Lightbulb, 0},{Symbol.Tower, 1},{Symbol.Blank, 0},});
+			IPlayer player2 = GeneratePlayer(1, new Dictionary<Symbol, int>(){{Symbol.Clock, 0},{Symbol.Crown, 0},{Symbol.Factory, 0},{Symbol.Leaf, 0},{Symbol.Lightbulb, 0},{Symbol.Tower, 0},{Symbol.Blank, 0},});
+			IPlayer player3 = GeneratePlayer(1, new Dictionary<Symbol, int>(){{Symbol.Clock, 0},{Symbol.Crown, 0},{Symbol.Factory, 0},{Symbol.Leaf, 0},{Symbol.Lightbulb, 0},{Symbol.Tower, 0},{Symbol.Blank, 0},});
+			IPlayer player4 = GeneratePlayer(1, new Dictionary<Symbol, int>(){{Symbol.Clock, 0},{Symbol.Crown, 0},{Symbol.Factory, 0},{Symbol.Leaf, 0},{Symbol.Lightbulb, 0},{Symbol.Tower, 0},{Symbol.Blank, 0},});
+
+			playerActionsTaken = new Dictionary<IPlayer, int> { { player1, 0 }, { player2, 0 }, { player3, 0 }, { player4, 0 }, };
+			playerActionsCalled = new Dictionary<IPlayer, int> { { player1, 0 }, { player2, 0 }, { player3, 0 }, { player4, 0 }, };
+
+			testGame = new Game { Players = new List<IPlayer> { player1,player2,player3,player4, }, AgeDecks = new List<Deck>{new Deck{Age = 1, Cards = new List<ICard>{new Card()}}}};
 			
-			var testCard = new Card
-			{
-				Name = "Test Blue Card",
-				Color = Color.Blue,
-				Age = 1,
-				Top = Symbol.Blank,
-				Left = Symbol.Tower,
-				Center = Symbol.Tower,
-				Right = Symbol.Tower,
-				Actions = new List<CardAction>()
-				{
-					new CardAction(ActionType.Required, Symbol.Crown, "Action Text", DrawCardAction)
-				}
-			};
+			var testCard = MockRepository.GenerateStub<ICard>();
+			testCard.Stub(c => c.Actions).Return(new List<CardAction> { new CardAction(ActionType.Required, Symbol.Tower, "test", TestRequiredActionHandler) });
 
-			Dogma.Action(testCard, testGame.Players[0], testGame);
-			Assert.AreEqual(5, testGame.Players[0].Hand.Count);   // starts with 3, action adds 1, player2 shares adds 1
-			Assert.AreEqual(3, testGame.Players[1].Hand.Count);   // starts with 2, action adds 1
+			Dogma.Action(testCard, player1, testGame);
+
+			Assert.AreEqual(1, playerActionsCalled[player1]);
+			Assert.AreEqual(0, playerActionsCalled[player2]);
+			Assert.AreEqual(0, playerActionsCalled[player3]);
+			Assert.AreEqual(0, playerActionsCalled[player4]);
+
+			Assert.AreEqual(1, playerActionsTaken[player1]);
+			Assert.AreEqual(0, playerActionsTaken[player2]);
+			Assert.AreEqual(0, playerActionsTaken[player3]);
+			Assert.AreEqual(0, playerActionsTaken[player4]);
+
+			Assert.AreEqual(0, player1.Hand.Count()); //test free draw action
+			Assert.AreEqual(player1, targetedPlayer); //test to make sure the current player went last
+			Assert.AreEqual(player1, activePlayer);
+
 		}
 
 		[TestMethod]
-		public void DogmaAction_Required_DoesNotShare()
+		public void Dogma_Action_OtherPlayersQualify_RequiredAction()
 		{
-			//testGame.Players[0].AlwaysParticipates = false;
-			//testGame.Players[1].AlwaysParticipates = false;
+			IPlayer player1 = GeneratePlayer(1, new Dictionary<Symbol, int>() { { Symbol.Clock, 0 }, { Symbol.Crown, 0 }, { Symbol.Factory, 0 }, { Symbol.Leaf, 0 }, { Symbol.Lightbulb, 0 }, { Symbol.Tower, 1 }, { Symbol.Blank, 0 }, });
+			IPlayer player2 = GeneratePlayer(1, new Dictionary<Symbol, int>() { { Symbol.Clock, 0 }, { Symbol.Crown, 0 }, { Symbol.Factory, 0 }, { Symbol.Leaf, 0 }, { Symbol.Lightbulb, 0 }, { Symbol.Tower, 1 }, { Symbol.Blank, 0 }, });
+			IPlayer player3 = GeneratePlayer(1, new Dictionary<Symbol, int>() { { Symbol.Clock, 0 }, { Symbol.Crown, 0 }, { Symbol.Factory, 0 }, { Symbol.Leaf, 0 }, { Symbol.Lightbulb, 0 }, { Symbol.Tower, 1 }, { Symbol.Blank, 0 }, });
+			IPlayer player4 = GeneratePlayer(1, new Dictionary<Symbol, int>() { { Symbol.Clock, 0 }, { Symbol.Crown, 0 }, { Symbol.Factory, 0 }, { Symbol.Leaf, 0 }, { Symbol.Lightbulb, 0 }, { Symbol.Tower, 1 }, { Symbol.Blank, 0 }, });
 
-			testGame.Players[0].Tableau.Stacks[Color.Yellow].AddCardToTop(
-				 new Card { Name = "Test Yellow Card", Color = Color.Yellow, Age = 1, Top = Symbol.Blank, Left = Symbol.Crown, Center = Symbol.Crown, Right = Symbol.Tower }
-			);
+			playerActionsTaken = new Dictionary<IPlayer, int> { { player1, 0 }, { player2, 0 }, { player3, 0 }, { player4, 0 }, };
+			playerActionsCalled = new Dictionary<IPlayer, int> { { player1, 0 }, { player2, 0 }, { player3, 0 }, { player4, 0 }, };
 
-			var testCard = new Card
-			{
-				Name = "Test Blue Card",
-				Color = Color.Blue,
-				Age = 1,
-				Top = Symbol.Blank,
-				Left = Symbol.Tower,
-				Center = Symbol.Tower,
-				Right = Symbol.Tower,
-				Actions = new List<CardAction>()
-				{
-					new CardAction(ActionType.Required, Symbol.Crown, "Action Text", DrawCardAction)
-				}
-			};
+			testGame = new Game { Players = new List<IPlayer> { player1, player2, player3, player4, }, AgeDecks = new List<Deck> { new Deck { Age = 1, Cards = new List<ICard> { new Card() } } } };
 
-			Dogma.Action(testCard, testGame.Players[0], testGame);
-			Assert.AreEqual(4, testGame.Players[0].Hand.Count);   // starts with 3, action adds 1
-			Assert.AreEqual(2, testGame.Players[1].Hand.Count);   // starts with 2, action adds 1
+			var testCard = MockRepository.GenerateStub<ICard>();
+			testCard.Stub(c => c.Actions).Return(new List<CardAction> { new CardAction(ActionType.Required, Symbol.Tower, "test", TestRequiredActionHandler) });
+
+			Dogma.Action(testCard, player1, testGame);
+
+			Assert.AreEqual(1, playerActionsCalled[player1]);
+			Assert.AreEqual(1, playerActionsCalled[player2]);
+			Assert.AreEqual(1, playerActionsCalled[player3]);
+			Assert.AreEqual(1, playerActionsCalled[player4]);
+
+			Assert.AreEqual(1, playerActionsTaken[player1]);
+			Assert.AreEqual(1, playerActionsTaken[player2]);
+			Assert.AreEqual(1, playerActionsTaken[player3]);
+			Assert.AreEqual(1, playerActionsTaken[player4]);
+
+			Assert.AreEqual(1, player1.Hand.Count()); //test free draw action
+			Assert.AreEqual(player1, targetedPlayer); //test to make sure the current player went last
+			Assert.AreEqual(player1, activePlayer);
 		}
 
 		[TestMethod]
-		public void DogmaAction_Demand_Player2Affected()
+		public void Dogma_Action_OtherPlayersQualify_OptionalAction_ActionNotTaken()
 		{
-			//testGame.Players[0].AlwaysParticipates = false;
-			//testGame.Players[1].AlwaysParticipates = false;
+			IPlayer player1 = GeneratePlayer(1, new Dictionary<Symbol, int>() { { Symbol.Clock, 0 }, { Symbol.Crown, 0 }, { Symbol.Factory, 0 }, { Symbol.Leaf, 0 }, { Symbol.Lightbulb, 0 }, { Symbol.Tower, 1 }, { Symbol.Blank, 0 }, });
+			IPlayer player2 = GeneratePlayer(1, new Dictionary<Symbol, int>() { { Symbol.Clock, 0 }, { Symbol.Crown, 0 }, { Symbol.Factory, 0 }, { Symbol.Leaf, 0 }, { Symbol.Lightbulb, 0 }, { Symbol.Tower, 1 }, { Symbol.Blank, 0 }, });
+			IPlayer player3 = GeneratePlayer(1, new Dictionary<Symbol, int>() { { Symbol.Clock, 0 }, { Symbol.Crown, 0 }, { Symbol.Factory, 0 }, { Symbol.Leaf, 0 }, { Symbol.Lightbulb, 0 }, { Symbol.Tower, 1 }, { Symbol.Blank, 0 }, });
+			IPlayer player4 = GeneratePlayer(1, new Dictionary<Symbol, int>() { { Symbol.Clock, 0 }, { Symbol.Crown, 0 }, { Symbol.Factory, 0 }, { Symbol.Leaf, 0 }, { Symbol.Lightbulb, 0 }, { Symbol.Tower, 1 }, { Symbol.Blank, 0 }, });
 
-			testGame.Players[0].Tableau.Stacks[Color.Red].AddCardToTop(
-				 new Card { Name = "Test Red Card", Color = Color.Red, Age = 1, Top = Symbol.Blank, Left = Symbol.Crown, Center = Symbol.Crown, Right = Symbol.Tower }
-			);
+			playerActionsTaken = new Dictionary<IPlayer, int> { { player1, 0 }, { player2, 0 }, { player3, 0 }, { player4, 0 }, };
+			playerActionsCalled = new Dictionary<IPlayer, int> { { player1, 0 }, { player2, 0 }, { player3, 0 }, { player4, 0 }, };
 
-			var testCard = new Card
-			{
-				Name = "Test Blue Card",
-				Color = Color.Blue,
-				Age = 1,
-				Top = Symbol.Blank,
-				Left = Symbol.Tower,
-				Center = Symbol.Tower,
-				Right = Symbol.Tower,
-				Actions = new List<CardAction>()
-				{
-					new CardAction(ActionType.Demand, Symbol.Crown, "Action Text", TransferCardAction)
-				}
-			};
+			testGame = new Game { Players = new List<IPlayer> { player1, player2, player3, player4, }, AgeDecks = new List<Deck> { new Deck { Age = 1, Cards = new List<ICard> { new Card() } } } };
 
-			Dogma.Action(testCard, testGame.Players[0], testGame);
-			Assert.AreEqual(4, testGame.Players[0].Hand.Count);   // starts with 3, player2 gives 1, no draw
-			Assert.AreEqual(1, testGame.Players[1].Hand.Count);   // starts with 2, gives 1 to player1
+			var testCard = MockRepository.GenerateStub<ICard>();
+			testCard.Stub(c => c.Actions).Return(new List<CardAction> { new CardAction(ActionType.Optional, Symbol.Tower, "test", TestOptionalActionHandler) });
+
+			takeAction = false;
+
+			Dogma.Action(testCard, player1, testGame);
+
+			Assert.AreEqual(1, playerActionsCalled[player1]);
+			Assert.AreEqual(1, playerActionsCalled[player2]);
+			Assert.AreEqual(1, playerActionsCalled[player3]);
+			Assert.AreEqual(1, playerActionsCalled[player4]);
+
+			Assert.AreEqual(1, playerActionsTaken[player1]);
+			Assert.AreEqual(0, playerActionsTaken[player2]);
+			Assert.AreEqual(0, playerActionsTaken[player3]);
+			Assert.AreEqual(0, playerActionsTaken[player4]);
+
+			Assert.AreEqual(0, player1.Hand.Count()); //test free draw action
+			Assert.AreEqual(player1, targetedPlayer); //test to make sure the current player went last
+			Assert.AreEqual(player1, activePlayer);
 		}
 
 		[TestMethod]
-		public void DogmaAction_Demand_Player2Unaffected()
+		public void Dogma_Action_OtherPlayersQualify_OptionalAction()
 		{
-			//testGame.Players[0].AlwaysParticipates = false;
-			//testGame.Players[1].AlwaysParticipates = false;
-			
-			var testCard = new Card
-			{
-				Name = "Test Blue Card",
-				Color = Color.Blue,
-				Age = 1,
-				Top = Symbol.Blank,
-				Left = Symbol.Tower,
-				Center = Symbol.Tower,
-				Right = Symbol.Tower,
-				Actions = new List<CardAction>()
-				{
-					new CardAction(ActionType.Demand, Symbol.Crown, "Action Text", TransferCardAction)
-				}
-			};
+			IPlayer player1 = GeneratePlayer(1, new Dictionary<Symbol, int>() { { Symbol.Clock, 0 }, { Symbol.Crown, 0 }, { Symbol.Factory, 0 }, { Symbol.Leaf, 0 }, { Symbol.Lightbulb, 0 }, { Symbol.Tower, 1 }, { Symbol.Blank, 0 }, });
+			IPlayer player2 = GeneratePlayer(1, new Dictionary<Symbol, int>() { { Symbol.Clock, 0 }, { Symbol.Crown, 0 }, { Symbol.Factory, 0 }, { Symbol.Leaf, 0 }, { Symbol.Lightbulb, 0 }, { Symbol.Tower, 1 }, { Symbol.Blank, 0 }, });
+			IPlayer player3 = GeneratePlayer(1, new Dictionary<Symbol, int>() { { Symbol.Clock, 0 }, { Symbol.Crown, 0 }, { Symbol.Factory, 0 }, { Symbol.Leaf, 0 }, { Symbol.Lightbulb, 0 }, { Symbol.Tower, 1 }, { Symbol.Blank, 0 }, });
+			IPlayer player4 = GeneratePlayer(1, new Dictionary<Symbol, int>() { { Symbol.Clock, 0 }, { Symbol.Crown, 0 }, { Symbol.Factory, 0 }, { Symbol.Leaf, 0 }, { Symbol.Lightbulb, 0 }, { Symbol.Tower, 1 }, { Symbol.Blank, 0 }, });
 
-			Dogma.Action(testCard, testGame.Players[0], testGame);
-			Assert.AreEqual(3, testGame.Players[0].Hand.Count);   // starts with 3
-			Assert.AreEqual(2, testGame.Players[1].Hand.Count);   // starts with 2
-		}
+			playerActionsTaken = new Dictionary<IPlayer, int> { { player1, 0 }, { player2, 0 }, { player3, 0 }, { player4, 0 }, };
+			playerActionsCalled = new Dictionary<IPlayer, int> { { player1, 0 }, { player2, 0 }, { player3, 0 }, { player4, 0 }, };
 
+			testGame = new Game { Players = new List<IPlayer> { player1, player2, player3, player4, }, AgeDecks = new List<Deck> { new Deck { Age = 1, Cards = new List<ICard> { new Card() } } } };
 
+			var testCard = MockRepository.GenerateStub<ICard>();
+			testCard.Stub(c => c.Actions).Return(new List<CardAction> { new CardAction(ActionType.Optional, Symbol.Tower, "test", TestOptionalActionHandler) });
 
-		[TestMethod]
-		public void DogmaAction_Optional_BothTakePart()
-		{
-			//testGame.Players[0].AlwaysParticipates = true;
-			//testGame.Players[1].AlwaysParticipates = true;
+			takeAction = true;
 
-			var testCard = new Card
-			{
-				Name = "Test Blue Card",
-				Color = Color.Blue,
-				Age = 1,
-				Top = Symbol.Blank,
-				Left = Symbol.Tower,
-				Center = Symbol.Tower,
-				Right = Symbol.Tower,
-				Actions = new List<CardAction>()
-				{
-					new CardAction(ActionType.Optional, Symbol.Crown, "Action Text", DrawCardAction)
-				}
-			};
+			Dogma.Action(testCard, player1, testGame);
 
-			Dogma.Action(testCard, testGame.Players[0], testGame);
-			Assert.AreEqual(5, testGame.Players[0].Hand.Count);   // starts with 3, action adds 1, player2 shares adds 1
-			Assert.AreEqual(3, testGame.Players[1].Hand.Count);   // starts with 2, action adds 1
+			Assert.AreEqual(1, playerActionsCalled[player1]);
+			Assert.AreEqual(1, playerActionsCalled[player2]);
+			Assert.AreEqual(1, playerActionsCalled[player3]);
+			Assert.AreEqual(1, playerActionsCalled[player4]);
+
+			Assert.AreEqual(1, playerActionsTaken[player1]);
+			Assert.AreEqual(1, playerActionsTaken[player2]);
+			Assert.AreEqual(1, playerActionsTaken[player3]);
+			Assert.AreEqual(1, playerActionsTaken[player4]);
+
+			Assert.AreEqual(1, player1.Hand.Count()); //test free draw action
+			Assert.AreEqual(player1, targetedPlayer); //test to make sure the current player went last
+			Assert.AreEqual(player1, activePlayer);
 		}
 
 		[TestMethod]
-		public void DogmaAction_Optional_BothAbdicate()
+		public void Dogma_Action_DemandAction_NoneEligable()
 		{
-			//testGame.Players[0].AlwaysParticipates = false;
-			//testGame.Players[1].AlwaysParticipates = false;
+			IPlayer player1 = GeneratePlayer(1, new Dictionary<Symbol, int>() { { Symbol.Clock, 0 }, { Symbol.Crown, 0 }, { Symbol.Factory, 0 }, { Symbol.Leaf, 0 }, { Symbol.Lightbulb, 0 }, { Symbol.Tower, 1 }, { Symbol.Blank, 0 }, });
+			IPlayer player2 = GeneratePlayer(1, new Dictionary<Symbol, int>() { { Symbol.Clock, 0 }, { Symbol.Crown, 0 }, { Symbol.Factory, 0 }, { Symbol.Leaf, 0 }, { Symbol.Lightbulb, 0 }, { Symbol.Tower, 1 }, { Symbol.Blank, 0 }, });
+			IPlayer player3 = GeneratePlayer(1, new Dictionary<Symbol, int>() { { Symbol.Clock, 0 }, { Symbol.Crown, 0 }, { Symbol.Factory, 0 }, { Symbol.Leaf, 0 }, { Symbol.Lightbulb, 0 }, { Symbol.Tower, 1 }, { Symbol.Blank, 0 }, });
+			IPlayer player4 = GeneratePlayer(1, new Dictionary<Symbol, int>() { { Symbol.Clock, 0 }, { Symbol.Crown, 0 }, { Symbol.Factory, 0 }, { Symbol.Leaf, 0 }, { Symbol.Lightbulb, 0 }, { Symbol.Tower, 1 }, { Symbol.Blank, 0 }, });
 
-			var testCard = new Card
-			{
-				Name = "Test Blue Card",
-				Color = Color.Blue,
-				Age = 1,
-				Top = Symbol.Blank,
-				Left = Symbol.Tower,
-				Center = Symbol.Tower,
-				Right = Symbol.Tower,
-				Actions = new List<CardAction>()
-				{
-					new CardAction(ActionType.Optional, Symbol.Crown, "Action Text", DrawCardAction)
-				}
-			};
+			playerActionsTaken = new Dictionary<IPlayer, int> { { player1, 0 }, { player2, 0 }, { player3, 0 }, { player4, 0 }, };
+			playerActionsCalled = new Dictionary<IPlayer, int> { { player1, 0 }, { player2, 0 }, { player3, 0 }, { player4, 0 }, };
 
-			Dogma.Action(testCard, testGame.Players[0], testGame);
-			Assert.AreEqual(3, testGame.Players[0].Hand.Count);   // starts with 3
-			Assert.AreEqual(2, testGame.Players[1].Hand.Count);   // starts with 2
+			testGame = new Game { Players = new List<IPlayer> { player1, player2, player3, player4, }, AgeDecks = new List<Deck> { new Deck { Age = 1, Cards = new List<ICard> { new Card() } } } };
+
+			var testCard = MockRepository.GenerateStub<ICard>();
+			testCard.Stub(c => c.Actions).Return(new List<CardAction> { new CardAction(ActionType.Demand, Symbol.Tower, "test", TestRequiredActionHandler) });
+
+			Dogma.Action(testCard, player1, testGame);
+
+			Assert.AreEqual(0, playerActionsCalled[player1]);
+			Assert.AreEqual(0, playerActionsCalled[player2]);
+			Assert.AreEqual(0, playerActionsCalled[player3]);
+			Assert.AreEqual(0, playerActionsCalled[player4]);
+
+			Assert.AreEqual(0, playerActionsTaken[player1]);
+			Assert.AreEqual(0, playerActionsTaken[player2]);
+			Assert.AreEqual(0, playerActionsTaken[player3]);
+			Assert.AreEqual(0, playerActionsTaken[player4]);
+
+			Assert.AreEqual(0, player1.Hand.Count()); //test free draw action
+			Assert.AreEqual(null, targetedPlayer); //test to make sure the current player went last
+			Assert.AreEqual(null, activePlayer);
 		}
 
 		[TestMethod]
-		public void DogmaAction_Optional_Player2Abdicates()
+		public void Dogma_Action_DemandAction_SomeEligable()
 		{
-			//testGame.Players[0].AlwaysParticipates = true;
-			//testGame.Players[1].AlwaysParticipates = false;
+			IPlayer player1 = GeneratePlayer(1, new Dictionary<Symbol, int>() { { Symbol.Clock, 0 }, { Symbol.Crown, 0 }, { Symbol.Factory, 0 }, { Symbol.Leaf, 0 }, { Symbol.Lightbulb, 0 }, { Symbol.Tower, 1 }, { Symbol.Blank, 0 }, });
+			IPlayer player2 = GeneratePlayer(1, new Dictionary<Symbol, int>() { { Symbol.Clock, 0 }, { Symbol.Crown, 0 }, { Symbol.Factory, 0 }, { Symbol.Leaf, 0 }, { Symbol.Lightbulb, 0 }, { Symbol.Tower, 0 }, { Symbol.Blank, 0 }, });
+			IPlayer player3 = GeneratePlayer(1, new Dictionary<Symbol, int>() { { Symbol.Clock, 0 }, { Symbol.Crown, 0 }, { Symbol.Factory, 0 }, { Symbol.Leaf, 0 }, { Symbol.Lightbulb, 0 }, { Symbol.Tower, 0 }, { Symbol.Blank, 0 }, });
+			IPlayer player4 = GeneratePlayer(1, new Dictionary<Symbol, int>() { { Symbol.Clock, 0 }, { Symbol.Crown, 0 }, { Symbol.Factory, 0 }, { Symbol.Leaf, 0 }, { Symbol.Lightbulb, 0 }, { Symbol.Tower, 1 }, { Symbol.Blank, 0 }, });
 
-			var testCard = new Card
-			{
-				Name = "Test Blue Card",
-				Color = Color.Blue,
-				Age = 1,
-				Top = Symbol.Blank,
-				Left = Symbol.Tower,
-				Center = Symbol.Tower,
-				Right = Symbol.Tower,
-				Actions = new List<CardAction>()
-				{
-					new CardAction(ActionType.Optional, Symbol.Crown, "Action Text", DrawCardAction)
-				}
-			};
+			playerActionsTaken = new Dictionary<IPlayer, int> { { player1, 0 }, { player2, 0 }, { player3, 0 }, { player4, 0 }, };
+			playerActionsCalled = new Dictionary<IPlayer, int> { { player1, 0 }, { player2, 0 }, { player3, 0 }, { player4, 0 }, };
 
-			Dogma.Action(testCard, testGame.Players[0], testGame);
-			Assert.AreEqual(4, testGame.Players[0].Hand.Count);   // starts with 3, draws 1
-			Assert.AreEqual(2, testGame.Players[1].Hand.Count);   // starts with 2
+			testGame = new Game { Players = new List<IPlayer> { player1, player2, player3, player4, }, AgeDecks = new List<Deck> { new Deck { Age = 1, Cards = new List<ICard> { new Card() } } } };
+
+			var testCard = MockRepository.GenerateStub<ICard>();
+			testCard.Stub(c => c.Actions).Return(new List<CardAction> { new CardAction(ActionType.Demand, Symbol.Tower, "test", TestRequiredActionHandler) });
+
+			Dogma.Action(testCard, player1, testGame);
+
+			Assert.AreEqual(0, playerActionsCalled[player1]);
+			Assert.AreEqual(1, playerActionsCalled[player2]);
+			Assert.AreEqual(1, playerActionsCalled[player3]);
+			Assert.AreEqual(0, playerActionsCalled[player4]);
+
+			Assert.AreEqual(0, playerActionsTaken[player1]);
+			Assert.AreEqual(1, playerActionsTaken[player2]);
+			Assert.AreEqual(1, playerActionsTaken[player3]);
+			Assert.AreEqual(0, playerActionsTaken[player4]);
+
+			Assert.AreEqual(0, player1.Hand.Count()); //test free draw action
+			Assert.AreEqual(player3, targetedPlayer); //test to make sure who went last
+			Assert.AreEqual(player1, activePlayer);
 		}
+
+		[TestMethod]
+		public void Dogma_Action_MultipleActions()
+		{
+			IPlayer player1 = GeneratePlayer(1, new Dictionary<Symbol, int>() { { Symbol.Clock, 0 }, { Symbol.Crown, 0 }, { Symbol.Factory, 0 }, { Symbol.Leaf, 0 }, { Symbol.Lightbulb, 0 }, { Symbol.Tower, 1 }, { Symbol.Blank, 0 }, });
+			IPlayer player2 = GeneratePlayer(1, new Dictionary<Symbol, int>() { { Symbol.Clock, 0 }, { Symbol.Crown, 0 }, { Symbol.Factory, 0 }, { Symbol.Leaf, 0 }, { Symbol.Lightbulb, 0 }, { Symbol.Tower, 1 }, { Symbol.Blank, 0 }, });
+			IPlayer player3 = GeneratePlayer(1, new Dictionary<Symbol, int>() { { Symbol.Clock, 0 }, { Symbol.Crown, 0 }, { Symbol.Factory, 0 }, { Symbol.Leaf, 0 }, { Symbol.Lightbulb, 0 }, { Symbol.Tower, 1 }, { Symbol.Blank, 0 }, });
+			IPlayer player4 = GeneratePlayer(1, new Dictionary<Symbol, int>() { { Symbol.Clock, 0 }, { Symbol.Crown, 0 }, { Symbol.Factory, 0 }, { Symbol.Leaf, 0 }, { Symbol.Lightbulb, 0 }, { Symbol.Tower, 1 }, { Symbol.Blank, 0 }, });
+
+			playerActionsTaken = new Dictionary<IPlayer, int> { { player1, 0 }, { player2, 0 }, { player3, 0 }, { player4, 0 }, };
+			playerActionsCalled = new Dictionary<IPlayer, int> { { player1, 0 }, { player2, 0 }, { player3, 0 }, { player4, 0 }, };
+
+			testGame = new Game { Players = new List<IPlayer> { player1, player2, player3, player4, }, AgeDecks = new List<Deck> { new Deck { Age = 1, Cards = new List<ICard> { new Card() } } } };
+
+			var testCard = MockRepository.GenerateStub<ICard>();
+			testCard.Stub(c => c.Actions).Return(new List<CardAction>
+			{
+				new CardAction(ActionType.Required, Symbol.Tower, "test", TestRequiredActionHandler),
+				new CardAction(ActionType.Required, Symbol.Tower, "test", TestOptionalActionHandler),
+				
+			});
+
+			Dogma.Action(testCard, player1, testGame);
+
+			Assert.AreEqual(2, playerActionsCalled[player1]);
+			Assert.AreEqual(2, playerActionsCalled[player2]);
+			Assert.AreEqual(2, playerActionsCalled[player3]);
+			Assert.AreEqual(2, playerActionsCalled[player4]);
+
+			Assert.AreEqual(2, playerActionsTaken[player1]);
+			Assert.AreEqual(1, playerActionsTaken[player2]);
+			Assert.AreEqual(1, playerActionsTaken[player3]);
+			Assert.AreEqual(1, playerActionsTaken[player4]);
+
+			Assert.AreEqual(1, player1.Hand.Count()); //test free draw action
+			Assert.AreEqual(player1, targetedPlayer); //test to make sure the current player went last
+			Assert.AreEqual(player1, activePlayer);
+		}
+		
 	}
 }
