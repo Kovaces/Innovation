@@ -88,7 +88,9 @@ namespace Innovation.Cards.Tests
 			testGame.Players[1].Tableau.Stacks[Color.Red].AddCardToTop(
 				 new Card { Name = "Test Red Card", Color = Color.Red, Age = 1, Top = Symbol.Blank, Left = Symbol.Crown, Center = Symbol.Crown, Right = Symbol.Tower }
 			);
-		}
+
+            Mocks.ConvertPlayersToMock(testGame);
+        }
 
 		//ActionType.Demand, Symbol.Tower, "I demand you transfer two cards from your hand to my hand! Draw a [2]!"
 

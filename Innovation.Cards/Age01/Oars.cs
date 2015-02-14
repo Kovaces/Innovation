@@ -32,9 +32,12 @@ namespace Innovation.Cards
 			ValidateParameters(parameters);
 
 			List<ICard> cardsWithCrowns = parameters.TargetPlayer.Hand.Where(x => x.HasSymbol(Symbol.Crown)).ToList();
-	        
-			if (cardsWithCrowns.Count == 0)
-		        return false;
+
+            if (cardsWithCrowns.Count == 0)
+            {
+                parameters.Game.StashPropertyBagValue("OarsAction1Taken", false);
+                return false;
+            }
 
 			ICard card = parameters.TargetPlayer.PickCard(cardsWithCrowns);
 			parameters.TargetPlayer.Hand.Remove(card);
@@ -42,9 +45,9 @@ namespace Innovation.Cards
 
 			parameters.TargetPlayer.Hand.Add(Draw.Action(1, parameters.Game));
 
-			parameters.Game.StashPropertyBagValue("OarsAction1Taken", true);
-			
-			return false;
+            parameters.Game.StashPropertyBagValue("OarsAction1Taken", true);
+		
+			return true;
 		}
 
 		bool Action2(CardActionParameters parameters)

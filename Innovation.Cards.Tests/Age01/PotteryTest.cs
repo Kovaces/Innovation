@@ -7,6 +7,7 @@ using Innovation.Tests.Helpers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Innovation.Actions;
 using Innovation.Models.Interfaces;
+using Rhino.Mocks;
 
 namespace Innovation.Cards.Tests
 {
@@ -88,6 +89,8 @@ namespace Innovation.Cards.Tests
 			testGame.Players[1].Tableau.Stacks[Color.Red].AddCardToTop(
 				 new Card { Name = "Test Red Card", Color = Color.Red, Age = 1, Top = Symbol.Blank, Left = Symbol.Crown, Center = Symbol.Crown, Right = Symbol.Tower }
 			);
+
+            Mocks.ConvertPlayersToMock(testGame);
 		}
 
 		//ActionType.Optional, Symbol.Leaf, "You may return up to three cards from your hand. If you returned any cards, draw and score a card of value equal to the number of cards you returned."
@@ -97,8 +100,18 @@ namespace Innovation.Cards.Tests
 		{
 			//testGame.Players[0].AlwaysParticipates = true;
 			//testGame.Players[0].SelectsCards = new List<int>() { 0, 1 };
+            testGame.Players[0].Stub(p => p.PickMultipleCards(Arg<List<ICard>>.Is.Anything, Arg<int>.Is.Anything, Arg<int>.Is.Anything))
+                        .Return(null)
+                        .WhenCalled(p =>
+                        {
+                            List<ICard> cards = (List<ICard>)p.Arguments[0];
+                            p.ReturnValue = cards.Take(2).ToList();
+                        }
+                    ).Repeat.Any();
 
-			new Pottery().Actions.ToList()[0].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[0], Game = testGame, ActivePlayer = testGame.Players[0], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
+			bool result = new Pottery().Actions.ToList()[0].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[0], Game = testGame, ActivePlayer = testGame.Players[0], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
+
+			Assert.AreEqual(true, result);
 
 			Assert.AreEqual(1, testGame.Players[0].Hand.Count);
 			Assert.AreEqual(5, testGame.AgeDecks.Where(x => x.Age == 1).FirstOrDefault().Cards.Count);
@@ -123,7 +136,9 @@ namespace Innovation.Cards.Tests
 			//testGame.Players[0].AlwaysParticipates = true;
 			//testGame.Players[0].SelectsCards = new List<int>() { 0, 1 };
 
-			new Pottery().Actions.ToList()[1].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[0], Game = testGame, ActivePlayer = testGame.Players[0], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
+			bool result = new Pottery().Actions.ToList()[1].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[0], Game = testGame, ActivePlayer = testGame.Players[0], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
+
+			Assert.AreEqual(true, result);
 
 			Assert.AreEqual(4, testGame.Players[0].Hand.Count);
 			Assert.AreEqual(2, testGame.AgeDecks.Where(x => x.Age == 1).FirstOrDefault().Cards.Count);

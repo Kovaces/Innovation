@@ -20,7 +20,7 @@ namespace Innovation
 			if (_PropertyBag.ContainsKey(key))
 				return _PropertyBag[key];
 
-			return string.Empty;
+			return null;
 		}
 		public void StashPropertyBagValue(string key, object value)
 		{

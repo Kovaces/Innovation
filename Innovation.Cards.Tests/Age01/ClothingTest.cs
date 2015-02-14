@@ -89,7 +89,9 @@ namespace Innovation.Cards.Tests
 			testGame.Players[1].Tableau.Stacks[Color.Red].AddCardToTop(
 				new Card { Name = "Test Red Card", Color = Color.Red, Age = 1, Top = Symbol.Blank, Left = Symbol.Crown, Center = Symbol.Crown, Right = Symbol.Leaf }
 			);
-		}
+
+            Mocks.ConvertPlayersToMock(testGame);
+        }
 
 		//ActionType.Required, Symbol.Leaf, "Meld a card from your hand of different color from any card on your board."
 
@@ -100,10 +102,21 @@ namespace Innovation.Cards.Tests
 
 			//testGame.Players[0].SelectsCards = new List<int>() { 0 };
 
-			new Clothing().Actions.ToList()[0].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[0], Game = testGame, ActivePlayer = testGame.Players[0], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
+			bool result = new Clothing().Actions.ToList()[0].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[0], Game = testGame, ActivePlayer = testGame.Players[0], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
 
-			Assert.AreEqual(1, testGame.Players[0].Tableau.Stacks[Color.Green].Cards.Count);
+			Assert.AreEqual(true, result);
+
 			Assert.AreEqual(2, testGame.Players[0].Hand.Count);
+			Assert.AreEqual(1, testGame.Players[1].Hand.Count);
+
+			Assert.AreEqual(0, testGame.Players[0].Tableau.ScorePile.Count);
+			Assert.AreEqual(0, testGame.Players[1].Tableau.ScorePile.Count);
+
+			Assert.AreEqual(1, testGame.Players[0].Tableau.Stacks[Color.Blue].Cards.Count);
+			Assert.AreEqual(1, testGame.Players[0].Tableau.Stacks[Color.Green].Cards.Count);
+			Assert.AreEqual(1, testGame.Players[0].Tableau.Stacks[Color.Red].Cards.Count);
+			Assert.AreEqual(0, testGame.Players[0].Tableau.Stacks[Color.Purple].Cards.Count);
+			Assert.AreEqual(1, testGame.Players[0].Tableau.Stacks[Color.Yellow].Cards.Count);
 		}
 
 		[TestMethod]
@@ -111,9 +124,21 @@ namespace Innovation.Cards.Tests
 		{
 			// player2:  red stack;				red card;				nothing happens
 
-			new Clothing().Actions.ToList()[0].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[1], Game = testGame, ActivePlayer = testGame.Players[1], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
-			Assert.AreEqual(1, testGame.Players[1].Tableau.Stacks[Color.Red].Cards.Count);
+			bool result = new Clothing().Actions.ToList()[0].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[1], Game = testGame, ActivePlayer = testGame.Players[1], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
+
+			Assert.AreEqual(false, result);
+
+			Assert.AreEqual(3, testGame.Players[0].Hand.Count);
 			Assert.AreEqual(1, testGame.Players[1].Hand.Count);
+
+			Assert.AreEqual(0, testGame.Players[0].Tableau.ScorePile.Count);
+			Assert.AreEqual(0, testGame.Players[1].Tableau.ScorePile.Count);
+
+			Assert.AreEqual(1, testGame.Players[0].Tableau.Stacks[Color.Blue].Cards.Count);
+			Assert.AreEqual(0, testGame.Players[0].Tableau.Stacks[Color.Green].Cards.Count);
+			Assert.AreEqual(1, testGame.Players[0].Tableau.Stacks[Color.Red].Cards.Count);
+			Assert.AreEqual(0, testGame.Players[0].Tableau.Stacks[Color.Purple].Cards.Count);
+			Assert.AreEqual(1, testGame.Players[0].Tableau.Stacks[Color.Yellow].Cards.Count);
 		}
 
 
@@ -128,9 +153,12 @@ namespace Innovation.Cards.Tests
 
 			//testGame.Players[0].SelectsCards = new List<int>() { 0 };
 
-			new Clothing().Actions.ToList()[1].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[0], Game = testGame, ActivePlayer = testGame.Players[0], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
+			bool result = new Clothing().Actions.ToList()[1].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[0], Game = testGame, ActivePlayer = testGame.Players[0], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
+
+			Assert.AreEqual(true, result);
 
 			Assert.AreEqual(3, testGame.Players[0].Hand.Count);
+			Assert.AreEqual(1, testGame.Players[1].Hand.Count);
 
 			Assert.AreEqual(2, testGame.Players[0].Tableau.ScorePile.Count);
 			Assert.AreEqual(2, testGame.Players[0].Tableau.GetScore());
@@ -140,7 +168,7 @@ namespace Innovation.Cards.Tests
 			Assert.AreEqual(0, testGame.Players[0].Tableau.Stacks[Color.Green].Cards.Count);
 			Assert.AreEqual(1, testGame.Players[0].Tableau.Stacks[Color.Red].Cards.Count);
 			Assert.AreEqual(0, testGame.Players[0].Tableau.Stacks[Color.Purple].Cards.Count);
-			Assert.AreEqual(0, testGame.Players[1].Tableau.Stacks[Color.Yellow].Cards.Count);
+			Assert.AreEqual(1, testGame.Players[0].Tableau.Stacks[Color.Yellow].Cards.Count);
 		}
 
 		[TestMethod]
@@ -150,7 +178,9 @@ namespace Innovation.Cards.Tests
 			// player2:	red
 			// player2 -> nothing happens
 
-			new Clothing().Actions.ToList()[1].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[1], Game = testGame, ActivePlayer = testGame.Players[1], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
+			bool result = new Clothing().Actions.ToList()[1].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[1], Game = testGame, ActivePlayer = testGame.Players[1], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
+
+			Assert.AreEqual(false, result);
 
 			Assert.AreEqual(1, testGame.Players[1].Hand.Count);
 			
@@ -161,7 +191,7 @@ namespace Innovation.Cards.Tests
 			Assert.AreEqual(0, testGame.Players[0].Tableau.Stacks[Color.Green].Cards.Count);
 			Assert.AreEqual(1, testGame.Players[0].Tableau.Stacks[Color.Red].Cards.Count);
 			Assert.AreEqual(0, testGame.Players[0].Tableau.Stacks[Color.Purple].Cards.Count);
-			Assert.AreEqual(0, testGame.Players[1].Tableau.Stacks[Color.Yellow].Cards.Count);
+			Assert.AreEqual(1, testGame.Players[0].Tableau.Stacks[Color.Yellow].Cards.Count);
 		}
 	}
 }

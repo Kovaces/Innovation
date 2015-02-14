@@ -95,7 +95,9 @@ namespace Innovation.Cards.Tests
 		[TestMethod]
 		public void Card_TheWheelAction1()
 		{
-			new TheWheel().Actions.ToList()[0].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[0], Game = testGame, ActivePlayer = testGame.Players[0], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
+			bool result = new TheWheel().Actions.ToList()[0].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[0], Game = testGame, ActivePlayer = testGame.Players[0], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
+
+			Assert.AreEqual(true, result);
 
 			Assert.AreEqual(5, testGame.Players[0].Hand.Count);
 			Assert.AreEqual(1, testGame.AgeDecks.Where(x => x.Age == 1).FirstOrDefault().Cards.Count);

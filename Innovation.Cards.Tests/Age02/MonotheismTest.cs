@@ -87,7 +87,9 @@ namespace Innovation.Cards.Tests
 
 			testGame.Players[1].Tableau.Stacks[Color.Red].AddCardToTop(
 				 new Card { Name = "Test Red Card", Color = Color.Red, Age = 1, Top = Symbol.Blank, Left = Symbol.Crown, Center = Symbol.Crown, Right = Symbol.Tower }
-			);
+            );
+
+            Mocks.ConvertPlayersToMock(testGame);
 		}
 
 		//ActionType.Demand, Symbol.Tower, "I demand you transfer a top card on your board of different color from any 
@@ -112,7 +114,7 @@ namespace Innovation.Cards.Tests
 			Assert.AreEqual(1, testGame.Players[0].Tableau.Stacks[Color.Red].Cards.Count);
 			Assert.AreEqual(0, testGame.Players[0].Tableau.Stacks[Color.Purple].Cards.Count);
 			Assert.AreEqual(0, testGame.Players[0].Tableau.Stacks[Color.Yellow].Cards.Count);
-		}
+        }
 
 		[TestMethod]
 		public void Card_MonotheismAction1_Affected()
@@ -122,7 +124,7 @@ namespace Innovation.Cards.Tests
 				 new Card { Name = "Test Green Card", Color = Color.Green, Age = 1, Top = Symbol.Blank, Left = Symbol.Crown, Center = Symbol.Crown, Right = Symbol.Tower }
 			);
 
-			bool result = new Monotheism().Actions.ToList()[0].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[0], Game = testGame, ActivePlayer = testGame.Players[0], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
+			bool result = new Monotheism().Actions.ToList()[0].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[1], Game = testGame, ActivePlayer = testGame.Players[0], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
 
 			Assert.AreEqual(true, result);
 

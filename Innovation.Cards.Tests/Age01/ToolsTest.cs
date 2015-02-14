@@ -97,8 +97,10 @@ namespace Innovation.Cards.Tests
 
 			testGame.Players[1].Tableau.Stacks[Color.Red].AddCardToTop(
 				 new Card { Name = "Test Red Card", Color = Color.Red, Age = 1, Top = Symbol.Blank, Left = Symbol.Crown, Center = Symbol.Crown, Right = Symbol.Tower }
-			);
-		}
+            );
+
+            Mocks.ConvertPlayersToMock(testGame);
+        }
 
 		//ActionType.Optional, Symbol.Lightbulb, "You may return three cards from your hand. If you do, draw and meld a [3]."
 
@@ -108,7 +110,9 @@ namespace Innovation.Cards.Tests
 			//testGame.Players[0].AlwaysParticipates = true;
 			//testGame.Players[0].SelectsCards = new List<int>() { 0, 1, 2 };
 
-			new Tools().Actions.ToList()[0].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[0], Game = testGame, ActivePlayer = testGame.Players[0], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
+			bool result = new Tools().Actions.ToList()[0].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[0], Game = testGame, ActivePlayer = testGame.Players[0], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
+
+            Assert.AreEqual(true, result);
 
 			Assert.AreEqual(0, testGame.Players[0].Hand.Count);
 			Assert.AreEqual(6, testGame.AgeDecks.Where(x => x.Age == 1).FirstOrDefault().Cards.Count);
@@ -138,7 +142,9 @@ namespace Innovation.Cards.Tests
 				new Card { Name = "Test Yellow Card", Color = Color.Yellow, Age = 3, Top = Symbol.Blank, Left = Symbol.Crown, Center = Symbol.Tower, Right = Symbol.Tower }
 			);
 
-			new Tools().Actions.ToList()[1].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[0], Game = testGame, ActivePlayer = testGame.Players[0], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
+			bool result = new Tools().Actions.ToList()[1].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[0], Game = testGame, ActivePlayer = testGame.Players[0], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
+
+            Assert.AreEqual(true, result);
 
 			Assert.AreEqual(6, testGame.Players[0].Hand.Count);
 			Assert.AreEqual(0, testGame.AgeDecks.Where(x => x.Age == 1).FirstOrDefault().Cards.Count);

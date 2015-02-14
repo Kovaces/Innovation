@@ -42,8 +42,8 @@ namespace Innovation.Cards
 		    for (int i = 0; i < numberOfCardsToDraw; i++)
 		    {
 			    ICard card = Draw.Action(4, parameters.Game);
-				parameters.TargetPlayer.RevealCard(card);
-				parameters.TargetPlayer.Hand.Add(card);
+                parameters.TargetPlayer.RevealCard(card); 
+                parameters.TargetPlayer.Hand.Add(card);
 				cardsDrawn.Add(card);
 		    }
 			

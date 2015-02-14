@@ -1,12 +1,11 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
-using Innovation.Models;
+﻿using Innovation.Models;
 using Innovation.Models.Enums;
+using Innovation.Models.Interfaces;
 using Innovation.Tests.Helpers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Innovation.Actions;
-using Innovation.Models.Interfaces;
+using Rhino.Mocks;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Innovation.Cards.Tests
 {
@@ -88,7 +87,9 @@ namespace Innovation.Cards.Tests
 			testGame.Players[1].Tableau.Stacks[Color.Red].AddCardToTop(
 				 new Card { Name = "Test Red Card", Color = Color.Red, Age = 1, Top = Symbol.Blank, Left = Symbol.Crown, Center = Symbol.Crown, Right = Symbol.Tower }
 			);
-		}
+
+            Mocks.ConvertPlayersToMock(testGame);
+        }
 
 		//ActionType.Optional, Symbol.Crown, "You may return any number of cards from your hand. If you do, draw and score a [2] for every different value card you returned."
 
@@ -97,6 +98,8 @@ namespace Innovation.Cards.Tests
 		{
 			//testGame.Players[0].AlwaysParticipates = true;
 			//testGame.Players[0].SelectsCards = new List<int>() { };
+
+            testGame.Players[0].Stub(p => p.PickMultipleCards(Arg<List<ICard>>.Is.Anything, Arg<int>.Is.Anything, Arg<int>.Is.Anything)).Return(new List<ICard>()).Repeat.Any();
 
 			bool result = new Currency().Actions.ToList()[0].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[0], Game = testGame, ActivePlayer = testGame.Players[0], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
 

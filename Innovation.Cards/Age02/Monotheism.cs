@@ -41,7 +41,7 @@ namespace Innovation.Cards
 
 			Tuck.Action(Draw.Action(1, parameters.Game), parameters.TargetPlayer);
 
-			return false;
+			return true;
 		}
         bool Action2(CardActionParameters parameters) 
 		{

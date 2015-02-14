@@ -89,7 +89,9 @@ namespace Innovation.Cards.Tests
 			testGame.Players[1].Tableau.Stacks[Color.Red].AddCardToTop(
 				 new Card { Name = "Test Red Card", Color = Color.Red, Age = 1, Top = Symbol.Blank, Left = Symbol.Crown, Center = Symbol.Crown, Right = Symbol.Tower }
 			);
-		}
+        
+            Mocks.ConvertPlayersToMock(testGame);
+        }
 
 		//ActionType.Demand, Symbol.Crown, "I demand you transfer a top card with a [TOWER] from your board to my board if you have 
 		//									at least four [TOWER] on your board! If you do, draw a [1]!"
@@ -98,11 +100,23 @@ namespace Innovation.Cards.Tests
 		public void Card_CityStatesAction1_WhenNotEnoughTowers()
 		{
 			// player2 doesn't have 4 towers.. dogma doesn't activate
-			new CityStates().Actions.ToList()[0].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[1], Game = testGame, ActivePlayer = testGame.Players[0], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
+			bool result = new CityStates().Actions.ToList()[0].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[1], Game = testGame, ActivePlayer = testGame.Players[0], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
 
-			Assert.AreEqual(1, testGame.Players[0].Tableau.Stacks[Color.Blue].Cards.Count);
-			Assert.AreEqual(1, testGame.Players[0].Tableau.Stacks[Color.Red].Cards.Count);
-		}
+            Assert.AreEqual(false, result);
+
+            Assert.AreEqual(1, testGame.Players[0].Tableau.Stacks[Color.Blue].Cards.Count);
+            Assert.AreEqual(0, testGame.Players[0].Tableau.Stacks[Color.Green].Cards.Count);
+            Assert.AreEqual(1, testGame.Players[0].Tableau.Stacks[Color.Red].Cards.Count);
+            Assert.AreEqual(0, testGame.Players[0].Tableau.Stacks[Color.Purple].Cards.Count);
+            Assert.AreEqual(1, testGame.Players[0].Tableau.Stacks[Color.Yellow].Cards.Count);
+
+            Assert.AreEqual(1, testGame.Players[1].Tableau.Stacks[Color.Red].Cards.Count);
+            Assert.AreEqual(0, testGame.Players[1].Tableau.Stacks[Color.Yellow].Cards.Count);
+            Assert.AreEqual(2, testGame.Players[1].Hand.Count);
+
+            Assert.AreEqual(0, testGame.Players[0].Tableau.ScorePile.Count);
+            Assert.AreEqual(0, testGame.Players[1].Tableau.ScorePile.Count);
+        }
 
 		[TestMethod]
 		public void Card_CityStatesAction1()
@@ -114,7 +128,9 @@ namespace Innovation.Cards.Tests
 				new Card { Name = "Test Yellow Card", Color = Color.Yellow, Age = 1, Top = Symbol.Blank, Left = Symbol.Tower, Center = Symbol.Tower, Right = Symbol.Tower }
 			);
 
-			new CityStates().Actions.ToList()[0].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[1], Game = testGame, ActivePlayer = testGame.Players[0], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
+			bool result = new CityStates().Actions.ToList()[0].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[1], Game = testGame, ActivePlayer = testGame.Players[0], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
+
+            Assert.AreEqual(true, result);
 
 			Assert.AreEqual(1, testGame.Players[0].Tableau.Stacks[Color.Blue].Cards.Count);
 			Assert.AreEqual(0, testGame.Players[0].Tableau.Stacks[Color.Green].Cards.Count);

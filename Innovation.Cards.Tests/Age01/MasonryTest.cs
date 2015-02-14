@@ -6,6 +6,7 @@ using Innovation.Tests.Helpers;
 using Innovation.Actions;
 using Innovation.Models.Interfaces;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Rhino.Mocks;
 
 namespace Innovation.Cards.Tests
 {
@@ -90,7 +91,9 @@ namespace Innovation.Cards.Tests
 			testGame.Players[1].Tableau.Stacks[Color.Red].AddCardToTop(
 				 new Card { Name = "Test Red Card", Color = Color.Red, Age = 1, Top = Symbol.Blank, Left = Symbol.Crown, Center = Symbol.Crown, Right = Symbol.Tower }
 			);
-		}
+
+            Mocks.ConvertPlayersToMock(testGame);
+        }
 
 		//ActionType.Optional, Symbol.Tower, "You may meld any number of cards from your hand, each with a [TOWER]. 
 		//									  If you melded four or more cards in this way, claim the Monument achievement."
@@ -101,7 +104,18 @@ namespace Innovation.Cards.Tests
 			//testGame.Players[0].AlwaysParticipates = true;
 			//testGame.Players[0].SelectsCards = new List<int>() { 0, 1, 2, 3 };
 
-			new Masonry().Actions.ToList()[0].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[0], Game = testGame, ActivePlayer = testGame.Players[0], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
+            testGame.Players[0].Stub(p => p.PickMultipleCards(Arg<List<ICard>>.Is.Anything, Arg<int>.Is.Anything, Arg<int>.Is.Anything))
+                        .Return(null)
+                        .WhenCalled(p =>
+                        {
+                            List<ICard> cards = (List<ICard>)p.Arguments[0];
+                            p.ReturnValue = cards.Take(4).ToList();
+                        }
+                    ).Repeat.Any();
+
+			bool result = new Masonry().Actions.ToList()[0].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[0], Game = testGame, ActivePlayer = testGame.Players[0], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
+
+			Assert.AreEqual(true, result);
 
 			Assert.AreEqual(0, testGame.Players[0].Hand.Count);
 			Assert.AreEqual(2, testGame.Players[0].Tableau.Stacks[Color.Blue].Cards.Count);
@@ -117,7 +131,9 @@ namespace Innovation.Cards.Tests
 			//testGame.Players[0].AlwaysParticipates = true;
 			//testGame.Players[0].SelectsCards = new List<int>() { 0 };
 
-			new Masonry().Actions.ToList()[0].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[0], Game = testGame, ActivePlayer = testGame.Players[0], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
+			bool result = new Masonry().Actions.ToList()[0].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[0], Game = testGame, ActivePlayer = testGame.Players[0], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
+
+			Assert.AreEqual(true, result);
 
 			Assert.AreEqual(3, testGame.Players[0].Hand.Count);
 			Assert.AreEqual(1, testGame.Players[0].Tableau.Stacks[Color.Blue].Cards.Count);

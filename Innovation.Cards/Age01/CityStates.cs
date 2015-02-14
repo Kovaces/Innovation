@@ -59,7 +59,7 @@ namespace Innovation.Cards
 			// if you do, draw a 1
 			parameters.TargetPlayer.Hand.Add(Draw.Action(1, parameters.Game));
 			
-			return false;
+			return true;
 		}
     }
 }

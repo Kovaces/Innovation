@@ -13,10 +13,6 @@ namespace Innovation.Models
 		public List<ICard> Hand { get; set; }
 		public string Team { get; set; } //the base rules support team play but implementing that is low on the priority list
 
-		public bool AlwaysParticipates { get; set; }  // testing help
-		public List<int> SelectsCards { get; set; }  // testing help
-		public Player AlwaysPicksPlayer { get; set; }  // testing help
-
 		public ICard PickCardFromHand()
 		{
 			return PickCard(Hand);
