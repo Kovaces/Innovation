@@ -35,7 +35,10 @@ namespace Innovation.Cards
 			{
 				List<ICard> cardsToMeld = parameters.TargetPlayer.PickMultipleCards(parameters.TargetPlayer.Hand, 1, 2).ToList();
 				foreach (ICard card in cardsToMeld)
+				{
+					parameters.TargetPlayer.Hand.Remove(card);
 					Meld.Action(card, parameters.TargetPlayer);
+				}
 
 				if (cardsToMeld.Count == 2)
 				{
@@ -44,7 +47,7 @@ namespace Innovation.Cards
 						ICard topRedCard = parameters.TargetPlayer.Tableau.GetTopCards().Where(x => x.Color == Color.Red).FirstOrDefault();
 						if (topRedCard != null)
 						{
-							IPlayer playerToTransferTo = parameters.TargetPlayer.PickPlayer(parameters.Game.Players);
+							IPlayer playerToTransferTo = parameters.TargetPlayer.PickPlayer(parameters.Game.Players.Where(x => x != parameters.TargetPlayer).ToList());
 
 							parameters.TargetPlayer.Tableau.Stacks[Color.Red].Cards.Remove(topRedCard);
 							playerToTransferTo.Tableau.Stacks[Color.Red].AddCardToTop(topRedCard);

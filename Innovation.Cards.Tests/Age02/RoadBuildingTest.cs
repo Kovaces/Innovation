@@ -1,16 +1,18 @@
-﻿using Innovation.Models;
+﻿using System;
+using System.Linq;
+using System.Collections.Generic;
+using Innovation.Models;
 using Innovation.Models.Enums;
-using Innovation.Models.Interfaces;
 using Innovation.Tests.Helpers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Innovation.Actions;
+using Innovation.Models.Interfaces;
 using Rhino.Mocks;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Innovation.Cards.Tests
 {
 	[TestClass]
-	public class CurrencyTest
+	public class RoadBuildingTest
 	{
 		private Game testGame;
 
@@ -89,23 +91,21 @@ namespace Innovation.Cards.Tests
 			);
 
             Mocks.ConvertPlayersToMock(testGame);
-        }
+		}
 
-		//ActionType.Optional, Symbol.Crown, "You may return any number of cards from your hand. If you do, draw and score a [2] for every different value card you returned."
+		//ActionType.Required, Symbol.Tower, "Meld one or two cards from your hand. If you melded two, you may transfer your top red card to another player's board. If you do, transfer that player's top green card to your board."
 
 		[TestMethod]
-		public void Card_CurrencyAction1_ReturnNone()
+		public void Card_RoadBuildingAction1_MeldOne()
 		{
 			//testGame.Players[0].AlwaysParticipates = true;
-			//testGame.Players[0].SelectsCards = new List<int>() { };
+			//testGame.Players[0].SelectsCards = new List<int>() { 0 };
 
-			Mocks.PlayerDrawsCards(testGame.Players[0], 0);
+			bool result = new RoadBuilding().Actions.ToList()[0].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[0], Game = testGame, ActivePlayer = testGame.Players[0], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
 
-			bool result = new Currency().Actions.ToList()[0].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[0], Game = testGame, ActivePlayer = testGame.Players[0], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
+			Assert.AreEqual(true, result);
 
-			Assert.AreEqual(false, result);
-
-			Assert.AreEqual(3, testGame.Players[0].Hand.Count);
+			Assert.AreEqual(2, testGame.Players[0].Hand.Count);
 			Assert.AreEqual(3, testGame.AgeDecks.Where(x => x.Age == 1).FirstOrDefault().Cards.Count);
 			Assert.AreEqual(3, testGame.AgeDecks.Where(x => x.Age == 2).FirstOrDefault().Cards.Count);
 
@@ -114,59 +114,77 @@ namespace Innovation.Cards.Tests
 
 			Assert.AreEqual(1, testGame.Players[0].Tableau.Stacks[Color.Blue].Cards.Count);
 			Assert.AreEqual(0, testGame.Players[0].Tableau.Stacks[Color.Green].Cards.Count);
-			Assert.AreEqual(1, testGame.Players[0].Tableau.Stacks[Color.Red].Cards.Count);
+			Assert.AreEqual(2, testGame.Players[0].Tableau.Stacks[Color.Red].Cards.Count);
 			Assert.AreEqual(0, testGame.Players[0].Tableau.Stacks[Color.Purple].Cards.Count);
 			Assert.AreEqual(0, testGame.Players[0].Tableau.Stacks[Color.Yellow].Cards.Count);
 		}
 
 		[TestMethod]
-		public void Card_CurrencyAction1_ReturnOne()
+		public void Card_RoadBuildingAction1_MeldTwoTargetNoGreen()
 		{
 			//testGame.Players[0].AlwaysParticipates = true;
 			//testGame.Players[0].SelectsCards = new List<int>() { 0 };
 
-			bool result = new Currency().Actions.ToList()[0].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[0], Game = testGame, ActivePlayer = testGame.Players[0], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
+			Mocks.PlayerDrawsCards(testGame.Players[0], 2);
+
+			bool result = new RoadBuilding().Actions.ToList()[0].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[0], Game = testGame, ActivePlayer = testGame.Players[0], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
 
 			Assert.AreEqual(true, result);
 
-			Assert.AreEqual(2, testGame.Players[0].Hand.Count);
-			Assert.AreEqual(4, testGame.AgeDecks.Where(x => x.Age == 1).FirstOrDefault().Cards.Count);
-			Assert.AreEqual(2, testGame.AgeDecks.Where(x => x.Age == 2).FirstOrDefault().Cards.Count);
+			Assert.AreEqual(1, testGame.Players[0].Hand.Count);
+			Assert.AreEqual(3, testGame.AgeDecks.Where(x => x.Age == 1).FirstOrDefault().Cards.Count);
+			Assert.AreEqual(3, testGame.AgeDecks.Where(x => x.Age == 2).FirstOrDefault().Cards.Count);
 
-			Assert.AreEqual(1, testGame.Players[0].Tableau.ScorePile.Count);
-			Assert.AreEqual(2, testGame.Players[0].Tableau.GetScore());
+			Assert.AreEqual(0, testGame.Players[0].Tableau.ScorePile.Count);
 			Assert.AreEqual(0, testGame.Players[1].Tableau.ScorePile.Count);
 
 			Assert.AreEqual(1, testGame.Players[0].Tableau.Stacks[Color.Blue].Cards.Count);
-			Assert.AreEqual(0, testGame.Players[0].Tableau.Stacks[Color.Green].Cards.Count);
+			Assert.AreEqual(1, testGame.Players[0].Tableau.Stacks[Color.Green].Cards.Count);
 			Assert.AreEqual(1, testGame.Players[0].Tableau.Stacks[Color.Red].Cards.Count);
 			Assert.AreEqual(0, testGame.Players[0].Tableau.Stacks[Color.Purple].Cards.Count);
 			Assert.AreEqual(0, testGame.Players[0].Tableau.Stacks[Color.Yellow].Cards.Count);
+
+			Assert.AreEqual(0, testGame.Players[1].Tableau.Stacks[Color.Blue].Cards.Count);
+			Assert.AreEqual(0, testGame.Players[1].Tableau.Stacks[Color.Green].Cards.Count);
+			Assert.AreEqual(2, testGame.Players[1].Tableau.Stacks[Color.Red].Cards.Count);
+			Assert.AreEqual(0, testGame.Players[1].Tableau.Stacks[Color.Purple].Cards.Count);
+			Assert.AreEqual(0, testGame.Players[1].Tableau.Stacks[Color.Yellow].Cards.Count);
 		}
 
 		[TestMethod]
-		public void Card_CurrencyAction1_ReturnTwo()
+		public void Card_RoadBuildingAction1_MeldTwo()
 		{
 			//testGame.Players[0].AlwaysParticipates = true;
 			//testGame.Players[0].SelectsCards = new List<int>() { 0 };
 
-			bool result = new Currency().Actions.ToList()[0].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[0], Game = testGame, ActivePlayer = testGame.Players[0], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
+			testGame.Players[1].Tableau.Stacks[Color.Green].AddCardToTop(
+				 new Card { Name = "Test Green Card", Color = Color.Green, Age = 1, Top = Symbol.Blank, Left = Symbol.Crown, Center = Symbol.Crown, Right = Symbol.Tower }
+			);
+
+			Mocks.PlayerDrawsCards(testGame.Players[0], 2);
+
+			bool result = new RoadBuilding().Actions.ToList()[0].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[0], Game = testGame, ActivePlayer = testGame.Players[0], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
 
 			Assert.AreEqual(true, result);
 
-			Assert.AreEqual(2, testGame.Players[0].Hand.Count);
-			Assert.AreEqual(4, testGame.AgeDecks.Where(x => x.Age == 1).FirstOrDefault().Cards.Count);
-			Assert.AreEqual(2, testGame.AgeDecks.Where(x => x.Age == 2).FirstOrDefault().Cards.Count);
+			Assert.AreEqual(1, testGame.Players[0].Hand.Count);
+			Assert.AreEqual(3, testGame.AgeDecks.Where(x => x.Age == 1).FirstOrDefault().Cards.Count);
+			Assert.AreEqual(3, testGame.AgeDecks.Where(x => x.Age == 2).FirstOrDefault().Cards.Count);
 
-			Assert.AreEqual(1, testGame.Players[0].Tableau.ScorePile.Count);
-			Assert.AreEqual(2, testGame.Players[0].Tableau.GetScore());
+			Assert.AreEqual(0, testGame.Players[0].Tableau.ScorePile.Count);
 			Assert.AreEqual(0, testGame.Players[1].Tableau.ScorePile.Count);
 
 			Assert.AreEqual(1, testGame.Players[0].Tableau.Stacks[Color.Blue].Cards.Count);
-			Assert.AreEqual(0, testGame.Players[0].Tableau.Stacks[Color.Green].Cards.Count);
+			Assert.AreEqual(2, testGame.Players[0].Tableau.Stacks[Color.Green].Cards.Count);
 			Assert.AreEqual(1, testGame.Players[0].Tableau.Stacks[Color.Red].Cards.Count);
 			Assert.AreEqual(0, testGame.Players[0].Tableau.Stacks[Color.Purple].Cards.Count);
 			Assert.AreEqual(0, testGame.Players[0].Tableau.Stacks[Color.Yellow].Cards.Count);
+
+			Assert.AreEqual(0, testGame.Players[1].Tableau.Stacks[Color.Blue].Cards.Count);
+			Assert.AreEqual(0, testGame.Players[1].Tableau.Stacks[Color.Green].Cards.Count);
+			Assert.AreEqual(2, testGame.Players[1].Tableau.Stacks[Color.Red].Cards.Count);
+			Assert.AreEqual(0, testGame.Players[1].Tableau.Stacks[Color.Purple].Cards.Count);
+			Assert.AreEqual(0, testGame.Players[1].Tableau.Stacks[Color.Yellow].Cards.Count);
 		}
 	}
 }

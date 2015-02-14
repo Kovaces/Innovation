@@ -67,6 +67,8 @@
     <Compile Include="Age01\MetalworkingTest.cs" />
     <Compile Include="Age01\MasonryTest.cs" />
     <Compile Include="Age01\DomesticationTest.cs" />
+    <Compile Include="Age02\RoadBuildingTest.cs" />
+    <Compile Include="Age02\PhilosophyTest.cs" />
     <Compile Include="Age02\MonotheismTest.cs" />
     <Compile Include="Age02\MathematicsTest.cs" />
     <Compile Include="Age02\MapmakingTest.cs" />

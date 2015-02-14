@@ -104,14 +104,7 @@ namespace Innovation.Cards.Tests
 			//testGame.Players[0].AlwaysParticipates = true;
 			//testGame.Players[0].SelectsCards = new List<int>() { 0, 1, 2, 3 };
 
-            testGame.Players[0].Stub(p => p.PickMultipleCards(Arg<List<ICard>>.Is.Anything, Arg<int>.Is.Anything, Arg<int>.Is.Anything))
-                        .Return(null)
-                        .WhenCalled(p =>
-                        {
-                            List<ICard> cards = (List<ICard>)p.Arguments[0];
-                            p.ReturnValue = cards.Take(4).ToList();
-                        }
-                    ).Repeat.Any();
+            Mocks.PlayerDrawsCards(testGame.Players[0], 4);
 
 			bool result = new Masonry().Actions.ToList()[0].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[0], Game = testGame, ActivePlayer = testGame.Players[0], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
 
