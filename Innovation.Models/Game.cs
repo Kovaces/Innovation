@@ -3,41 +3,53 @@ using System;
 using System.Collections.Generic;
 using Innovation.Models.Interfaces;
 
-namespace Innovation
+namespace Innovation.Models
 {
 	public class Game
 	{
+		public Game()
+		{
+			GameEnded = false;
+		}
+
 		public Guid Id { get; set; }
 		public string Name { get; set; }
 		public List<IPlayer> Players { get; set; }
 		public List<Deck> AgeDecks { get; set; }
 		public Deck AgeAchievementDeck { get; set; }
 
-		private Dictionary<string, object> _PropertyBag = new Dictionary<string,object>();
-
+		
+		private readonly Dictionary<string, object> _propertyBag = new Dictionary<string,object>();
 		public object GetPropertyBagValue(string key)
 		{
-			if (_PropertyBag.ContainsKey(key))
-				return _PropertyBag[key];
+			if (_propertyBag.ContainsKey(key))
+				return _propertyBag[key];
 
 			return null;
 		}
 		public void StashPropertyBagValue(string key, object value)
 		{
-			if (_PropertyBag.ContainsKey(key))
-				_PropertyBag[key] = value;
+			if (_propertyBag.ContainsKey(key))
+				_propertyBag[key] = value;
 			else
-				_PropertyBag.Add(key, value);
+				_propertyBag.Add(key, value);
 		}
 		public void ClearPropertyBag()
 		{
-			_PropertyBag.Clear();
+			_propertyBag.Clear();
 		}
-		
-		public void TriggerEndOfGame()
+
+
+		public bool GameEnded { get; private set; }
+		private IPlayer _winner;
+		public void TriggerEndOfGame(IPlayer winner = null)
 		{
-			throw new NotImplementedException();
+			GameEnded = true;
+			
+			if (_winner != null)
+				_winner = winner;
 		}
+
 
 		public List<IPlayer> GetPlayersInPlayerOrder(int startingIndex)
 		{

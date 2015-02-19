@@ -22,7 +22,7 @@ namespace Innovation.Cards
                 return new List<CardAction>()
 				{
                     new CardAction(ActionType.Demand, Symbol.Tower, "I demand you transfer a card with a [CROWN] from your hand to my score pile! If you do, draw a [1]!", Action1)
-                    ,new CardAction(ActionType.Required, Symbol.Tower, "If no cards were transfered due to this demand, draw a [1].", Action2)
+                    ,new CardAction(ActionType.Required, Symbol.Tower, "If no cards were transferred due to this demand, draw a [1].", Action2)
                 };
             }
         }

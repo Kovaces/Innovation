@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using Innovation.Actions;
 using Innovation.Models;
 using Innovation.Models.Enums;
 namespace Innovation.Cards
@@ -22,6 +24,24 @@ namespace Innovation.Cards
                 };
             }
         }
-        bool Action1(CardActionParameters parameters) { throw new NotImplementedException(); }
+
+	    bool Action1(CardActionParameters parameters)
+	    {
+		    ValidateParameters(parameters);
+
+		    var selectedCard = parameters.TargetPlayer.PickCardFromHand();
+			if (selectedCard == null)
+				return false;
+
+			Return.Action(selectedCard, parameters.Game);
+
+			if (!selectedCard.Age.Equals(10))
+				return true;
+
+			for (var i = 0; i < parameters.TargetPlayer.Tableau.ScorePile.Select(c => c.Age).Distinct().Count(); i++)
+				Draw.Action(10, parameters.Game);
+
+			return true;
+	    }
     }
 }

@@ -16,6 +16,9 @@ namespace Innovation.Actions
 		/// <returns></returns>
 		public static bool Action(IPlayer player, Game game)
 		{
+			if (game.GameEnded)
+				return false;
+
 			if (!game.AgeAchievementDeck.Cards.Any())
 				return false;
 

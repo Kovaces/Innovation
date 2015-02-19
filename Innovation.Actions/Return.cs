@@ -8,7 +8,7 @@ namespace Innovation.Actions
 	{
 		public static void Action(ICard card, Game game)
 		{
-			game.AgeDecks.Where(x=>x.Age == card.Age).FirstOrDefault().InsertAtEnd(card);
+			game.AgeDecks.First(x => x.Age == card.Age).InsertAtEnd(card);
 		}
 	}
 }

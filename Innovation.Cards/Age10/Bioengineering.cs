@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Innovation.Models;
 using Innovation.Models.Enums;
 namespace Innovation.Cards
@@ -23,7 +24,27 @@ namespace Innovation.Cards
                 };
             }
         }
-        bool Action1(CardActionParameters parameters) { throw new NotImplementedException(); }
-        bool Action2(CardActionParameters parameters) { throw new NotImplementedException(); }
+
+	    bool Action1(CardActionParameters parameters)
+	    {
+		    ValidateParameters(parameters);
+
+		    var transferCards = parameters.Game.Players.SelectMany(p => p.Tableau.GetTopCards().Where(c => c.HasSymbol(Symbol.Leaf)));
+		    var selectedCard = parameters.TargetPlayer.PickCard(transferCards);
+			parameters.Game.Players.ForEach(p => p.Tableau.Stacks[selectedCard.Color].RemoveCard(selectedCard));
+			parameters.TargetPlayer.Tableau.Stacks[selectedCard.Color].AddCardToTop(selectedCard);
+
+			return true;
+	    }
+
+	    bool Action2(CardActionParameters parameters)
+	    {
+		    ValidateParameters(parameters);
+
+		    if (parameters.Game.Players.Exists(p => p.Tableau.GetSymbolCount(Symbol.Leaf) < 3))
+				parameters.Game.TriggerEndOfGame(parameters.Game.Players.OrderByDescending(p => p.Tableau.GetSymbolCount(Symbol.Leaf)).ToList().First());
+		    
+			return false;
+	    }
     }
 }

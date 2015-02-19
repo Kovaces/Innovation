@@ -17,7 +17,7 @@ namespace Innovation.Actions
 		/// <param name="game">The Game to perform the Action in</param>
 		public static ICard Action(int age, Game game)
 		{
-			return GetCard(age, game);
+			return (!game.GameEnded) ? GetCard(age, game) : null;
 		}
 
 		private static ICard GetCard(int age, Game game)
