@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Innovation", "Innvovation\Innovation.csproj", "{94186EB2-CE66-4069-921D-C879BAADA689}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Innovation.Cards", "Innovation.Cards\Innovation.Cards.csproj", "{596DC48F-02C4-4FBE-8AC0-7113EDF99C9D}"
@@ -18,6 +20,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Innovation.Tests.Helpers", "Innovation.Tests.Helpers\Innovation.Tests.Helpers.csproj", "{A878E64F-8D34-46CE-ADB2-6020CF3CEA3C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Innovation.Cards.Tests", "Innovation.Cards.Tests\Innovation.Cards.Tests.csproj", "{A0DD0D88-BF0E-499A-BAF9-085E64CB4A54}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Innovation.Web", "Innovation.Web\Innovation.Web.csproj", "{282E9D2B-338D-480C-B273-554DCEB379B5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Innovation.Web.Tests", "Innovation.Web.Tests\Innovation.Web.Tests.csproj", "{E23140F1-301E-42B5-8877-9E73315B8BAA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -57,6 +63,14 @@ Global
 		{A0DD0D88-BF0E-499A-BAF9-085E64CB4A54}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A0DD0D88-BF0E-499A-BAF9-085E64CB4A54}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A0DD0D88-BF0E-499A-BAF9-085E64CB4A54}.Release|Any CPU.Build.0 = Release|Any CPU
+		{282E9D2B-338D-480C-B273-554DCEB379B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{282E9D2B-338D-480C-B273-554DCEB379B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{282E9D2B-338D-480C-B273-554DCEB379B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{282E9D2B-338D-480C-B273-554DCEB379B5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E23140F1-301E-42B5-8877-9E73315B8BAA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E23140F1-301E-42B5-8877-9E73315B8BAA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E23140F1-301E-42B5-8877-9E73315B8BAA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E23140F1-301E-42B5-8877-9E73315B8BAA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -66,5 +80,6 @@ Global
 		{658B69C0-2E77-4559-B7CB-3FC38F54B3BD} = {40AF1D88-19BB-4735-8986-193114F2E359}
 		{A878E64F-8D34-46CE-ADB2-6020CF3CEA3C} = {40AF1D88-19BB-4735-8986-193114F2E359}
 		{A0DD0D88-BF0E-499A-BAF9-085E64CB4A54} = {40AF1D88-19BB-4735-8986-193114F2E359}
+		{E23140F1-301E-42B5-8877-9E73315B8BAA} = {40AF1D88-19BB-4735-8986-193114F2E359}
 	EndGlobalSection
 EndGlobal
