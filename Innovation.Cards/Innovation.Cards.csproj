@@ -143,6 +143,7 @@
     <Compile Include="Age10\Software.cs" />
     <Compile Include="Age10\StemCells.cs" />
     <Compile Include="Age10\TheInternet.cs" />
+    <Compile Include="CardList.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />

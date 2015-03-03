@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Configuration;
+using Innovation.Cards;
 using Innovation.Models;
 using Innovation.Models.Interfaces;
 using Innovation.Web;
@@ -49,7 +50,39 @@ namespace Innovation
 
 		public void CreateGame(string gameName, string[] playerIds)
 		{
+			/*
+		 * Create game
+		 *		Create Age Decks
+		 *		Create Special Achievement Decks
+		 *		Create Age Achievement Deck
+		 *		Determine # of players
+		 *		Deal starting Age 1 cards
+		 *		First Meld
+		 */
+
+			var game = new Game();
+			var cardList = CardList.GetCardList().ToList();
+
+			var age1 = new Deck(cardList.Where(c => c.Age == 1), 1);
+			var age2 = new Deck(cardList.Where(c => c.Age == 2), 2);
+			var age3 = new Deck(cardList.Where(c => c.Age == 3), 3);
+			var age4 = new Deck(cardList.Where(c => c.Age == 4), 4);
+			var age5 = new Deck(cardList.Where(c => c.Age == 5), 5);
+			var age6 = new Deck(cardList.Where(c => c.Age == 6), 6);
+			var age7 = new Deck(cardList.Where(c => c.Age == 7), 7);
+			var age8 = new Deck(cardList.Where(c => c.Age == 8), 8);
+			var age9 = new Deck(cardList.Where(c => c.Age == 9), 9);
+			var age10 = new Deck(cardList.Where(c => c.Age == 10), 10);
+
+			game.AgeDecks = new List<Deck> { age1, age2, age3, age4, age5, age6, age7, age8, age9, age10 };
+			game.AgeDecks.ForEach(d => d.Shuffle());
 			
+			var achievementDeck = new List<ICard>();
+			game.AgeDecks.ForEach(d => achievementDeck.Add(d.Cards[0]));
+			game.AgeDecks.ForEach(d => d.Cards.RemoveAt(0));
+			game.AgeAchievementDeck = new Deck(achievementDeck, -1);
+
+
 			throw new NotImplementedException();
 		}
 
