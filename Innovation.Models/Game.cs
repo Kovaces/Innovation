@@ -59,5 +59,18 @@ namespace Innovation.Models
 
 			return players;
 		}
+
+		public void StartGame()
+		{
+			throw new NotImplementedException();
+		}
+
+		public void RevealCard(ICard card)
+		{
+			foreach (var player in Players)
+			{
+				player.RevealCard(card);
+			}
+		}
 	}
 }

@@ -9,6 +9,7 @@ namespace Innovation.Models.Interfaces
 {
     public interface IPlayer
     {
+		string Id { get; set; }
 		string Name { get; set; }
 		ITableau Tableau { get; set; }
 		List<ICard> Hand { get; set; }
@@ -22,5 +23,10 @@ namespace Innovation.Models.Interfaces
 	    bool AskQuestion(string question);
 
 		IPlayer PickPlayer(List<IPlayer> playerList);
+
+		void PickCardResponse(ICard cardSelected);
+		void PickMultipleCardsResponse(IEnumerable<ICard> cardsSelected);
+		void AskQuestionResponse(bool answer);
+		void PickPlayerResponse(IPlayer playerSelected);
 	}
 }
