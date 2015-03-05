@@ -29,13 +29,19 @@ namespace Innovation.Cards
 			ValidateParameters(parameters);
 
 			ICard card = Draw.Action(1, parameters.Game);
+			if (card == null)
+				return true;
 
 			parameters.TargetPlayer.RevealCard(card);
 
 			if (parameters.TargetPlayer.Tableau.GetStackColors().Contains(card.Color))
 			{
 				Meld.Action(card, parameters.TargetPlayer);
-				parameters.TargetPlayer.Hand.Add(Draw.Action(1, parameters.Game));
+				var drawnCard = Draw.Action(1, parameters.Game);
+				if (drawnCard == null)
+					return true;
+
+				parameters.TargetPlayer.Hand.Add(drawnCard);
 			}
 			else
 				parameters.TargetPlayer.Hand.Add(card);

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Innovation.Models;
 using Innovation.Models.Enums;
@@ -11,6 +12,8 @@ namespace Innovation.Cards
 {
 	public abstract class CardBase : ICard
 	{
+		public string ID { get { return "C_" + new Regex("[^a-zA-Z0-9]").Replace(Name, ""); } }
+
 		public abstract Symbol Top { get; }
 		public abstract Symbol Left { get; }
 		public abstract Symbol Center { get; }

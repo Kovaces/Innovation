@@ -4,11 +4,12 @@ using System.Collections.Generic;
 using Innovation.Actions;
 using Innovation.Models;
 using Innovation.Models.Enums;
+using Innovation.Actions.Handlers;
 namespace Innovation.Cards
 {
     public class CityStates : CardBase
     {
-        public override string Name { get { return "City States"; } }
+		public override string Name { get { return "City States"; } }
         public override int Age { get { return 1; } }
         public override Color Color { get { return Color.Purple; } }
         public override Symbol Top { get { return Symbol.Blank; } }
@@ -46,9 +47,25 @@ namespace Innovation.Cards
 
 			if (topCardsWithTowers.Count == 0)
 				return false;
-			
-			
-			ICard cardToMove = parameters.TargetPlayer.PickCard(topCardsWithTowers);
+
+			RequestQueueManager.PickCards(
+				parameters.Game,
+				parameters.TargetPlayer,
+				parameters.ActivePlayer,
+				parameters.TargetPlayer,
+				topCardsWithTowers,
+				1, 1,
+				parameters.PlayerSymbolCounts,
+				Action1_Step2
+			);
+
+			return false;
+		}
+		bool Action1_Step2(CardActionParameters parameters) 
+		{
+			ICard cardToMove = parameters.Answer.SingleCard;
+			if (cardToMove == null)
+				throw new ArgumentNullException("Must choose card.");
 					
 			// remove from TargetPlayer's board
 			parameters.TargetPlayer.Tableau.Stacks[cardToMove.Color].RemoveCard(cardToMove);
@@ -57,7 +74,11 @@ namespace Innovation.Cards
 			parameters.ActivePlayer.Tableau.Stacks[cardToMove.Color].AddCardToTop(cardToMove);
 
 			// if you do, draw a 1
-			parameters.TargetPlayer.Hand.Add(Draw.Action(1, parameters.Game));
+			var drawnCard = Draw.Action(1, parameters.Game);
+			if (drawnCard == null)
+				return true;
+
+			parameters.TargetPlayer.Hand.Add(drawnCard);
 			
 			return true;
 		}

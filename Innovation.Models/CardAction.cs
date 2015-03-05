@@ -28,5 +28,16 @@ namespace Innovation.Models
 		public IPlayer ActivePlayer { get; set; }
 		public Game Game { get; set; }
 		public Dictionary<IPlayer, Dictionary<Symbol, int>> PlayerSymbolCounts { get; set; }
+
+		public GenericAnswer Answer { get; set; }
+	}
+
+	public class GenericAnswer
+	{
+		public ICard SingleCard { get; set; }
+		public List<ICard> MultipleCards { get; set; }
+		public bool Boolean { get; set; }
+		public List<IPlayer> Players { get; set; }
+		public Color Color { get; set; }
 	}
 }

@@ -40,6 +40,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Achieve.cs" />
+    <Compile Include="ActionWorkers\QueuedActionDraw.cs" />
+    <Compile Include="ActionWorkers\QueuedActionImmediateDelegate.cs" />
+    <Compile Include="ActionWorkers\QueuedActionAskQuestion.cs" />
+    <Compile Include="ActionWorkers\QueuedActionPickPlayer.cs" />
+    <Compile Include="ActionWorkers\QueuedActionPickCard.cs" />
+    <Compile Include="ActionWorkers\QueuedActionEndDogma.cs" />
+    <Compile Include="Handlers\ActionQueueManager.cs" />
+    <Compile Include="Handlers\RequestQueueManager.cs" />
     <Compile Include="Tuck.cs" />
     <Compile Include="Score.cs" />
     <Compile Include="Return.cs" />

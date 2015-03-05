@@ -22,7 +22,15 @@ namespace Innovation.Tests.Helpers
 				mockPlayer.Name = game.Players[i].Name;
 				mockPlayer.Team = game.Players[i].Team;
 
-				mockPlayer.Stub(p => p.AskToSplay(Arg<Color>.Is.Anything, Arg<SplayDirection>.Is.Anything)).Return(true);
+				mockPlayer.Stub(p => p.AskToSplay(Arg<List<Color>>.Is.Anything, Arg<SplayDirection>.Is.Anything))
+						.Return(Color.None)
+						.WhenCalled(p =>
+						{
+							List<Color> colors = (List<Color>)p.Arguments[0];
+							p.ReturnValue = colors.First();
+						}
+					);
+
 				mockPlayer.Stub(p => p.AskQuestion(Arg<string>.Is.Anything)).Return(true);
 				mockPlayer.Stub(p => p.PickCardFromHand()).Return(mockPlayer.Hand.First());
 				mockPlayer.Stub(p => p.PickPlayer(Arg<List<IPlayer>>.Is.Anything))

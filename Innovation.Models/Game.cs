@@ -18,8 +18,10 @@ namespace Innovation.Models
 		public List<Deck> AgeDecks { get; set; }
 		public Deck AgeAchievementDeck { get; set; }
 
-		
-		private readonly Dictionary<string, object> _propertyBag = new Dictionary<string,object>();
+		public RequestQueue RequestQueue { get; set; }
+		public ActionQueue ActionQueue { get; set; }
+
+		private readonly Dictionary<string, object> _propertyBag = new Dictionary<string, object>();
 		public object GetPropertyBagValue(string key)
 		{
 			if (_propertyBag.ContainsKey(key))
@@ -45,7 +47,7 @@ namespace Innovation.Models
 		public void TriggerEndOfGame(IPlayer winner = null)
 		{
 			GameEnded = true;
-			
+
 			if (_winner != null)
 				_winner = winner;
 		}

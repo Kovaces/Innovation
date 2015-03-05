@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Innovation.Models;
 using Innovation.Models.Enums;
 using Innovation.Actions;
+using Innovation.Actions.Handlers;
 namespace Innovation.Cards
 {
 	public class Clothing : CardBase
@@ -37,13 +38,29 @@ namespace Innovation.Cards
 
 			if (cardsToMeld.Count == 0)
 				return false;
-			
-			ICard card = parameters.TargetPlayer.PickCard(cardsToMeld);
 
-			parameters.TargetPlayer.Hand.Remove(card);
-			Meld.Action(card, parameters.TargetPlayer);
+			RequestQueueManager.PickCards(
+				parameters.Game,
+				parameters.TargetPlayer,
+				parameters.ActivePlayer,
+				parameters.TargetPlayer,
+				cardsToMeld,
+				1, 1,
+				parameters.PlayerSymbolCounts,
+				Action1_Step2
+			);
+			return false;
+		}
+		bool Action1_Step2(CardActionParameters parameters)
+		{
+			ICard drawnCard = parameters.Answer.SingleCard;
+			if (drawnCard == null)
+				throw new ArgumentNullException("Must choose card.");
 
-			return true;	
+			parameters.TargetPlayer.Hand.Remove(drawnCard);
+			Meld.Action(drawnCard, parameters.TargetPlayer);
+
+			return true;
 		}
 
 		bool Action2(CardActionParameters parameters)
@@ -55,7 +72,12 @@ namespace Innovation.Cards
 
 			var numberOfCardsToDraw = targetPlayerTopCardColors.Count(x => !otherPlayerTopCardColors.Contains(x));
 			for (var i = 0; i < numberOfCardsToDraw; i++)
-				Score.Action(Draw.Action(1, parameters.Game), parameters.TargetPlayer);
+			{
+				var card = Draw.Action(1, parameters.Game);
+				if (card == null)
+					return true;
+				Score.Action(card, parameters.TargetPlayer);
+			}
 
 			return (numberOfCardsToDraw > 0);
 		}

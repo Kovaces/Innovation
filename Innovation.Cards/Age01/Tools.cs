@@ -45,7 +45,11 @@ namespace Innovation.Cards
 				Return.Action(card, parameters.Game);
 			}
 
-			Meld.Action(Draw.Action(3, parameters.Game), parameters.TargetPlayer);
+			var drawnCard = Draw.Action(3, parameters.Game);
+			if (drawnCard == null)
+				return true;
+
+			Meld.Action(drawnCard, parameters.TargetPlayer);
 
 			return true;
 		}
@@ -67,10 +71,21 @@ namespace Innovation.Cards
 			parameters.TargetPlayer.Hand.Remove(cardToReturn);
 			Return.Action(cardToReturn, parameters.Game);
 
-			parameters.TargetPlayer.Hand.Add(Draw.Action(1, parameters.Game));
-			parameters.TargetPlayer.Hand.Add(Draw.Action(1, parameters.Game));
-			parameters.TargetPlayer.Hand.Add(Draw.Action(1, parameters.Game));
+			var drawnCard = Draw.Action(1, parameters.Game);
+			if (drawnCard == null)
+				return true;
+			parameters.TargetPlayer.Hand.Add(drawnCard);
 
+			drawnCard = Draw.Action(1, parameters.Game);
+			if (drawnCard == null)
+				return true;
+			parameters.TargetPlayer.Hand.Add(drawnCard);
+
+			drawnCard = Draw.Action(1, parameters.Game);
+			if (drawnCard == null)
+				return true;
+			parameters.TargetPlayer.Hand.Add(drawnCard);
+		
 			return true;
 		}
     }

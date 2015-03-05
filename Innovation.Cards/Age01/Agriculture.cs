@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Innovation.Actions;
+using Innovation.Actions.Handlers;
 using Innovation.Models;
 using Innovation.Models.Enums;
 
@@ -31,8 +32,23 @@ namespace Innovation.Cards
 		{
 			ValidateParameters(parameters);
 
-			ICard selectedCard = parameters.TargetPlayer.PickCardFromHand();
-			
+			RequestQueueManager.PickCards(
+				parameters.Game,
+				parameters.TargetPlayer,
+				parameters.ActivePlayer,
+				parameters.TargetPlayer,
+				parameters.TargetPlayer.Hand,
+				1, 1,
+				parameters.PlayerSymbolCounts,
+				Action1_Step2
+			);
+
+			return false;
+		}
+
+		private bool Action1_Step2(CardActionParameters parameters)
+		{
+			ICard selectedCard = parameters.Answer.SingleCard;
 			if (selectedCard == null)
 				return false;
 
@@ -41,6 +57,9 @@ namespace Innovation.Cards
 
 			int ageToDraw = selectedCard.Age + 1;
 			var cardToScore = Draw.Action(ageToDraw, parameters.Game);
+			if (cardToScore == null)
+				return true;
+
 			Score.Action(cardToScore, parameters.TargetPlayer);
 
 			return true;

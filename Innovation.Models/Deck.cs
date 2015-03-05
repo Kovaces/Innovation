@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Innovation.Models.ExtensionMethods;
 
 namespace Innovation.Models
 {
@@ -11,13 +8,6 @@ namespace Innovation.Models
 		public Deck()
 		{
 			Cards = new List<ICard>();
-		}
-
-		public Deck(IEnumerable<ICard> cards, int age)
-		{
-
-			Cards = cards.ToList();
-			Age = age;
 		}
 
 		public List<ICard> Cards { get; set; }
@@ -40,11 +30,6 @@ namespace Innovation.Models
 				Cards.Insert(Cards.Count, card);
 			else
 				Cards.Add(card);
-		}
-
-		public void Shuffle()
-		{
-			Cards.Shuffle(new Random());
 		}
 	}
 }

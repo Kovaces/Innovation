@@ -58,12 +58,12 @@
     <Compile Include="Age01\CityStatesTest.cs" />
     <Compile Include="Age01\ClothingTest.cs" />
     <Compile Include="Age01\CodeOfLawsTest.cs" />
+    <Compile Include="Age01\MysticismTest.cs" />
     <Compile Include="Age01\ToolsTest.cs" />
     <Compile Include="Age01\TheWheelTest.cs" />
     <Compile Include="Age01\SailingTest.cs" />
     <Compile Include="Age01\PotteryTest.cs" />
     <Compile Include="Age01\OarsTest.cs" />
-    <Compile Include="Age01\Mysticism.cs" />
     <Compile Include="Age01\MetalworkingTest.cs" />
     <Compile Include="Age01\MasonryTest.cs" />
     <Compile Include="Age01\DomesticationTest.cs" />

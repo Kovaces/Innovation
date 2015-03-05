@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Innovation.Actions;
+using Innovation.Actions.Handlers;
 using Innovation.Models;
 using Innovation.Models.Enums;
 namespace Innovation.Cards
@@ -34,8 +35,23 @@ namespace Innovation.Cards
 			
 			if (cardsWithTowers.Count == 0)
 				return false;
-			
-			var selectedCards = parameters.TargetPlayer.PickMultipleCards(cardsWithTowers, 0, cardsWithTowers.Count).ToList();
+
+			RequestQueueManager.PickCards(
+				parameters.Game,
+				parameters.TargetPlayer,
+				parameters.ActivePlayer,
+				parameters.TargetPlayer,
+				cardsWithTowers,
+				0, cardsWithTowers.Count,
+				parameters.PlayerSymbolCounts,
+				Action1_Step2
+			);
+
+			return false;
+		}
+		bool Action1_Step2(CardActionParameters parameters)
+		{
+			var selectedCards = parameters.Answer.MultipleCards;
 			foreach (var card in selectedCards)
 			{
 				parameters.TargetPlayer.Hand.Remove(card);

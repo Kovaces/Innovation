@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Innovation.Actions;
+using Innovation.Actions.Handlers;
 using Innovation.Models;
 using Innovation.Models.Enums;
 namespace Innovation.Cards
@@ -29,16 +30,39 @@ namespace Innovation.Cards
 		{
 			ValidateParameters(parameters);
 
-			parameters.TargetPlayer.Hand.Add(Draw.Action(1, parameters.Game));
+			var drawnCard = Draw.Action(1, parameters.Game);
+			if (drawnCard == null)
+				return true;
+
+			parameters.TargetPlayer.Hand.Add(drawnCard);
 
 			var highestAgeInHand = parameters.TargetPlayer.Hand.Max(c => c.Age);
 			var highestCards = parameters.TargetPlayer.Hand.Where(c => c.Age.Equals(highestAgeInHand)).ToList();
 
-			ICard selectedCard = parameters.TargetPlayer.PickCard(highestCards);
+			RequestQueueManager.PickCards(
+				parameters.Game,
+				parameters.TargetPlayer,
+				parameters.ActivePlayer,
+				parameters.TargetPlayer,
+				parameters.TargetPlayer.Hand,
+				1, 1,
+				parameters.PlayerSymbolCounts,
+				Action1_Step2
+			);
+
+			return false;
+		}
+
+		bool Action1_Step2(CardActionParameters parameters) 
+		{
+			ICard selectedCard = parameters.Answer.SingleCard;
+			if (selectedCard == null)
+				throw new ArgumentNullException("Must choose card.");
 
 			parameters.TargetPlayer.Hand.Remove(selectedCard);
 			parameters.ActivePlayer.Hand.Add(selectedCard);
 
+			ActionQueueManager.PopNextAction(parameters.Game);
 			return true;
 		}
 	}

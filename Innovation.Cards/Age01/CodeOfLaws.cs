@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Innovation.Models;
 using Innovation.Models.Enums;
 using Innovation.Actions;
+using Innovation.Actions.Handlers;
 namespace Innovation.Cards
 {
     public class CodeOfLaws : CardBase
@@ -35,18 +36,48 @@ namespace Innovation.Cards
 			if (cardsMatchingBoardColor.Count == 0)
 				return false;
 
-			ICard cardToTuck = parameters.TargetPlayer.PickCard(cardsMatchingBoardColor);
+			RequestQueueManager.PickCards(
+				parameters.Game,
+				parameters.TargetPlayer,
+				parameters.ActivePlayer,
+				parameters.TargetPlayer,
+				cardsMatchingBoardColor,
+				1, 1,
+				parameters.PlayerSymbolCounts,
+				Action1_Step2
+			);
 
+			return false;
+		}
+
+		bool Action1_Step2(CardActionParameters parameters)
+		{
+			ICard cardToTuck = parameters.Answer.SingleCard;
 			if (cardToTuck == null)
 				return false;
 				
 			parameters.TargetPlayer.Hand.Remove(cardToTuck);
 			Tuck.Action(cardToTuck, parameters.TargetPlayer);
 
-			if (parameters.TargetPlayer.AskToSplay(cardToTuck.Color, SplayDirection.Left))
-				parameters.TargetPlayer.Tableau.Stacks[cardToTuck.Color].SplayedDirection = SplayDirection.Left;
+			RequestQueueManager.AskToSplay(
+				parameters.Game,
+				parameters.TargetPlayer,
+				parameters.ActivePlayer,
+				parameters.TargetPlayer,
+				new List<Color>() { cardToTuck.Color },
+				SplayDirection.Left,
+				parameters.PlayerSymbolCounts,
+				Action1_Step3
+			);
 
 			return true;	
+		}
+
+		bool Action1_Step3(CardActionParameters parameters)
+		{
+			parameters.TargetPlayer.Tableau.Stacks[parameters.Answer.Color].SplayedDirection = SplayDirection.Left;
+
+			return true;
 		}
     }
 }

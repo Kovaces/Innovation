@@ -28,18 +28,24 @@ namespace Innovation.Cards
 		{
 			ValidateParameters(parameters);
 
-			var card = Draw.Action(1, parameters.Game);
-			parameters.TargetPlayer.RevealCard(card);
+			var drawnCard = Draw.Action(1, parameters.Game);
+			if (drawnCard == null)
+				return true;
 
-			while (card.HasSymbol(Symbol.Tower))
+			parameters.TargetPlayer.RevealCard(drawnCard);
+
+			while (drawnCard.HasSymbol(Symbol.Tower))
 			{
-				Score.Action(card, parameters.TargetPlayer);
+				Score.Action(drawnCard, parameters.TargetPlayer);
 
-				card = Draw.Action(1, parameters.Game);
-				parameters.TargetPlayer.RevealCard(card);
+				drawnCard = Draw.Action(1, parameters.Game);
+				if (drawnCard == null)
+					return true;
+
+				parameters.TargetPlayer.RevealCard(drawnCard);
 			}
 
-			parameters.TargetPlayer.Hand.Add(card);
+			parameters.TargetPlayer.Hand.Add(drawnCard);
 
 			return true;
 		}

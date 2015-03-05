@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Innovation.Models;
 using Innovation.Models.Enums;
 using Innovation.Actions;
+using Innovation.Actions.Handlers;
 namespace Innovation.Cards
 {
     public class Oars : CardBase
@@ -39,11 +40,33 @@ namespace Innovation.Cards
                 return false;
             }
 
-			ICard card = parameters.TargetPlayer.PickCard(cardsWithCrowns);
+			RequestQueueManager.PickCards(
+				parameters.Game,
+				parameters.TargetPlayer,
+				parameters.ActivePlayer,
+				parameters.TargetPlayer,
+				cardsWithCrowns,
+				1, 1,
+				parameters.PlayerSymbolCounts,
+				Action1_Step2
+			);
+
+			return false;
+		}
+		bool Action1_Step2(CardActionParameters parameters)
+		{
+			ICard card = parameters.Answer.SingleCard;
+			if (card == null)
+				throw new ArgumentNullException("Must choose card.");
+
 			parameters.TargetPlayer.Hand.Remove(card);
 			Score.Action(card, parameters.ActivePlayer);
 
-			parameters.TargetPlayer.Hand.Add(Draw.Action(1, parameters.Game));
+			var drawnCard = Draw.Action(1, parameters.Game);
+			if (drawnCard == null)
+				return true;
+
+			parameters.TargetPlayer.Hand.Add(drawnCard);
 
             parameters.Game.StashPropertyBagValue("OarsAction1Taken", true);
 		
@@ -56,8 +79,12 @@ namespace Innovation.Cards
 
 			if ((bool)parameters.Game.GetPropertyBagValue("OarsAction1Taken"))
 				return false;
-			
-			parameters.TargetPlayer.Hand.Add(Draw.Action(1, parameters.Game));
+
+			var drawnCard = Draw.Action(1, parameters.Game);
+			if (drawnCard == null)
+				return true;
+
+			parameters.TargetPlayer.Hand.Add(drawnCard);
 			
 			return true;
 		}

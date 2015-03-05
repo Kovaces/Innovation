@@ -29,9 +29,16 @@ namespace Innovation.Cards
 		{
 			ValidateParameters(parameters);
 
-			parameters.TargetPlayer.Hand.Add(Draw.Action(1, parameters.Game));
-			parameters.TargetPlayer.Hand.Add(Draw.Action(1, parameters.Game));
+			var drawnCard = Draw.Action(1, parameters.Game);
+			if (drawnCard == null)
+				return true;
+			parameters.TargetPlayer.Hand.Add(drawnCard);
 
+			drawnCard = Draw.Action(1, parameters.Game);
+			if (drawnCard == null)
+				return true;
+			parameters.TargetPlayer.Hand.Add(drawnCard);
+		
 			return true;
 		}
     }
