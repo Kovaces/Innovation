@@ -1,34 +1,37 @@
-﻿using System;
+﻿using Innovation.Models.Enums;
+using Innovation.Models.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Innovation.Models.Enums;
 
-namespace Innovation.Models.Interfaces
+namespace Innovation.Models
 {
 	public class RequestQueue
 	{
-		private List<Request> _Requests { get; set; }
+		private readonly List<Request> _requests = new List<Request>();
 
 		public void AddRequest(Request newRequest)
 		{
-			this._Requests.Add(newRequest);
+			_requests.Add(newRequest);
 		}
 
 		public void RemoveRequest(Request removedRequest)
 		{
-			this._Requests.Remove(removedRequest);
+			_requests.Remove(removedRequest);
 		}
 
 		public Request PopRequestForPlayerByType(IPlayer player, RequestType type)
 		{
-			var request = this._Requests.Where(x => x.TargetPlayer == player && x.Type == type).First();
+			var request = _requests.First(x => x.TargetPlayer == player && x.Type == type);
 			if (request == null)
 				return null;
 
-			this._Requests.Remove(request);
+			_requests.Remove(request);
 			return request;
+		}
+
+		public bool HasPendingRequests()
+		{
+			return _requests.Any();
 		}
 	}
 }

@@ -1,20 +1,17 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web.Configuration;
-using Innovation.Actions.Handlers;
+﻿using Innovation.Actions.Handlers;
+using Innovation.Cards;
 using Innovation.Models;
 using Innovation.Models.Enums;
 using Innovation.Models.Interfaces;
-using Innovation.Web;
 using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace Innovation
+namespace Innovation.Web.Innovation
 {
 	public class Innovation
 	{
@@ -22,8 +19,7 @@ namespace Innovation
 
 		private readonly ConcurrentDictionary<string, Game> _games = new ConcurrentDictionary<string, Game>();
 		private readonly ConcurrentDictionary<string, IPlayer> _players = new ConcurrentDictionary<string, IPlayer>();
-		private readonly ConcurrentDictionary<Guid, string> _responsesPending = new ConcurrentDictionary<Guid, string>();
-
+		
 		private IHubConnectionContext<dynamic> Clients { get; set; }
 
 		private Innovation(IHubConnectionContext<dynamic> clients)
@@ -31,6 +27,7 @@ namespace Innovation
 			Clients = clients;
 
 			_games.Clear();
+			_players.Clear();
 		}
 
 		public static Innovation Instance
@@ -38,68 +35,93 @@ namespace Innovation
 			get { return _instance.Value; }
 		}
 
-		public IPlayer GetPlayerById(string id)
+		private IPlayer GetPlayerById(string id)
 		{
-			IPlayer tempPlayer;
-			if (_players.TryGetValue(id, out tempPlayer)
-					&& tempPlayer != null)
-				return tempPlayer;
-			else
+			IPlayer tempPlayer = null;
+			
+			_players.TryGetValue(id, out tempPlayer);
+			
+			if (tempPlayer == null)
 				throw new ArgumentNullException("Invalid Player.  [" + id + "]");
+
+			return tempPlayer;
 		}
-		public Game GetGameById(string id)
+		private Game GetGameById(string id)
 		{
 			Game tempGame = null;
-			if (_games.TryGetValue(id, out tempGame)
-					&& tempGame != null)
-				return tempGame;
-			else
+			
+			_games.TryGetValue(id, out tempGame);
+
+			if (tempGame == null)
 				throw new ArgumentNullException("Invalid Game.  " + id + "]");
+			
+			return tempGame;
 		}
-
-
-
-		public void AddUser(string userId)
-		{
-			var player = new Player { Id = userId, PickMultipleCardsHandler = PickCards, AskQuestionHandler = AskQuestion, PickPlayersHandler = PickPlayers };
-			_players.TryAdd(player.Id, player);
-		}
-
-		public void RemoveUser(string userId)
-		{
-			IPlayer player;
-			_players.TryRemove(userId, out player);
-		}
-
-		public void CreateGame(string gameName, string[] playerIds)
-		{
-			Game game = new Game()
-			{
-				Name = gameName,
-				Id = new Guid().ToString()
-			};
-			List<IPlayer> playersToGame = new List<IPlayer>();
-			foreach (string id in playerIds)
-			{
-				playersToGame.Add(GetPlayerById(id));
-			}
-			game.Players = playersToGame;
-		}
-
-
-		public void ValidateResponseParameters(string gameId, string playerId, out Game game, out IPlayer player)
+		private void ValidateResponseParameters(string gameId, string playerId, out Game game, out IPlayer player)
 		{
 			game = GetGameById(gameId);
 			player = GetPlayerById(playerId);
 			if (!game.Players.Contains(player))
 				throw new ArgumentNullException("Player [" + playerId + "] not in game [" + gameId + "]");
 		}
+		
+		//User
+		public void AddUser(string userId)
+		{
+			var player = new Player
+			{
+				Id = userId, 
+				PickMultipleCardsHandler = PickCards, 
+				AskQuestionHandler = AskQuestion, 
+				PickPlayersHandler = PickPlayers, 
+				StartTurnHandler = PlayerStartTurn
+			};
 
+			_players.TryAdd(player.Id, player);
+		}
+		public void RemoveUser(string userId)
+		{
+			IPlayer player;
+			_players.TryRemove(userId, out player);
+		}
 
+		//Game
+		public void CreateGame(string gameName, string[] playerIds)
+		{
+			var game = new Game()
+			{
+				Name = gameName,
+				Id = new Guid().ToString(),
+				Players = playerIds.Select(id => GetPlayerById(id)).ToList(),
+				GameOverHandler = GameOver
+			};
 
+			_games.TryAdd(gameName, game);
+			
+			Task.Factory.StartNew(() => GameManager.StartGame(game));
+		}
+		public void GameOver(string gameName, string winner)
+		{
+			Clients.Group(gameName).gameOverNotification(GetPlayerById(winner).Name);
+			
+			Game game;
+			_games.TryRemove(gameName, out game);
+		}
 
+		//Player
+		public void PlayerStartTurn(string playerId)
+		{
+			Clients.User(playerId).startTurn();
+		}
+		internal void PickAction(string gameId, string playerId, string selectedAction)
+		{
+			Game game;
+			IPlayer player;
+			ValidateResponseParameters(gameId, playerId, out game, out player);
 
-
+			ActionQueueManager.PerformAction(game, player, selectedAction);
+		}
+		
 		public void PickCards(string playerId, IEnumerable<ICard> cardsToSelectFrom, int minimumNumberToSelect, int maximumNumberToSelect)
 		{
 			Clients.User(playerId).pickCard(
@@ -110,40 +132,26 @@ namespace Innovation
 		}
 		internal void PickCardsResponse(string gameId, string playerId, string[] cardIds)
 		{
-			Game game = null;
-			if (_games.TryGetValue(gameId, out game)
-					|| game == null)
-				throw new ArgumentNullException("Invalid Game.  " + gameId);
-
-			IPlayer player = GetPlayerById(playerId);
-
-			if (!game.Players.Contains(player))
-				throw new ArgumentNullException("Player [" + playerId + "] not in game [" + gameId + "]");
-
-			List<string> cardList = cardIds.ToList();
-
-			RequestQueueManager.ReceiveCardResponse(game, player, cardList);
+			Game game;
+			IPlayer player;
+			ValidateResponseParameters(gameId, playerId, out game, out player);
+			
+			RequestQueueManager.ReceiveCardResponse(game, player, cardIds.ToList());
 		}
-
-
-
+		
 		public void AskQuestion(string playerId, string question)
 		{
-			Clients.User(playerId).askQuestion(
-				question
-			);
+			Clients.User(playerId).askQuestion(question);
 		}
 		internal void AskQuestionResponse(string gameId, string playerId, bool response)
 		{
-			Game game = null;
+			Game game;
 			IPlayer player;
 			ValidateResponseParameters(gameId, playerId, out game, out player);
 
 			RequestQueueManager.ReceiveBooleanResponse(game, player, response);
 		}
-
-
-
+		
 		public void PickPlayers(string playerId, IEnumerable<IPlayer> playerList, int minimumNumberToSelect, int maximumNumberToSelect)
 		{
 			Clients.User(playerId).pickPlayers(
@@ -154,15 +162,13 @@ namespace Innovation
 		}
 		internal void PickPlayersResponse(string gameId, string playerId, string[] selectedPlayers)
 		{
-			Game game = GetGameById(gameId);
-			IPlayer player = GetPlayerById(playerId);
-			if (!game.Players.Contains(player))
-				throw new ArgumentNullException("Player [" + playerId + "] not in game [" + gameId + "]");
+			Game game;
+			IPlayer player;
+			ValidateResponseParameters(gameId, playerId, out game, out player);
 
 			RequestQueueManager.ReceivePlayerResponse(game, player, selectedPlayers.ToList());
 		}
-
-
+		
 		public void AskToSplay(string playerId, IEnumerable<Color> colors, SplayDirection splayDirection)
 		{
 			Clients.User(playerId).askToSplay(
@@ -170,30 +176,37 @@ namespace Innovation
 				Newtonsoft.Json.JsonConvert.SerializeObject(splayDirection)
 			);
 		}
-		public void PickSplayResponse(string gameId, string playerId, string selectedColor)
+		internal void PickSplayResponse(string gameId, string playerId, string selectedColor)
 		{
-			Game game = null;
+			Game game;
 			IPlayer player;
 			ValidateResponseParameters(gameId, playerId, out game, out player);
 
 			RequestQueueManager.ReceiveSplayResponse(game, player, selectedColor);
 		}
 
-
-
-
-
-		public void PickAction(string playerId)
+		//data
+		internal object GetCardList()
 		{
-			Clients.User(playerId).pickAction();
-		}
-		public void PickActionResponse(string gameId, string playerId, string selectedAction)
-		{
-			Game game = null;
-			IPlayer player;
-			ValidateResponseParameters(gameId, playerId, out game, out player);
-
-			RequestQueueManager.ReceiveActionResponse(game, player, selectedAction);
+			return CardList.GetCardList()
+							.Select(c => new
+							{
+								CardId = c.Id,
+								Name = c.Name,
+								Color = c.Color,
+								Age = c.Age,
+								Top = c.Top,
+								Left = c.Left,
+								Center = c.Center,
+								Right = c.Right,
+								Actions = c.Actions.Select(a => new
+								{
+									Symbol = a.Symbol,
+									ActionType = a.ActionType,
+									ActionText = a.ActionText
+								}),
+								Image = string.Empty
+							}).ToList();
 		}
 	}
 }

@@ -1,14 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using Innovation.Cards;
-using Innovation.Models;
-using Innovation.Models.Interfaces;
-using Microsoft.Ajax.Utilities;
-using Microsoft.AspNet.SignalR;
+﻿using Microsoft.AspNet.SignalR;
 
-namespace Innovation.Web
+namespace Innovation.Web.Innovation
 {
 	public class InnovationHub : Hub
 	{
@@ -56,47 +48,12 @@ namespace Innovation.Web
 			_innovation.AskQuestionResponse(gameId, playerId, response);
 		}
 
-
-
-
-
-
-
-
-
-		// data recovery
+		// data
 		public string GetCards()
 		{
-			var thing = CardList.GetCardList()
-							.Select(c => new
-							{
-								CardId = c.Id,
-								Name = c.Name,
-								Color = c.Color,
-								Age = c.Age,
-								Top = c.Top,
-								Left = c.Left,
-								Center = c.Center,
-								Right = c.Right,
-								Actions = c.Actions.Select(a => new
-								{
-									Symbol = a.Symbol,
-									ActionType = a.ActionType,
-									ActionText = a.ActionText
-								}),
-								Image = string.Empty
-							}).ToList();
-
-			string response = Newtonsoft.Json.JsonConvert.SerializeObject(thing);
-
-			return response;
-
-			//Clients.Client(Context.ConnectionId).populateCardList(response);
+			return Newtonsoft.Json.JsonConvert.SerializeObject(_innovation.GetCardList());
 		}
-
-
-
-
+		
 		// default chat action
 		public void Send(string name, string message)
 		{

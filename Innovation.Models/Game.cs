@@ -1,4 +1,5 @@
-﻿using Innovation.Models;
+﻿using System.Linq;
+using Innovation.Models;
 using System;
 using System.Threading;
 using System.Collections.Generic;
@@ -6,6 +7,8 @@ using Innovation.Models.Interfaces;
 
 namespace Innovation.Models
 {
+	public delegate void GameOver(string gameName, string winner);
+
 	public class Game
 	{
 		public Game()
@@ -49,7 +52,7 @@ namespace Innovation.Models
 			_propertyBag.Clear();
 		}
 
-
+		public GameOver GameOverHandler { get; set; }
 		public bool GameEnded { get; private set; }
 		private IPlayer _winner;
 		public void TriggerEndOfGame(IPlayer winner = null)
@@ -58,8 +61,12 @@ namespace Innovation.Models
 
 			if (_winner != null)
 				_winner = winner;
-		}
 
+			//TODO: calculate winner by score
+			_winner = Players.ElementAt(0);
+			
+			GameOverHandler(Name, _winner.Id);
+		}
 
 		public List<IPlayer> GetPlayersInPlayerOrder(int startingIndex)
 		{
@@ -70,17 +77,17 @@ namespace Innovation.Models
 			return players;
 		}
 
-		public void StartGame()
-		{
-			throw new NotImplementedException();
-		}
-
 		public void RevealCard(ICard card)
 		{
 			foreach (var player in Players)
 			{
 				player.RevealCard(card);
 			}
+		}
+
+		public IPlayer GetNextPlayer()
+		{
+			return GetPlayersInPlayerOrder(Players.IndexOf(ActivePlayer)).ElementAt(0);
 		}
 	}
 }

@@ -47,7 +47,6 @@
     <Compile Include="ActionWorkers\QueuedActionPickCard.cs" />
     <Compile Include="ActionWorkers\QueuedActionEndDogma.cs" />
     <Compile Include="Handlers\ActionQueueManager.cs" />
-    <Compile Include="Handlers\GameManager.cs" />
     <Compile Include="Handlers\RequestQueueManager.cs" />
     <Compile Include="Tuck.cs" />
     <Compile Include="Score.cs" />

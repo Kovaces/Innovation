@@ -18,6 +18,7 @@ namespace Innovation.Actions.Handlers
 		public static void ExecuteCardAction(Game game, CardActionDelegate cardActionDelegate, CardActionParameters parameters)
 		{
 			var cardActionResults = cardActionDelegate(parameters);
+
 			if (cardActionResults.OtherPlayerActed)
 				game.StashPropertyBagValue("OtherPlayersActed", true);
 
@@ -78,6 +79,11 @@ namespace Innovation.Actions.Handlers
 				if (!game.IsWaiting)
 					queuedAction = game.ActionQueue.PopAction();
 			}
+		}
+
+		public static void PerformAction(Game game, IPlayer player, string selectedAction)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

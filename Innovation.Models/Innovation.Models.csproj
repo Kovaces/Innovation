@@ -54,6 +54,7 @@
     <Compile Include="RequestQueue.cs" />
     <Compile Include="Stack.cs" />
     <Compile Include="Tableau.cs" />
+		<Compile Include="ExtensionMethods\ShuffleExtensions.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

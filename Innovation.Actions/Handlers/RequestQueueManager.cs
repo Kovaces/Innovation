@@ -142,19 +142,21 @@ namespace Innovation.Actions.Handlers
 
 		public static void ReceiveCardResponse(Game game, IPlayer fromPlayer, List<string> answers)
 		{
-			if (answers.Count <= 0)
-				throw new ArgumentNullException("Invalid choice.");
+			Request request = game.RequestQueue.PopRequestForPlayerByType(fromPlayer, RequestType.Card);
 
-			Request request = game.RequestQueue.PopRequestForPlayerByType(fromPlayer, RequestType.Boolean);
 			if (request == null)
 				return;
 
-			List<string> possibleAnswers = ((List<ICard>)request.Objects).Select(x => x.Id).ToList();
-			if (answers.Any(x => !possibleAnswers.Contains(x)))
-				throw new ArgumentNullException("Invalid choice.");
+			if (answers.Count < request.MinimumNumberToSelect)
+				throw new ArgumentOutOfRangeException("answers", string.Format("Player must select {0} card(s)", request.MinimumNumberToSelect));
 
-			List<ICard> possibleCards = (List<ICard>)request.Objects;
-			List<ICard> selectedCards = possibleCards.Where(x => answers.Contains(x.Id)).ToList();
+			if (answers.Count > request.MaximumNumberToSelect)
+				throw new ArgumentOutOfRangeException("answers", string.Format("Player must select no more than {0} card(s)", request.MaximumNumberToSelect));
+
+			List<ICard> selectedCards = ((List<ICard>)request.Objects).Where(x => answers.Contains(x.Id)).ToList();
+
+			if (answers.Any() && !selectedCards.Any())
+				throw new ArgumentOutOfRangeException("answers", "Card(s) selected are not valid for this request.");
 
 			ActionQueueManager.ExecuteCardAction(
 				game,
@@ -277,20 +279,6 @@ namespace Innovation.Actions.Handlers
 			targetPlayer.AskToSplay(colorsToSplay, splayDirection);
 		}
 
-		public static void PickAction(Game game, IPlayer activePlayer)
-		{
-			game.IsWaiting = true;
-			game.RequestQueue.AddRequest(new Request()
-			{
-				Type = RequestType.Action,
-
-				ActivePlayer = activePlayer,
-				TargetPlayer = activePlayer,
-			});
-
-			activePlayer.PickAction();
-		}
-
 		public static void AskQuestion(Game game, IPlayer activePlayer, IPlayer targetPlayer, string question, Dictionary<IPlayer, Dictionary<Symbol, int>> playerSymbolCounts, CardActionDelegate cardActionDelegate)
 		{
 			game.IsWaiting = true;
@@ -325,6 +313,21 @@ namespace Innovation.Actions.Handlers
 			});
 
 			activePlayer.PickPlayer(players, minimumNumberToSelect, maximumNumberToSelect);
+		}
+
+		public static void StartTurn(Game game, IPlayer player)
+		{
+			game.ActivePlayer = player;
+
+			game.RequestQueue.AddRequest(new Request()
+			{
+				Type = RequestType.Action,
+
+				ActivePlayer = player,
+				TargetPlayer = player,
+			});
+
+			player.StartTurn();
 		}
 	}
 }

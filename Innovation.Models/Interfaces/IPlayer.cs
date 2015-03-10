@@ -15,7 +15,7 @@ namespace Innovation.Models.Interfaces
 		List<ICard> Hand { get; set; }
 		string Team { get; set; } //the base rules support team play but implementing that is low on the priority list
 
-		int TurnsTaken { get; set; }
+		int ActionsTaken { get; set; }
 
 
 		void PickCardFromHand();
@@ -23,8 +23,9 @@ namespace Innovation.Models.Interfaces
 		void PickMultipleCards(IEnumerable<ICard> cardsToSelectFrom, int minimumNumberToSelect, int maximumNumberToSelect);
 		void RevealCard(ICard card);
 		void AskToSplay(IEnumerable<Color> colorsToSplay, SplayDirection directionToSplay);
-		void PickAction();
 		void AskQuestion(string question);
 		void PickPlayer(List<IPlayer> playerList, int minimumNumberToSelect, int maximumNumberToSelect);
+
+		void StartTurn();
 	}
 }
