@@ -11,7 +11,7 @@ namespace Innovation.Tests.Helpers
 {
 	public class Card : ICard
 	{
-		public string ID { get { return "C_" + new Regex("[^a-zA-Z0-9]").Replace(Name, ""); } }
+		public string Id { get { return "C_" + new Regex("[^a-zA-Z0-9]").Replace(Name, ""); } }
 
 		public Symbol Top { get; set; }
 		public Symbol Left { get; set; }

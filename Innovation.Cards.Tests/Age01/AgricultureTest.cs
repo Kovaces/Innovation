@@ -101,9 +101,9 @@ namespace Innovation.Cards.Tests
 			//testGame.Players[0].AlwaysParticipates = true;
 			//testGame.Players[0].SelectsCards = new List<int>() { 0 };
 
-			bool result = new Agriculture().Actions.ToList()[0].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[0], Game = testGame, ActivePlayer = testGame.Players[0], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
+			var result = new Agriculture().Actions.ToList()[0].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[0], Game = testGame, ActivePlayer = testGame.Players[0], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
 
-			Assert.AreEqual(true, result);
+			Assert.AreEqual(true, result.OtherPlayerActed);
 
 			Assert.AreEqual(2, testGame.Players[0].Hand.Count);
 			Assert.AreEqual(4, testGame.AgeDecks.Where(x => x.Age == 1).FirstOrDefault().Cards.Count);

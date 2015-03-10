@@ -24,7 +24,7 @@ namespace Innovation.Cards
                 };
             }
         }
-        bool Action1(CardActionParameters parameters) 
+		CardActionResults Action1(CardActionParameters parameters)
 		{
 			ValidateParameters(parameters);
 
@@ -32,7 +32,7 @@ namespace Innovation.Cards
 			for (int i = 0; i < numberOfLeafs / 2; i++)
 				parameters.TargetPlayer.Hand.Add(Draw.Action(2, parameters.Game));
 
-			return numberOfLeafs >= 2;
+			return new CardActionResults(numberOfLeafs >= 2, false);
 		}
     }
 }

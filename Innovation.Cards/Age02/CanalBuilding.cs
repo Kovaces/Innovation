@@ -3,34 +3,32 @@ using System.Linq;
 using System.Collections.Generic;
 using Innovation.Models;
 using Innovation.Models.Enums;
+using Innovation.Actions.Handlers;
 namespace Innovation.Cards
 {
-    public class CanalBuilding : CardBase
-    {
-        public override string Name { get { return "Canal Building"; } }
-        public override int Age { get { return 2; } }
-        public override Color Color { get { return Color.Yellow; } }
-        public override Symbol Top { get { return Symbol.Blank; } }
-        public override Symbol Left { get { return Symbol.Crown; } }
-        public override Symbol Center { get { return Symbol.Leaf; } }
-        public override Symbol Right { get { return Symbol.Crown; } }
-        public override IEnumerable<CardAction> Actions
-        {
-            get
-            {
-                return new List<CardAction>()
+	public class CanalBuilding : CardBase
+	{
+		public override string Name { get { return "Canal Building"; } }
+		public override int Age { get { return 2; } }
+		public override Color Color { get { return Color.Yellow; } }
+		public override Symbol Top { get { return Symbol.Blank; } }
+		public override Symbol Left { get { return Symbol.Crown; } }
+		public override Symbol Center { get { return Symbol.Leaf; } }
+		public override Symbol Right { get { return Symbol.Crown; } }
+		public override IEnumerable<CardAction> Actions
+		{
+			get
+			{
+				return new List<CardAction>()
 				{
                     new CardAction(ActionType.Optional, Symbol.Crown, "You may exchange all the highest cards in your hand with all the highest cards in your score pile.", Action1)
                 };
-            }
-        }
-		bool Action1(CardActionParameters parameters)
+			}
+		}
+		CardActionResults Action1(CardActionParameters parameters)
 		{
 			ValidateParameters(parameters);
 
-			if (!parameters.TargetPlayer.AskQuestion(this.Actions.ElementAt(0).ActionText))
-				return false;
-			
 			int maxAgeInHand = parameters.TargetPlayer.Hand.Any() ? parameters.TargetPlayer.Hand.Max(x => x.Age) : 0;
 			var cardsInHandToTransfer = parameters.TargetPlayer.Hand.Where(x => x.Age == maxAgeInHand).ToList();
 
@@ -38,7 +36,7 @@ namespace Innovation.Cards
 			var cardsInPileToTransfer = parameters.TargetPlayer.Tableau.ScorePile.Where(x => x.Age == maxAgeInPile).ToList();
 
 			if (!cardsInHandToTransfer.Any() && !cardsInPileToTransfer.Any())
-				return false; //no game state change regardless of player opting in
+				return new CardActionResults(false, false);
 
 			foreach (ICard card in cardsInHandToTransfer)
 			{
@@ -51,8 +49,8 @@ namespace Innovation.Cards
 				parameters.TargetPlayer.Tableau.ScorePile.Remove(card);
 				parameters.TargetPlayer.Hand.Add(card);
 			}
-			
-			return true;
+
+			return new CardActionResults(true, false);
 		}
-    }
+	}
 }

@@ -27,18 +27,17 @@ namespace Innovation.Cards
             }
         }
 
-        bool Action1(CardActionParameters parameters) 
+        CardActionResults Action1(CardActionParameters parameters) 
 		{
 			ValidateParameters(parameters);
 
 	        var cardsWithTowers = parameters.TargetPlayer.Hand.Where(c => c.HasSymbol(Symbol.Tower)).ToList();
 			
 			if (cardsWithTowers.Count == 0)
-				return false;
+				return new CardActionResults(false, false);
 
 			RequestQueueManager.PickCards(
 				parameters.Game,
-				parameters.TargetPlayer,
 				parameters.ActivePlayer,
 				parameters.TargetPlayer,
 				cardsWithTowers,
@@ -47,9 +46,9 @@ namespace Innovation.Cards
 				Action1_Step2
 			);
 
-			return false;
+			return new CardActionResults(false, true);
 		}
-		bool Action1_Step2(CardActionParameters parameters)
+		CardActionResults Action1_Step2(CardActionParameters parameters)
 		{
 			var selectedCards = parameters.Answer.MultipleCards;
 			foreach (var card in selectedCards)
@@ -61,7 +60,7 @@ namespace Innovation.Cards
 			if (selectedCards.Count > 4)
 				throw new NotImplementedException("Monument Achievement"); // TODO::achieve Monument.  Special achievements need a larger framework and some discussion
 
-			return (selectedCards.Count > 0);
+			return new CardActionResults((selectedCards.Count > 0), false);
 		}
     }
 }

@@ -25,7 +25,7 @@ namespace Innovation.Actions.Tests
 
 		private bool takeAction;
 	
-		private bool TestRequiredActionHandler(CardActionParameters parameters)
+		private CardActionResults TestRequiredActionHandler(CardActionParameters parameters)
 		{
 			targetedPlayer = parameters.TargetPlayer;
 			activePlayer = parameters.ActivePlayer;
@@ -33,10 +33,10 @@ namespace Innovation.Actions.Tests
 			playerActionsCalled[targetedPlayer]++;
 			playerActionsTaken[targetedPlayer]++;
 
-			return true;
+			return new CardActionResults(true, false);
 		}
 
-		private bool TestOptionalActionHandler(CardActionParameters parameters)
+		private CardActionResults TestOptionalActionHandler(CardActionParameters parameters)
 		{
 			targetedPlayer = parameters.TargetPlayer;
 			activePlayer = parameters.ActivePlayer;
@@ -46,7 +46,7 @@ namespace Innovation.Actions.Tests
 			if ((targetedPlayer == activePlayer) || takeAction)
 				playerActionsTaken[targetedPlayer]++;
 
-			return takeAction;
+			return new CardActionResults(true, false);
 		}
 
 		private IPlayer GeneratePlayer(int highestAge, Dictionary<Symbol, int> symbolCounts)

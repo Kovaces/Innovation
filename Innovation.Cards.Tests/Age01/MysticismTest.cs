@@ -97,9 +97,9 @@ namespace Innovation.Cards.Tests
 		[TestMethod]
 		public void Card_MysticismAction1()
 		{
-			bool result = new Mysticism().Actions.ToList()[0].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[0], Game = testGame, ActivePlayer = testGame.Players[0], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
+			var result = new Mysticism().Actions.ToList()[0].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[0], Game = testGame, ActivePlayer = testGame.Players[0], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
 
-			Assert.AreEqual(true, result);
+			Assert.AreEqual(true, result.OtherPlayerActed);
 
 			Assert.AreEqual(4, testGame.Players[0].Hand.Count);
 
@@ -126,9 +126,9 @@ namespace Innovation.Cards.Tests
 				new Card { Name = "Test Purple Card", Color = Color.Purple, Age = 1, Top = Symbol.Blank, Left = Symbol.Crown, Center = Symbol.Tower, Right = Symbol.Tower }
 			};
 
-			bool result = new Mysticism().Actions.ToList()[0].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[0], Game = testGame, ActivePlayer = testGame.Players[0], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
+			var result = new Mysticism().Actions.ToList()[0].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[0], Game = testGame, ActivePlayer = testGame.Players[0], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
 
-			Assert.AreEqual(true, result);
+			Assert.AreEqual(true, result.OtherPlayerActed);
 
 			Assert.AreEqual(4, testGame.Players[0].Hand.Count);
 

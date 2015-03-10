@@ -11,17 +11,14 @@ namespace Innovation.Actions.Handlers
 {
 	public class RequestQueueManager
 	{
-		public static void ReceiveActionResponse(Game game, Player fromPlayer, List<string> answers)
+		public static void ReceiveActionResponse(Game game, IPlayer fromPlayer, string answer)
 		{
-			if (answers.Count <= 0)
-				return;
-
 			Request request = game.RequestQueue.PopRequestForPlayerByType(fromPlayer, RequestType.Boolean);
 			if (request == null)
 				return;
 
 			ActionEnum selectedAction = ActionEnum.None;
-			if (Enum.TryParse(answers[0], true, out selectedAction))
+			if (Enum.TryParse(answer, true, out selectedAction))
 			{
 				switch (selectedAction)
 				{
@@ -97,16 +94,16 @@ namespace Innovation.Actions.Handlers
 
 		}
 
-		public static bool DogmaResponse(CardActionParameters parameters)
+		public static CardActionResults DogmaResponse(CardActionParameters parameters)
 		{
 			ICard card = parameters.Answer.SingleCard;
 
 			Dogma.Action(card, parameters.TargetPlayer, parameters.Game);
 
-			return true;
+			return new CardActionResults(true,false);
 		}
 
-		public static bool MeldResponse(CardActionParameters parameters)
+		public static CardActionResults MeldResponse(CardActionParameters parameters)
 		{
 			ICard card = parameters.Answer.SingleCard;
 
@@ -114,22 +111,17 @@ namespace Innovation.Actions.Handlers
 
 			Meld.Action(card, parameters.TargetPlayer);
 
-			return true;
+			return new CardActionResults(true, false);
 		}
 
 
 
 
-		public static void ReceiveBooleanResponse(Game game, Player fromPlayer, List<string> answers)
+		public static void ReceiveBooleanResponse(Game game, IPlayer fromPlayer, Boolean answer)
 		{
-			if (answers.Count <= 0)
-				return;
-
 			Request request = game.RequestQueue.PopRequestForPlayerByType(fromPlayer, RequestType.Boolean);
 			if (request == null)
 				return;
-
-			bool answer = bool.Parse(answers[0]);
 
 			if (answer)
 			{
@@ -148,23 +140,21 @@ namespace Innovation.Actions.Handlers
 			}
 		}
 
-		public static void ReceiveCardResponse(Game game, Player fromPlayer, List<string> answers)
+		public static void ReceiveCardResponse(Game game, IPlayer fromPlayer, List<string> answers)
 		{
 			if (answers.Count <= 0)
-				return;
+				throw new ArgumentNullException("Invalid choice.");
 
 			Request request = game.RequestQueue.PopRequestForPlayerByType(fromPlayer, RequestType.Boolean);
 			if (request == null)
 				return;
 
-			List<string> possibleAnswers = ((List<ICard>)request.Objects).Select(x => x.ID).ToList();
+			List<string> possibleAnswers = ((List<ICard>)request.Objects).Select(x => x.Id).ToList();
 			if (answers.Any(x => !possibleAnswers.Contains(x)))
-			{
-				return;                              // invalid answer returned
-			}
+				throw new ArgumentNullException("Invalid choice.");
 
 			List<ICard> possibleCards = (List<ICard>)request.Objects;
-			List<ICard> selectedCards = possibleCards.Where(x => answers.Contains(x.ID)).ToList();
+			List<ICard> selectedCards = possibleCards.Where(x => answers.Contains(x.Id)).ToList();
 
 			ActionQueueManager.ExecuteCardAction(
 				game,
@@ -181,7 +171,7 @@ namespace Innovation.Actions.Handlers
 			);
 		}
 
-		public static void ReceivePlayerResponse(Game game, Player fromPlayer, List<string> answers)
+		public static void ReceivePlayerResponse(Game game, IPlayer fromPlayer, List<string> answers)
 		{
 			if (answers.Count <= 0)
 				return;
@@ -189,13 +179,11 @@ namespace Innovation.Actions.Handlers
 			Request request = game.RequestQueue.PopRequestForPlayerByType(fromPlayer, RequestType.Boolean);
 
 			if (request == null)
-				return;
+				throw new ArgumentNullException("Invalid choice.");
 
 			List<string> possibleAnswers = ((List<IPlayer>)request.Objects).Select(x => x.Id).ToList();
 			if (answers.Any(x => !possibleAnswers.Contains(x)))
-			{
-				return;                              // invalid answer returned
-			}
+				throw new ArgumentNullException("Invalid choice.");
 
 			List<IPlayer> possiblePlayers = (List<IPlayer>)request.Objects;
 			List<IPlayer> selectedPlayers = possiblePlayers.Where(x => answers.Contains(x.Id)).ToList();
@@ -215,22 +203,19 @@ namespace Innovation.Actions.Handlers
 			);
 		}
 
-		public static void ReceiveSplayResponse(Game game, Player fromPlayer, List<string> answers)
+		public static void ReceiveSplayResponse(Game game, IPlayer fromPlayer, string answer)
 		{
-			if (answers.Count <= 0)
-				return;
-
 			Request request = game.RequestQueue.PopRequestForPlayerByType(fromPlayer, RequestType.Splay);
 
 			Color selectedColor = Color.None;
-			if (Enum.TryParse(answers[0], true, out selectedColor))
+			if (Enum.TryParse(answer, true, out selectedColor))
 			{
 				List<Color> possibleColors = (List<Color>)request.Objects;
 				if (!possibleColors.Contains(selectedColor))
-					return;
+					throw new ArgumentNullException("Invalid choice.");
 
 				if (selectedColor == Color.None)
-					return;
+					throw new ArgumentNullException("Invalid choice.");
 
 				ActionQueueManager.ExecuteCardAction(
 					game,
@@ -251,13 +236,14 @@ namespace Innovation.Actions.Handlers
 
 
 
-		public static void PickCards(Game game, IPlayer questionedPlayer, IPlayer activePlayer, IPlayer targetPlayer, IEnumerable<ICard> cards, int minimumNumberToSelect, int maximumNumberToSelect, Dictionary<IPlayer, Dictionary<Symbol, int>> playerSymbolCounts, CardActionDelegate cardActionDelegate)
+		public static void PickCards(Game game, IPlayer activePlayer, IPlayer targetPlayer, IEnumerable<ICard> cards, int minimumNumberToSelect, int maximumNumberToSelect, Dictionary<IPlayer, Dictionary<Symbol, int>> playerSymbolCounts, CardActionDelegate cardActionDelegate)
 		{
+			game.IsWaiting = true;
+
 			game.RequestQueue.AddRequest(new Request()
 			{
 				Type = RequestType.Card,
 
-				QuestionedPlayer = questionedPlayer,
 				ActivePlayer = activePlayer,
 				TargetPlayer = targetPlayer,
 				PlayerSymbolCounts = playerSymbolCounts,
@@ -269,16 +255,16 @@ namespace Innovation.Actions.Handlers
 				ResponseHandler = cardActionDelegate
 			});
 
-			questionedPlayer.PickCard(cards);
+			targetPlayer.PickMultipleCards(cards, minimumNumberToSelect, maximumNumberToSelect);
 		}
 
-		public static void AskToSplay(Game game, IPlayer questionedPlayer, IPlayer activePlayer, IPlayer targetPlayer, List<Color> colorsToSplay, SplayDirection splayDirection, Dictionary<IPlayer, Dictionary<Symbol, int>> playerSymbolCounts, CardActionDelegate cardActionDelegate)
+		public static void AskToSplay(Game game, IPlayer activePlayer, IPlayer targetPlayer, List<Color> colorsToSplay, SplayDirection splayDirection, Dictionary<IPlayer, Dictionary<Symbol, int>> playerSymbolCounts, CardActionDelegate cardActionDelegate)
 		{
+			game.IsWaiting = true;
 			game.RequestQueue.AddRequest(new Request()
 			{
 				Type = RequestType.Splay,
 
-				QuestionedPlayer = questionedPlayer,
 				ActivePlayer = activePlayer,
 				TargetPlayer = targetPlayer,
 				PlayerSymbolCounts = playerSymbolCounts,
@@ -288,7 +274,57 @@ namespace Innovation.Actions.Handlers
 				ResponseHandler = cardActionDelegate
 			});
 
-			questionedPlayer.AskToSplay(colorsToSplay, splayDirection);
+			targetPlayer.AskToSplay(colorsToSplay, splayDirection);
+		}
+
+		public static void PickAction(Game game, IPlayer activePlayer)
+		{
+			game.IsWaiting = true;
+			game.RequestQueue.AddRequest(new Request()
+			{
+				Type = RequestType.Action,
+
+				ActivePlayer = activePlayer,
+				TargetPlayer = activePlayer,
+			});
+
+			activePlayer.PickAction();
+		}
+
+		public static void AskQuestion(Game game, IPlayer activePlayer, IPlayer targetPlayer, string question, Dictionary<IPlayer, Dictionary<Symbol, int>> playerSymbolCounts, CardActionDelegate cardActionDelegate)
+		{
+			game.IsWaiting = true;
+			game.RequestQueue.AddRequest(new Request()
+			{
+				Type = RequestType.Boolean,
+
+				ActivePlayer = activePlayer,
+				TargetPlayer = targetPlayer,
+				PlayerSymbolCounts = playerSymbolCounts,
+
+				Objects = question
+			});
+
+			activePlayer.AskQuestion(question);
+		}
+
+		public static void PickPlayer(Game game, IPlayer activePlayer, IPlayer targetPlayer, List<IPlayer> players, int minimumNumberToSelect, int maximumNumberToSelect, Dictionary<IPlayer, Dictionary<Symbol, int>> playerSymbolCounts, CardActionDelegate cardActionDelegate)
+		{
+			game.IsWaiting = true;
+			game.RequestQueue.AddRequest(new Request()
+			{
+				Type = RequestType.Boolean,
+
+				ActivePlayer = activePlayer,
+				TargetPlayer = targetPlayer,
+				MinimumNumberToSelect = minimumNumberToSelect,
+				MaximumNumberToSelect = maximumNumberToSelect,
+				PlayerSymbolCounts = playerSymbolCounts,
+
+				Objects = players
+			});
+
+			activePlayer.PickPlayer(players, minimumNumberToSelect, maximumNumberToSelect);
 		}
 	}
 }

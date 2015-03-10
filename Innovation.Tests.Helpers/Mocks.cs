@@ -33,12 +33,14 @@ namespace Innovation.Tests.Helpers
 
 				mockPlayer.Stub(p => p.AskQuestion(Arg<string>.Is.Anything)).Return(true);
 				mockPlayer.Stub(p => p.PickCardFromHand()).Return(mockPlayer.Hand.First());
-				mockPlayer.Stub(p => p.PickPlayer(Arg<List<IPlayer>>.Is.Anything))
+				mockPlayer.Stub(p => p.PickPlayer(Arg<List<IPlayer>>.Is.Anything, Arg<int>.Is.Anything, Arg<int>.Is.Anything))
 						.Return(null)
 						.WhenCalled(p =>
 							{
 								List<IPlayer> players = (List<IPlayer>)p.Arguments[0];
-								p.ReturnValue = players.First();
+								int min = (int)p.Arguments[1];
+								int max = (int)p.Arguments[2];
+								p.ReturnValue = players.Take(Math.Max(1,min));
 							}
 					);
 				mockPlayer.Stub(p => p.PickCard(Arg<List<ICard>>.Is.Anything))

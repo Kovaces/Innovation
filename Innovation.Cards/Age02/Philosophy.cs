@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Innovation.Models;
 using Innovation.Models.Enums;
 using Innovation.Actions;
+using Innovation.Actions.Handlers;
 namespace Innovation.Cards
 {
     public class Philosophy : CardBase
@@ -26,34 +27,69 @@ namespace Innovation.Cards
                 };
             }
         }
-        bool Action1(CardActionParameters parameters) 
+		CardActionResults Action1(CardActionParameters parameters) 
 		{
 			ValidateParameters(parameters);
 
 			// pick color vs pick card?
-			List<ICard> cardsToSelectFrom = parameters.TargetPlayer.Tableau.GetTopCards();
-			if (cardsToSelectFrom.Count > 0)
-			{
-				Color chosenColor = parameters.TargetPlayer.PickMultipleCards(cardsToSelectFrom, 1, 1).First().Color;
+			List<Color> colorsToSelectFrom = parameters.TargetPlayer.Tableau.GetTopCards().Select(x => x.Color).ToList();
+			if (colorsToSelectFrom.Count == 0)
+				return new CardActionResults(false, false);
+			
+			RequestQueueManager.AskToSplay(
+				parameters.Game,
+				parameters.ActivePlayer,
+				parameters.TargetPlayer,
+				colorsToSelectFrom,
+				SplayDirection.Left,
+				parameters.PlayerSymbolCounts,
+				Action1_Step2
+			);
 
-				parameters.TargetPlayer.Tableau.Stacks[chosenColor].Splay(SplayDirection.Left);
-				return true;
-			}
-
-			return false;
+			return new CardActionResults(false, true);
 		}
-		bool Action2(CardActionParameters parameters)
+		CardActionResults Action1_Step2(CardActionParameters parameters)
+		{
+			Color chosenColor = parameters.Answer.Color;
+			if (chosenColor == Color.None)
+				return new CardActionResults(false, false);
+
+			parameters.TargetPlayer.Tableau.Stacks[chosenColor].Splay(SplayDirection.Left);
+
+			return new CardActionResults(true, false);
+		}
+
+
+		CardActionResults Action2(CardActionParameters parameters)
 		{
 			ValidateParameters(parameters);
 
-			if (parameters.TargetPlayer.Hand.Count > 0)
-			{
-				ICard card = parameters.TargetPlayer.PickCardFromHand();
-				parameters.TargetPlayer.Hand.Remove(card);
-				Score.Action(card, parameters.TargetPlayer);
-			}
+			if (parameters.TargetPlayer.Hand.Count == 0)
+				return new CardActionResults(false, false);
 
-			return false;
+			RequestQueueManager.PickCards(
+				parameters.Game,
+				parameters.ActivePlayer,
+				parameters.TargetPlayer,
+				parameters.TargetPlayer.Hand,
+				1,
+				1,
+				parameters.PlayerSymbolCounts,
+				Action2_Step2
+			);
+
+			return new CardActionResults(false, true);
+		}
+		CardActionResults Action2_Step2(CardActionParameters parameters)
+		{
+			ICard card = parameters.Answer.SingleCard;
+			if (card == null)
+				return new CardActionResults(false, false);
+
+			parameters.TargetPlayer.Hand.Remove(card);
+			Score.Action(card, parameters.TargetPlayer);
+
+			return new CardActionResults(true, false);
 		}
     }
 }

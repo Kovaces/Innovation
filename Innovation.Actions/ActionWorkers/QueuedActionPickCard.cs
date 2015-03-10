@@ -19,7 +19,6 @@ namespace Innovation.Actions.ActionWorkers
 
 				ActivePlayer = queuedAction.ActivePlayer,
 				TargetPlayer = queuedAction.TargetPlayer,
-				QuestionedPlayer = queuedAction.TargetPlayer,
 				PlayerSymbolCounts = queuedAction.PlayerSymbolCounts,
 				MinimumNumberToSelect = queuedAction.Parameters.MinSelections,
 				MaximumNumberToSelect = queuedAction.Parameters.MaxSelections,

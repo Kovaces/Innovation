@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Innovation.Actions;
+using Innovation.Actions.Handlers;
 using Innovation.Models;
 using Innovation.Models.Enums;
 namespace Innovation.Cards
@@ -26,17 +27,39 @@ namespace Innovation.Cards
             }
         }
 
-	    bool Action1(CardActionParameters parameters)
+	    CardActionResults Action1(CardActionParameters parameters)
 	    {
 		    ValidateParameters(parameters);
 
-		    var selectedCard = parameters.TargetPlayer.PickCard(parameters.TargetPlayer.Tableau.GetTopCards().Where(c => c.HasSymbol(Symbol.Leaf)));
+			var topCardsWithLeaves = parameters.TargetPlayer.Tableau.GetTopCards().Where(c => c.HasSymbol(Symbol.Leaf)).ToList();
+			if (topCardsWithLeaves.Count == 0)
+				return new CardActionResults(false, false);
+
+			RequestQueueManager.PickCards(
+				parameters.Game,
+				parameters.ActivePlayer,
+				parameters.TargetPlayer,
+				topCardsWithLeaves,
+				1,
+				1,
+				parameters.PlayerSymbolCounts,
+				Action1_Step2
+			);
+
+			return new CardActionResults(false, true);
+		}
+		CardActionResults Action1_Step2(CardActionParameters parameters)
+		{
+			var selectedCard = parameters.Answer.SingleCard;
+			if (selectedCard == null)
+				throw new ArgumentNullException("Must choose a card.");
+
 			Return.Action(selectedCard, parameters.Game);
 
-		    return false;
-	    }
+			return new CardActionResults(true, false);
+		}
 
-	    bool Action2(CardActionParameters parameters)
+     CardActionResults Action2(CardActionParameters parameters)
 	    {
 		    ValidateParameters(parameters);
 
@@ -45,7 +68,7 @@ namespace Innovation.Cards
 			if (!parameters.Game.Players.Exists(p => p.Tableau.GetSymbolCount(Symbol.Leaf) > p.Tableau.GetSymbolCount(Symbol.Factory)))
 				parameters.Game.TriggerEndOfGame(parameters.Game.Players.OrderByDescending(p => p.Tableau.GetScore()).ToList().First());
 
-			return true;
-	    }
+			return new CardActionResults(true, false);
+		}
     }
 }

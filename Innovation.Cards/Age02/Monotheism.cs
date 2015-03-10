@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Innovation.Models;
 using Innovation.Models.Enums;
 using Innovation.Actions;
+using Innovation.Actions.Handlers;
 namespace Innovation.Cards
 {
     public class Monotheism : CardBase
@@ -25,7 +26,7 @@ namespace Innovation.Cards
                 };
             }
         }
-        bool Action1(CardActionParameters parameters)
+        CardActionResults Action1(CardActionParameters parameters)
 		{
 			ValidateParameters(parameters);
 
@@ -33,23 +34,42 @@ namespace Innovation.Cards
 			List<ICard> possibleTransferCards = parameters.TargetPlayer.Tableau.GetTopCards().Where(x => !activePlayerTopColors.Contains(x.Color)).ToList();
 
 			if (possibleTransferCards.Count == 0)
-				return false;
-			
-			ICard cardToTransfer = parameters.TargetPlayer.PickCard(possibleTransferCards);
+				return new CardActionResults(false, false);
+
+			RequestQueueManager.PickCards(
+				parameters.Game,
+				parameters.ActivePlayer,
+				parameters.TargetPlayer,
+				possibleTransferCards,
+				1, 1,
+				parameters.PlayerSymbolCounts,
+				Action1_Step2
+			);
+
+			return new CardActionResults(false, true);
+		}
+		CardActionResults Action1_Step2(CardActionParameters parameters)
+		{
+			ICard cardToTransfer = parameters.Answer.SingleCard;
+			if (cardToTransfer == null)
+				throw new ArgumentNullException("Must choose a card.");
+
 			parameters.TargetPlayer.Tableau.Stacks[cardToTransfer.Color].RemoveCard(cardToTransfer);
 			parameters.ActivePlayer.Tableau.ScorePile.Add(cardToTransfer);
 
 			Tuck.Action(Draw.Action(1, parameters.Game), parameters.TargetPlayer);
 
-			return true;
+			return new CardActionResults(true, false);
 		}
-        bool Action2(CardActionParameters parameters) 
+
+
+        CardActionResults Action2(CardActionParameters parameters) 
 		{
 			ValidateParameters(parameters);
 
 			Tuck.Action(Draw.Action(1, parameters.Game), parameters.TargetPlayer);
 
-			return true;
+			return new CardActionResults(true, false);
 		}
     }
 }

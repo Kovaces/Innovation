@@ -4,7 +4,7 @@ using Innovation.Models.Interfaces;
 
 namespace Innovation.Models
 {
-	public delegate bool CardActionDelegate(CardActionParameters parameters);
+	public delegate CardActionResults CardActionDelegate(CardActionParameters parameters);
 
 	public class CardAction
 	{
@@ -23,13 +23,24 @@ namespace Innovation.Models
 	}
 
 	public class CardActionParameters
-	{
+	{ 
 		public IPlayer TargetPlayer { get; set; }
 		public IPlayer ActivePlayer { get; set; }
 		public Game Game { get; set; }
 		public Dictionary<IPlayer, Dictionary<Symbol, int>> PlayerSymbolCounts { get; set; }
 
 		public GenericAnswer Answer { get; set; }
+	}
+
+	public class CardActionResults
+	{
+		public bool OtherPlayerActed { get; set; }
+		public bool IsWaitingForResponse { get; set; }
+		public CardActionResults(bool otherPlayerActed, bool isWaitingForResponse)
+		{
+			OtherPlayerActed = otherPlayerActed;
+			IsWaitingForResponse = isWaitingForResponse;
+		}
 	}
 
 	public class GenericAnswer
@@ -39,5 +50,6 @@ namespace Innovation.Models
 		public bool Boolean { get; set; }
 		public List<IPlayer> Players { get; set; }
 		public Color Color { get; set; }
+		public ActionEnum Action { get; set; }
 	}
 }

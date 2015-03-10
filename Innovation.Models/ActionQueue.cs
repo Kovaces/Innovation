@@ -16,6 +16,15 @@ namespace Innovation.Models
 			this._Actions.Clear();
 		}
 
+		public bool IsEmpty
+		{
+			get
+			{
+				return this._Actions.Any();
+			}
+		}
+		public IPlayer ActivePlayer { get; set; }
+
 		public void AddAction(QueuedAction newAction)
 		{
 			this._Actions.Add(newAction);

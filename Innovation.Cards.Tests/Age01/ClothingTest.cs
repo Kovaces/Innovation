@@ -102,9 +102,9 @@ namespace Innovation.Cards.Tests
 
 			//testGame.Players[0].SelectsCards = new List<int>() { 0 };
 
-			bool result = new Clothing().Actions.ToList()[0].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[0], Game = testGame, ActivePlayer = testGame.Players[0], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
+			var result = new Clothing().Actions.ToList()[0].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[0], Game = testGame, ActivePlayer = testGame.Players[0], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
 
-			Assert.AreEqual(true, result);
+			Assert.AreEqual(true, result.OtherPlayerActed);
 
 			Assert.AreEqual(2, testGame.Players[0].Hand.Count);
 			Assert.AreEqual(1, testGame.Players[1].Hand.Count);
@@ -124,9 +124,9 @@ namespace Innovation.Cards.Tests
 		{
 			// player2:  red stack;				red card;				nothing happens
 
-			bool result = new Clothing().Actions.ToList()[0].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[1], Game = testGame, ActivePlayer = testGame.Players[1], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
+			var result = new Clothing().Actions.ToList()[0].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[1], Game = testGame, ActivePlayer = testGame.Players[1], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
 
-			Assert.AreEqual(false, result);
+			Assert.AreEqual(false, result.OtherPlayerActed);
 
 			Assert.AreEqual(3, testGame.Players[0].Hand.Count);
 			Assert.AreEqual(1, testGame.Players[1].Hand.Count);
@@ -153,9 +153,9 @@ namespace Innovation.Cards.Tests
 
 			//testGame.Players[0].SelectsCards = new List<int>() { 0 };
 
-			bool result = new Clothing().Actions.ToList()[1].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[0], Game = testGame, ActivePlayer = testGame.Players[0], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
+			var result = new Clothing().Actions.ToList()[1].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[0], Game = testGame, ActivePlayer = testGame.Players[0], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
 
-			Assert.AreEqual(true, result);
+			Assert.AreEqual(true, result.OtherPlayerActed);
 
 			Assert.AreEqual(3, testGame.Players[0].Hand.Count);
 			Assert.AreEqual(1, testGame.Players[1].Hand.Count);
@@ -178,9 +178,9 @@ namespace Innovation.Cards.Tests
 			// player2:	red
 			// player2 -> nothing happens
 
-			bool result = new Clothing().Actions.ToList()[1].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[1], Game = testGame, ActivePlayer = testGame.Players[1], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
+			var result = new Clothing().Actions.ToList()[1].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[1], Game = testGame, ActivePlayer = testGame.Players[1], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
 
-			Assert.AreEqual(false, result);
+			Assert.AreEqual(false, result.OtherPlayerActed);
 
 			Assert.AreEqual(1, testGame.Players[1].Hand.Count);
 			

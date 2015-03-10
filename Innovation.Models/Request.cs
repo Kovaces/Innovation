@@ -11,7 +11,6 @@ namespace Innovation.Models
 	public class Request
 	{
 		public RequestType Type { get; set; }
-		public IPlayer QuestionedPlayer { get; set; }
 		public IPlayer TargetPlayer { get; set; }
 		public IPlayer ActivePlayer { get; set; }
 		public object Objects { get; set; }

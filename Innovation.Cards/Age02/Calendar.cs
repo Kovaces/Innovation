@@ -24,7 +24,7 @@ namespace Innovation.Cards
                 };
             }
         }
-		bool Action1(CardActionParameters parameters)
+		CardActionResults Action1(CardActionParameters parameters)
 		{
 			ValidateParameters(parameters);
 
@@ -32,12 +32,12 @@ namespace Innovation.Cards
 			int cardsInHand = parameters.TargetPlayer.Hand.Count;
 
 			if (cardsInScorePile <= cardsInHand)
-				return false;
+				return new CardActionResults(false, false);
 			
 			parameters.TargetPlayer.Hand.Add(Draw.Action(3, parameters.Game));
 			parameters.TargetPlayer.Hand.Add(Draw.Action(3, parameters.Game));
 
-			return true;
+			return new CardActionResults(true, false);
 		}
     }
 }

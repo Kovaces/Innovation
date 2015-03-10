@@ -25,7 +25,7 @@ namespace Innovation.Cards
             }
         }
 
-	    bool Action1(CardActionParameters parameters)
+	    CardActionResults Action1(CardActionParameters parameters)
 	    {
 		    ValidateParameters(parameters);
 
@@ -40,8 +40,8 @@ namespace Innovation.Cards
 			//Draw and meld a [10]
 		    var drawnCard = Draw.Action(10, parameters.Game);
 			if (drawnCard == null)
-				return true;
-
+				return new CardActionResults(true, false);
+			
 			Meld.Action(drawnCard, parameters.TargetPlayer);
 
 		    foreach (var cardAction in drawnCard.Actions)
@@ -50,7 +50,7 @@ namespace Innovation.Cards
 				    cardAction.ActionHandler(new CardActionParameters {ActivePlayer = parameters.TargetPlayer, TargetPlayer = parameters.TargetPlayer, Game = parameters.Game, PlayerSymbolCounts = parameters.PlayerSymbolCounts});
 		    }
 
-		    return true;
-	    }
+			return new CardActionResults(true, false);
+		}
     }
 }

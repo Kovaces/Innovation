@@ -5,7 +5,7 @@ namespace Innovation.Models
 {
 	public interface ICard
 	{
-		string ID { get; }
+		string Id { get; }
 
 		Symbol Top { get; }
 		Symbol Left { get; }

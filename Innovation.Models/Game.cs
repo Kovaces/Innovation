@@ -1,5 +1,6 @@
 ﻿using Innovation.Models;
 using System;
+using System.Threading;
 using System.Collections.Generic;
 using Innovation.Models.Interfaces;
 
@@ -12,7 +13,14 @@ namespace Innovation.Models
 			GameEnded = false;
 		}
 
-		public Guid Id { get; set; }
+		public bool IsWaiting { get; set; }
+		public Thread Thread {get;set;}
+		public bool IsRunning { get; set; }
+		public bool IsProcessing { get; set; }
+		public IPlayer ActivePlayer { get; set; }
+
+
+		public string Id { get; set; }
 		public string Name { get; set; }
 		public List<IPlayer> Players { get; set; }
 		public List<Deck> AgeDecks { get; set; }

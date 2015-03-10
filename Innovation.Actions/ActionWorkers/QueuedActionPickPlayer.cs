@@ -19,7 +19,6 @@ namespace Innovation.Actions.ActionWorkers
 
 				ActivePlayer = queuedAction.ActivePlayer,
 				TargetPlayer = queuedAction.TargetPlayer,
-				QuestionedPlayer = queuedAction.TargetPlayer,
 				PlayerSymbolCounts = queuedAction.PlayerSymbolCounts,
 				MinimumNumberToSelect = 1,
 				MaximumNumberToSelect = 1,
@@ -27,7 +26,7 @@ namespace Innovation.Actions.ActionWorkers
 				ResponseHandler = queuedAction.Parameters.ResponseHandler
 			});
 
-			queuedAction.TargetPlayer.PickPlayer(queuedAction.Parameters.Players);
+			queuedAction.TargetPlayer.PickPlayer(queuedAction.Parameters.Players, 1, 1);
 		}
 	}
 }

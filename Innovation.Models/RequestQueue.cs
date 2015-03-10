@@ -23,7 +23,7 @@ namespace Innovation.Models.Interfaces
 
 		public Request PopRequestForPlayerByType(IPlayer player, RequestType type)
 		{
-			var request = this._Requests.Where(x => x.QuestionedPlayer == player && x.Type == type).First();
+			var request = this._Requests.Where(x => x.TargetPlayer == player && x.Type == type).First();
 			if (request == null)
 				return null;
 

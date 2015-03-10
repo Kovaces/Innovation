@@ -26,13 +26,13 @@ namespace Innovation.Cards
                 };
 			}
 		}
-		bool Action1(CardActionParameters parameters)
+		CardActionResults Action1(CardActionParameters parameters)
 		{
 			ValidateParameters(parameters);
 
 			var drawnCard = Draw.Action(1, parameters.Game);
 			if (drawnCard == null)
-				return true;
+				return new CardActionResults(true, false);
 
 			parameters.TargetPlayer.Hand.Add(drawnCard);
 
@@ -41,19 +41,18 @@ namespace Innovation.Cards
 
 			RequestQueueManager.PickCards(
 				parameters.Game,
-				parameters.TargetPlayer,
 				parameters.ActivePlayer,
 				parameters.TargetPlayer,
-				parameters.TargetPlayer.Hand,
+				highestCards,
 				1, 1,
 				parameters.PlayerSymbolCounts,
 				Action1_Step2
 			);
 
-			return false;
+			return new CardActionResults(true, true);
 		}
 
-		bool Action1_Step2(CardActionParameters parameters) 
+		CardActionResults Action1_Step2(CardActionParameters parameters) 
 		{
 			ICard selectedCard = parameters.Answer.SingleCard;
 			if (selectedCard == null)
@@ -63,7 +62,7 @@ namespace Innovation.Cards
 			parameters.ActivePlayer.Hand.Add(selectedCard);
 
 			ActionQueueManager.PopNextAction(parameters.Game);
-			return true;
+			return new CardActionResults(true, false);
 		}
 	}
 }

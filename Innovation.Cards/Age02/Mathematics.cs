@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Innovation.Actions;
+using Innovation.Actions.Handlers;
 using Innovation.Models;
 using Innovation.Models.Enums;
 namespace Innovation.Cards
@@ -24,22 +25,40 @@ namespace Innovation.Cards
                 };
             }
         }
-        bool Action1(CardActionParameters parameters) 
+        CardActionResults Action1(CardActionParameters parameters) 
 		{
 			ValidateParameters(parameters);
 
-			ICard card = parameters.TargetPlayer.PickCardFromHand();
-	        
+			if (parameters.TargetPlayer.Hand.Count == 0)
+				return new CardActionResults(false, false);
+
+			RequestQueueManager.PickCards(
+				parameters.Game,
+				parameters.ActivePlayer,
+				parameters.TargetPlayer,
+				parameters.TargetPlayer.Hand,
+				1, 1,
+				parameters.PlayerSymbolCounts,
+				Action1_Step2
+			);
+
+			return new CardActionResults(false, true);
+		}
+
+		CardActionResults Action1_Step2(CardActionParameters parameters) 
+		{
+			var card = parameters.Answer.SingleCard;
+
 			if (card == null)
-		        return false;
+				return new CardActionResults(false, false);
 
 			parameters.TargetPlayer.Hand.Remove(card);
 			
 			Return.Action(card, parameters.Game);
 			
 			Meld.Action(Draw.Action(card.Age + 1, parameters.Game), parameters.TargetPlayer);
-			
-			return true;
+
+			return new CardActionResults(true, false);
 		}
     }
 }

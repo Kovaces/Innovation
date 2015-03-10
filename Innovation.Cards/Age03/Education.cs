@@ -22,6 +22,6 @@ namespace Innovation.Cards
                 };
             }
         }
-        bool Action1(CardActionParameters parameters) { throw new NotImplementedException(); }
+        CardActionResults Action1(CardActionParameters parameters) { throw new NotImplementedException(); }
     }
 }

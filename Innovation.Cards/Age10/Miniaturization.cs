@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Innovation.Actions;
+using Innovation.Actions.Handlers;
 using Innovation.Models;
 using Innovation.Models.Enums;
 namespace Innovation.Cards
@@ -25,23 +26,41 @@ namespace Innovation.Cards
             }
         }
 
-	    bool Action1(CardActionParameters parameters)
+	    CardActionResults Action1(CardActionParameters parameters)
 	    {
 		    ValidateParameters(parameters);
 
-		    var selectedCard = parameters.TargetPlayer.PickCardFromHand();
+			if (!parameters.TargetPlayer.Hand.Any())
+				return new CardActionResults(false, false);
+
+			RequestQueueManager.PickCards(
+				parameters.Game,
+				parameters.ActivePlayer,
+				parameters.TargetPlayer,
+				parameters.TargetPlayer.Hand,
+				1, 1,
+				parameters.PlayerSymbolCounts,
+				Action1_Step2
+			);
+
+			return new CardActionResults(false, true);
+		}
+
+		CardActionResults Action1_Step2(CardActionParameters parameters)
+		{
+			var selectedCard = parameters.Answer.SingleCard;
 			if (selectedCard == null)
-				return false;
+				return new CardActionResults(false, false);
 
 			Return.Action(selectedCard, parameters.Game);
 
 			if (!selectedCard.Age.Equals(10))
-				return true;
+				return new CardActionResults(true, false);
 
 			for (var i = 0; i < parameters.TargetPlayer.Tableau.ScorePile.Select(c => c.Age).Distinct().Count(); i++)
 				Draw.Action(10, parameters.Game);
 
-			return true;
-	    }
+			return new CardActionResults(true, false);
+		}
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Innovation.Actions;
+using Innovation.Actions.Handlers;
 using Innovation.Models;
 using Innovation.Models.Enums;
 using Innovation.Models.Interfaces;
@@ -28,27 +29,45 @@ namespace Innovation.Cards
                 };
             }
         }
-		bool Action1(CardActionParameters parameters)
+		CardActionResults Action1(CardActionParameters parameters)
 		{
 			ValidateParameters(parameters);
 
 			int numberOfCardsToTransfer = Math.Min(parameters.TargetPlayer.Hand.Count, 2);
-			if (numberOfCardsToTransfer > 0)
-			{
-				List<ICard> cardsToTransfer = parameters.TargetPlayer.PickMultipleCards(parameters.TargetPlayer.Hand, numberOfCardsToTransfer, numberOfCardsToTransfer).ToList();
+			if (numberOfCardsToTransfer == 0)
+				return new CardActionResults(false, false);
 
-				foreach (ICard card in cardsToTransfer)
-				{
-					parameters.TargetPlayer.Hand.Remove(card);
-					parameters.ActivePlayer.Hand.Add(card);
-				}
+			RequestQueueManager.PickCards(
+				parameters.Game,
+				parameters.ActivePlayer,
+				parameters.TargetPlayer,
+				parameters.TargetPlayer.Hand,
+				numberOfCardsToTransfer, numberOfCardsToTransfer,
+				parameters.PlayerSymbolCounts,
+				Action1_Step2
+			);
+
+			return new CardActionResults(false, true);
+		}
+		CardActionResults Action1_Step2(CardActionParameters parameters)
+		{
+			List<ICard> cardsToTransfer = parameters.Answer.MultipleCards;
+			if (cardsToTransfer.Count == 0)
+				throw new ArgumentNullException("Must choose a card.");
+
+			foreach (ICard card in cardsToTransfer)
+			{
+				parameters.TargetPlayer.Hand.Remove(card);
+				parameters.ActivePlayer.Hand.Add(card);
 			}
 
 			parameters.TargetPlayer.Hand.Add(Draw.Action(2, parameters.Game));
 
-			return true;
+			return new CardActionResults(true, false);
 		}
-        bool Action2(CardActionParameters parameters) 
+
+
+        CardActionResults Action2(CardActionParameters parameters) 
 		{
 			ValidateParameters(parameters);
 
@@ -67,7 +86,7 @@ namespace Innovation.Cards
 				throw new NotImplementedException("Empire Achievement"); // TODO::achieve Empire.  Special achievements need a larger framework and some discussion
 			}
 
-			return false;
+			return new CardActionResults(true, false);
 		}
     }
 }

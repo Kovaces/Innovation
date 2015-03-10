@@ -28,19 +28,18 @@ namespace Innovation.Cards
 			}
 		}
 
-		bool Action1(CardActionParameters parameters)
+		CardActionResults Action1(CardActionParameters parameters)
 		{
 			ValidateParameters(parameters);
 
 			if (!parameters.TargetPlayer.Hand.Any())
-				return false;
+				return new CardActionResults(false, false);
 
 			var lowestAgeInHand = parameters.TargetPlayer.Hand.Min(c => c.Age);
 			var lowestCards = parameters.TargetPlayer.Hand.Where(c => c.Age.Equals(lowestAgeInHand)).ToList();
 
 			RequestQueueManager.PickCards(
 				parameters.Game,
-				parameters.TargetPlayer,
 				parameters.ActivePlayer,
 				parameters.TargetPlayer,
 				lowestCards,
@@ -49,9 +48,9 @@ namespace Innovation.Cards
 				Action1_Step2
 			);
 
-			return false;
+			return new CardActionResults(false, true);
 		}
-		bool Action1_Step2(CardActionParameters parameters)
+		CardActionResults Action1_Step2(CardActionParameters parameters)
 		{
 			ICard cardToMeld = parameters.Answer.SingleCard;
 			if (cardToMeld == null)
@@ -62,11 +61,11 @@ namespace Innovation.Cards
 
 			var drawnCard = Draw.Action(1, parameters.Game);
 			if (drawnCard == null)
-				return true;
+				return new CardActionResults(true, false);
 
 			parameters.TargetPlayer.Hand.Add(drawnCard);
 
-			return true;
+			return new CardActionResults(true, false);
 		}
 	}
 }

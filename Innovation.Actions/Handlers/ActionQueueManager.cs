@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Innovation.Actions.ActionWorkers;
 using Innovation.Models;
@@ -16,11 +17,12 @@ namespace Innovation.Actions.Handlers
 
 		public static void ExecuteCardAction(Game game, CardActionDelegate cardActionDelegate, CardActionParameters parameters)
 		{
-			var otherPlayerActed = cardActionDelegate(parameters);
-			if (otherPlayerActed)
+			var cardActionResults = cardActionDelegate(parameters);
+			if (cardActionResults.OtherPlayerActed)
 				game.StashPropertyBagValue("OtherPlayersActed", true);
-		}
 
+			game.IsWaiting = cardActionResults.IsWaitingForResponse;
+		}
 
 		public static void AddAction(Game game, QueuedAction action)
 		{
@@ -36,9 +38,7 @@ namespace Innovation.Actions.Handlers
 		{
 			QueuedAction queuedAction = game.ActionQueue.PopAction();
 
-			bool waiting = false;
-
-			while (!waiting)
+			while (!game.IsWaiting)
 			{
 				if (game.GameEnded)
 				{
@@ -46,17 +46,7 @@ namespace Innovation.Actions.Handlers
 					return;                   // end of game!
 				}
 
-				if (queuedAction == null)
-				{
-					// panic and figure out what to do?  aaaaaaahhhhhhh!
-
-					// examine game state to figure out who's next and make them do something
-					//		need to store current player
-					//		need to store how many actions that player has taken
-
-					// need to put this somewhere better ?
-				}
-				else
+				if (queuedAction != null)
 				{
 					switch (queuedAction.Type)
 					{
@@ -71,25 +61,21 @@ namespace Innovation.Actions.Handlers
 						// actions requiring input or will take care of themselves
 						case QueuedActionType.ImmediateDelegate:
 							QueuedActionImmediateDelegate.Execute(queuedAction);
-							waiting = true;
 							break;
 
 						case QueuedActionType.AskQuestion:
 							QueuedActionAskQuestion.Execute(queuedAction);
-							waiting = true;
 							break;
 						case QueuedActionType.PickCard:
 							QueuedActionPickCard.Execute(queuedAction);
-							waiting = true;
 							break;
 						case QueuedActionType.PickPlayer:
 							QueuedActionPickPlayer.Execute(queuedAction);
-							waiting = true;
 							break;
 					}
 				}
 
-				if (!waiting)
+				if (!game.IsWaiting)
 					queuedAction = game.ActionQueue.PopAction();
 			}
 		}

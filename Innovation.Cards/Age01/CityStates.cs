@@ -26,12 +26,12 @@ namespace Innovation.Cards
                 };
             }
         }
-		bool Action1(CardActionParameters parameters)
+		CardActionResults Action1(CardActionParameters parameters)
 		{
 			ValidateParameters(parameters);
 
 			if (parameters.TargetPlayer.Tableau.GetSymbolCount(Symbol.Tower) < 4)
-				return false;
+				return new CardActionResults(false, false);
 			
 			List<ICard> topCardsWithTowers = new List<ICard>();
 			
@@ -46,11 +46,10 @@ namespace Innovation.Cards
 			}
 
 			if (topCardsWithTowers.Count == 0)
-				return false;
+				return new CardActionResults(false, false);
 
 			RequestQueueManager.PickCards(
 				parameters.Game,
-				parameters.TargetPlayer,
 				parameters.ActivePlayer,
 				parameters.TargetPlayer,
 				topCardsWithTowers,
@@ -59,9 +58,9 @@ namespace Innovation.Cards
 				Action1_Step2
 			);
 
-			return false;
+			return new CardActionResults(false, true);
 		}
-		bool Action1_Step2(CardActionParameters parameters) 
+		CardActionResults Action1_Step2(CardActionParameters parameters) 
 		{
 			ICard cardToMove = parameters.Answer.SingleCard;
 			if (cardToMove == null)
@@ -76,11 +75,11 @@ namespace Innovation.Cards
 			// if you do, draw a 1
 			var drawnCard = Draw.Action(1, parameters.Game);
 			if (drawnCard == null)
-				return true;
+				return new CardActionResults(true, false);
 
 			parameters.TargetPlayer.Hand.Add(drawnCard);
-			
-			return true;
+
+			return new CardActionResults(true, false);
 		}
     }
 }

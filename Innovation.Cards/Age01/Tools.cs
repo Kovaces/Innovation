@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Innovation.Actions;
 using Innovation.Models;
 using Innovation.Models.Enums;
+using Innovation.Actions.Handlers;
 namespace Innovation.Cards
 {
     public class Tools : CardBase
@@ -27,17 +28,32 @@ namespace Innovation.Cards
             }
         }
 
-        bool Action1(CardActionParameters parameters) 
+        CardActionResults Action1(CardActionParameters parameters) 
 		{
 			ValidateParameters(parameters);
 
 			if (parameters.TargetPlayer.Hand.Count < 3)
-				return false;
+				return new CardActionResults(false, false);
 
-			List<ICard> cardsToReturn = parameters.TargetPlayer.PickMultipleCards(parameters.TargetPlayer.Hand, 3, 3).ToList();
-			
+			RequestQueueManager.PickCards(
+				parameters.Game,
+				parameters.ActivePlayer,
+				parameters.TargetPlayer,
+				parameters.TargetPlayer.Hand,
+				3,
+				3,
+				parameters.PlayerSymbolCounts,
+				Action2_Step2
+			);
+
+			return new CardActionResults(false, true);
+		}
+		CardActionResults Action2_Step2(CardActionParameters parameters)
+		{
+			List<ICard> cardsToReturn = parameters.Answer.MultipleCards;
+		
 			if (cardsToReturn.Count == 0)
-				return false;
+				return new CardActionResults(false, false);
 
 			foreach (ICard card in cardsToReturn)
 			{
@@ -47,46 +63,59 @@ namespace Innovation.Cards
 
 			var drawnCard = Draw.Action(3, parameters.Game);
 			if (drawnCard == null)
-				return true;
+				return new CardActionResults(true, false);
 
 			Meld.Action(drawnCard, parameters.TargetPlayer);
 
-			return true;
+			return new CardActionResults(true, false);
 		}
 
-        bool Action2(CardActionParameters parameters) 
+        CardActionResults Action2(CardActionParameters parameters) 
 		{
 			ValidateParameters(parameters);
 
 			List<ICard> ageThreeCardsInHand = parameters.TargetPlayer.Hand.Where(x => x.Age == 3).ToList();
 
 			if (ageThreeCardsInHand.Count == 0)
-				return false;
+				return new CardActionResults(false, false);
 
-			ICard cardToReturn = parameters.TargetPlayer.PickCard(ageThreeCardsInHand);
+			RequestQueueManager.PickCards(
+				parameters.Game,
+				parameters.ActivePlayer,
+				parameters.TargetPlayer,
+				parameters.TargetPlayer.Hand,
+				1, 1,
+				parameters.PlayerSymbolCounts,
+				Action1_Step2
+			);
 
-	        if (cardToReturn == null)
-		        return false;
+			return new CardActionResults(false, true);
+		}
+		CardActionResults Action1_Step2(CardActionParameters parameters)
+		{
+			ICard cardToReturn = parameters.Answer.SingleCard;
+			if (cardToReturn == null)
+				return new CardActionResults(false, false);
 
 			parameters.TargetPlayer.Hand.Remove(cardToReturn);
 			Return.Action(cardToReturn, parameters.Game);
 
 			var drawnCard = Draw.Action(1, parameters.Game);
 			if (drawnCard == null)
-				return true;
+				return new CardActionResults(true, false);
 			parameters.TargetPlayer.Hand.Add(drawnCard);
 
 			drawnCard = Draw.Action(1, parameters.Game);
 			if (drawnCard == null)
-				return true;
+				return new CardActionResults(true, false);
 			parameters.TargetPlayer.Hand.Add(drawnCard);
 
 			drawnCard = Draw.Action(1, parameters.Game);
 			if (drawnCard == null)
-				return true;
+				return new CardActionResults(true, false);
 			parameters.TargetPlayer.Hand.Add(drawnCard);
-		
-			return true;
+
+			return new CardActionResults(true, false);
 		}
     }
 }

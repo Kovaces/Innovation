@@ -26,7 +26,7 @@ namespace Innovation.Cards
                 };
             }
         }
-		bool Action1(CardActionParameters parameters)
+		CardActionResults Action1(CardActionParameters parameters)
 		{
 			ValidateParameters(parameters);
 
@@ -34,11 +34,10 @@ namespace Innovation.Cards
 			List<ICard> cardsMatchingBoardColor = parameters.TargetPlayer.Hand.Where(x => topCardColors.Contains(x.Color)).ToList();
 
 			if (cardsMatchingBoardColor.Count == 0)
-				return false;
+				return new CardActionResults(false, false);
 
 			RequestQueueManager.PickCards(
 				parameters.Game,
-				parameters.TargetPlayer,
 				parameters.ActivePlayer,
 				parameters.TargetPlayer,
 				cardsMatchingBoardColor,
@@ -47,21 +46,20 @@ namespace Innovation.Cards
 				Action1_Step2
 			);
 
-			return false;
+			return new CardActionResults(false, true);
 		}
 
-		bool Action1_Step2(CardActionParameters parameters)
+		CardActionResults Action1_Step2(CardActionParameters parameters)
 		{
 			ICard cardToTuck = parameters.Answer.SingleCard;
 			if (cardToTuck == null)
-				return false;
+				return new CardActionResults(false, false);
 				
 			parameters.TargetPlayer.Hand.Remove(cardToTuck);
 			Tuck.Action(cardToTuck, parameters.TargetPlayer);
 
 			RequestQueueManager.AskToSplay(
 				parameters.Game,
-				parameters.TargetPlayer,
 				parameters.ActivePlayer,
 				parameters.TargetPlayer,
 				new List<Color>() { cardToTuck.Color },
@@ -70,14 +68,14 @@ namespace Innovation.Cards
 				Action1_Step3
 			);
 
-			return true;	
+			return new CardActionResults(true, true);
 		}
 
-		bool Action1_Step3(CardActionParameters parameters)
+		CardActionResults Action1_Step3(CardActionParameters parameters)
 		{
 			parameters.TargetPlayer.Tableau.Stacks[parameters.Answer.Color].SplayedDirection = SplayDirection.Left;
 
-			return true;
+			return new CardActionResults(true, false);
 		}
     }
 }

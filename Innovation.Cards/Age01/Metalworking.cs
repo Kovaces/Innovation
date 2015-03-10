@@ -24,13 +24,13 @@ namespace Innovation.Cards
                 };
             }
         }
-		bool Action1(CardActionParameters parameters)
+		CardActionResults Action1(CardActionParameters parameters)
 		{
 			ValidateParameters(parameters);
 
 			var drawnCard = Draw.Action(1, parameters.Game);
 			if (drawnCard == null)
-				return true;
+				return new CardActionResults(true, false);
 
 			parameters.TargetPlayer.RevealCard(drawnCard);
 
@@ -40,14 +40,14 @@ namespace Innovation.Cards
 
 				drawnCard = Draw.Action(1, parameters.Game);
 				if (drawnCard == null)
-					return true;
+					return new CardActionResults(true, false);
 
 				parameters.TargetPlayer.RevealCard(drawnCard);
 			}
 
 			parameters.TargetPlayer.Hand.Add(drawnCard);
 
-			return true;
+			return new CardActionResults(true, false);
 		}
     }
 }

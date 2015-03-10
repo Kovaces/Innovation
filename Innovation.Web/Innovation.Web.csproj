@@ -184,6 +184,7 @@
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\Game.css" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
@@ -198,6 +199,7 @@
     <Content Include="Innovation.html" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="Scripts\game.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
@@ -246,6 +248,14 @@
     <None Include="Project_Readme.html" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Innovation.Actions\Innovation.Actions.csproj">
+      <Project>{155b79cc-0637-4735-ad8e-392c62e31f9a}</Project>
+      <Name>Innovation.Actions</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Innovation.Cards\Innovation.Cards.csproj">
+      <Project>{596dc48f-02c4-4fbe-8ac0-7113edf99c9d}</Project>
+      <Name>Innovation.Cards</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Innovation.Models\Innovation.Models.csproj">
       <Project>{36480362-a948-4c1c-aaa8-3d21eaa25d9b}</Project>
       <Name>Innovation.Models</Name>

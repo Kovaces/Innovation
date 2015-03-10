@@ -24,17 +24,17 @@ namespace Innovation.Cards
                 };
 			}
 		}
-		bool Action1(CardActionParameters parameters)
+		CardActionResults Action1(CardActionParameters parameters)
 		{
 			ValidateParameters(parameters);
 
 			var drawnCard = Draw.Action(1, parameters.Game);
 			if (drawnCard == null)
-				return true;
+				return new CardActionResults(true, false);
 
 			Meld.Action(drawnCard, parameters.TargetPlayer);
 
-			return true;
+			return new CardActionResults(true, false);
 		}
 	}
 }

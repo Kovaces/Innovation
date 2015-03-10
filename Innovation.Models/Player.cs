@@ -12,6 +12,7 @@ namespace Innovation.Models
 	public delegate void PickMultipleCardsOutgoing(string playerId, IEnumerable<ICard> cardsToSelectFrom, int minimumNumberToSelect, int maximumNumberToSelect);
 	public delegate void AskQuestionOutgoing(string playerId, string question);
 	public delegate void PickPlayersOutgoing(string playerId, IEnumerable<IPlayer> playerList, int minimumNumberToSelect, int maximumNumberToSelect);
+	public delegate void PickActionOutgoing();
 
 	public class Player : IPlayer
 	{
@@ -23,6 +24,9 @@ namespace Innovation.Models
 		public List<ICard> Hand { get; set; }
 		public string Team { get; set; } //the base rules support team play but implementing that is low on the priority list
 
+		public int TurnsTaken { get; set; }
+
+
 		public RevealCard RevealCardHandler { get; set; }
 		public void RevealCard(ICard card)
 		{
@@ -30,96 +34,56 @@ namespace Innovation.Models
 		}
 
 
-
-		private Color _colorSelected;
-		private bool _waitingForColor;
 		public PickColorToSplayOutgoing PickColorToSplayHandler { get; set; }
-		public Color AskToSplay(IEnumerable<Color> colorsToSplay, SplayDirection directionToSplay)
+		public void AskToSplay(IEnumerable<Color> colorsToSplay, SplayDirection directionToSplay)
 		{
 			if (!colorsToSplay.Any())
-				return Color.None;
+				return;
 
-			_colorSelected = Color.None;
 			PickColorToSplayHandler(Id, colorsToSplay, directionToSplay);
-
-			while (_waitingForColor)
-				Thread.Sleep(THREAD_SLEEP_MS);
-
-			return _colorSelected;
-		}
-		public void PickColorToSplayResponse(Color colorSelected)
-		{
-			_colorSelected = colorSelected;
-			_waitingForColor = false;
 		}
 
 
-
-		public ICard PickCard(IEnumerable<ICard> cardsToSelectFrom)
-		{
-			return PickMultipleCards(cardsToSelectFrom, 1, 1).First();
-		}
-
-		private IEnumerable<ICard> _cardsSelected;
 		public PickMultipleCardsOutgoing PickMultipleCardsHandler { get; set; }
-		public ICard PickCardFromHand()
+		public void PickCard(IEnumerable<ICard> cardsToSelectFrom)
 		{
-			return PickMultipleCards(Hand, 1, 1).First();
+			PickMultipleCards(cardsToSelectFrom, 1, 1);
 		}
-		public IEnumerable<ICard> PickMultipleCards(IEnumerable<ICard> cardsToSelectFrom, int minimumNumberToSelect, int maximumNumberToSelect)
+		public void PickCardFromHand()
+		{
+			PickMultipleCards(Hand, 1, 1);
+		}
+		public void PickMultipleCards(IEnumerable<ICard> cardsToSelectFrom, int minimumNumberToSelect, int maximumNumberToSelect)
 		{
 			if (!cardsToSelectFrom.Any())
-				return null;
+				return;
 
-			_cardsSelected = null;
 			PickMultipleCardsHandler(Id, cardsToSelectFrom, minimumNumberToSelect, maximumNumberToSelect);
-
-			while (_cardsSelected == null)
-				Thread.Sleep(5000);
-
-			return _cardsSelected;
-		}
-		public void PickMultipleCardsResponse(IEnumerable<ICard> cardsSelected)
-		{
-			_cardsSelected = cardsSelected;
 		}
 
 
 
-		private bool? _answer;
 		public AskQuestionOutgoing AskQuestionHandler { get; set; }
-		public bool AskQuestion(string question)
+		public void AskQuestion(string question)
 		{
-			_answer = null;
 			AskQuestionHandler(Id, question);
-
-			while (!_answer.HasValue)
-				Thread.Sleep(5000);
-
-			return _answer.Value;
-		}
-		public void AskQuestionResponse(bool answer)
-		{
-			_answer = answer;
 		}
 
-
-
-		private IPlayer _selectedPlayer;
+		
 		public PickPlayersOutgoing PickPlayersHandler { get; set; }
-		public IPlayer PickPlayer(List<IPlayer> playerList)
+		public void PickPlayer(List<IPlayer> playerList, int minimumNumberToSelect, int maximumNumberToSelect)
 		{
-			_selectedPlayer = null;
-			PickPlayersHandler(Id, playerList, 1, 1);
+			if (playerList.Count == 0)
+				return;
 
-			while (_selectedPlayer == null)
-				Thread.Sleep(5000);
-
-			return _selectedPlayer;
+			PickPlayersHandler(Id, playerList, minimumNumberToSelect, maximumNumberToSelect);
 		}
-		public void PickPlayerResponse(IPlayer playerSelected)
+
+
+		public PickActionOutgoing PickActionHandler { get; set; }
+		public void PickAction()
 		{
-			_selectedPlayer = playerSelected;
+			PickActionHandler();
 		}
 	}
 }

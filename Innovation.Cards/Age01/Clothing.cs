@@ -29,7 +29,7 @@ namespace Innovation.Cards
 			}
 		}
 
-		bool Action1(CardActionParameters parameters)
+		CardActionResults Action1(CardActionParameters parameters)
 		{
 			ValidateParameters(parameters);
 
@@ -37,11 +37,10 @@ namespace Innovation.Cards
 			List<ICard> cardsToMeld = parameters.TargetPlayer.Hand.Where(x => !topCardColors.Contains(x.Color)).ToList();
 
 			if (cardsToMeld.Count == 0)
-				return false;
+				return new CardActionResults(false, false);
 
 			RequestQueueManager.PickCards(
 				parameters.Game,
-				parameters.TargetPlayer,
 				parameters.ActivePlayer,
 				parameters.TargetPlayer,
 				cardsToMeld,
@@ -49,9 +48,10 @@ namespace Innovation.Cards
 				parameters.PlayerSymbolCounts,
 				Action1_Step2
 			);
-			return false;
+
+			return new CardActionResults(false, true);
 		}
-		bool Action1_Step2(CardActionParameters parameters)
+		CardActionResults Action1_Step2(CardActionParameters parameters)
 		{
 			ICard drawnCard = parameters.Answer.SingleCard;
 			if (drawnCard == null)
@@ -60,10 +60,10 @@ namespace Innovation.Cards
 			parameters.TargetPlayer.Hand.Remove(drawnCard);
 			Meld.Action(drawnCard, parameters.TargetPlayer);
 
-			return true;
+			return new CardActionResults(true, false);
 		}
 
-		bool Action2(CardActionParameters parameters)
+		CardActionResults Action2(CardActionParameters parameters)
 		{
 			ValidateParameters(parameters);
 
@@ -75,11 +75,11 @@ namespace Innovation.Cards
 			{
 				var card = Draw.Action(1, parameters.Game);
 				if (card == null)
-					return true;
+					return new CardActionResults(true, false);
 				Score.Action(card, parameters.TargetPlayer);
 			}
 
-			return (numberOfCardsToDraw > 0);
+			return new CardActionResults((numberOfCardsToDraw > 0), false);
 		}
 	}
 }

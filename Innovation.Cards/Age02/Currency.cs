@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Innovation.Actions;
 using Innovation.Models;
 using Innovation.Models.Enums;
+using Innovation.Actions.Handlers;
 namespace Innovation.Cards
 {
     public class Currency : CardBase
@@ -25,15 +26,33 @@ namespace Innovation.Cards
                 };
 			}
 		}
-		bool Action1(CardActionParameters parameters)
+		CardActionResults Action1(CardActionParameters parameters)
 		{
 			ValidateParameters(parameters);
 
-			List<ICard> cardsToReturn = parameters.TargetPlayer.PickMultipleCards(parameters.TargetPlayer.Hand, 0, parameters.TargetPlayer.Hand.Count).ToList();
-			if (cardsToReturn.Count == 0)
-				return false;
+			if (parameters.TargetPlayer.Hand.Count == 0)
+				return new CardActionResults(false, false);
 
-			
+			RequestQueueManager.PickCards(
+				parameters.Game,
+				parameters.ActivePlayer,
+				parameters.TargetPlayer,
+				parameters.TargetPlayer.Tableau.ScorePile,
+				0,
+				parameters.TargetPlayer.Hand.Count,
+				parameters.PlayerSymbolCounts,
+				Action1_Step2
+			);
+
+			return new CardActionResults(false, true);
+		}
+		CardActionResults Action1_Step2(CardActionParameters parameters)
+		{
+			var cardsToReturn = parameters.Answer.MultipleCards;
+
+			if (cardsToReturn.Count == 0)
+				return new CardActionResults(false, false);
+
 			foreach (ICard card in cardsToReturn)
 			{
 				parameters.TargetPlayer.Hand.Remove(card);
@@ -45,7 +64,7 @@ namespace Innovation.Cards
 			for (int i = 0; i < differentAges; i++)
 				Score.Action(Draw.Action(2, parameters.Game), parameters.TargetPlayer);
 
-			return true;
+			return new CardActionResults(true, false);
 		}
 	}
 }

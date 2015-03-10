@@ -28,21 +28,17 @@ namespace Innovation.Cards
             }
         }
         
-		bool Action1(CardActionParameters parameters)
+		CardActionResults Action1(CardActionParameters parameters)
 		{
 			ValidateParameters(parameters);
 
 			List<ICard> cardsWithCrowns = parameters.TargetPlayer.Hand.Where(x => x.HasSymbol(Symbol.Crown)).ToList();
 
             if (cardsWithCrowns.Count == 0)
-            {
-                parameters.Game.StashPropertyBagValue("OarsAction1Taken", false);
-                return false;
-            }
+				return new CardActionResults(false, false);
 
 			RequestQueueManager.PickCards(
 				parameters.Game,
-				parameters.TargetPlayer,
 				parameters.ActivePlayer,
 				parameters.TargetPlayer,
 				cardsWithCrowns,
@@ -51,9 +47,9 @@ namespace Innovation.Cards
 				Action1_Step2
 			);
 
-			return false;
+			return new CardActionResults(false, true);
 		}
-		bool Action1_Step2(CardActionParameters parameters)
+		CardActionResults Action1_Step2(CardActionParameters parameters)
 		{
 			ICard card = parameters.Answer.SingleCard;
 			if (card == null)
@@ -64,29 +60,29 @@ namespace Innovation.Cards
 
 			var drawnCard = Draw.Action(1, parameters.Game);
 			if (drawnCard == null)
-				return true;
+				return new CardActionResults(true, false);
 
 			parameters.TargetPlayer.Hand.Add(drawnCard);
 
             parameters.Game.StashPropertyBagValue("OarsAction1Taken", true);
-		
-			return true;
+
+			return new CardActionResults(true, false);
 		}
 
-		bool Action2(CardActionParameters parameters)
+		CardActionResults Action2(CardActionParameters parameters)
 		{
 			ValidateParameters(parameters);
 
 			if ((bool)parameters.Game.GetPropertyBagValue("OarsAction1Taken"))
-				return false;
+				return new CardActionResults(false, false);
 
 			var drawnCard = Draw.Action(1, parameters.Game);
 			if (drawnCard == null)
-				return true;
+				return new CardActionResults(true, false);
 
 			parameters.TargetPlayer.Hand.Add(drawnCard);
-			
-			return true;
+
+			return new CardActionResults(true, false);
 		}
     }
 }

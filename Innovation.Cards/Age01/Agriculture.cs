@@ -28,13 +28,12 @@ namespace Innovation.Cards
 			}
 		}
 
-		private bool Action1(CardActionParameters parameters)
+		private CardActionResults Action1(CardActionParameters parameters)
 		{
 			ValidateParameters(parameters);
 
 			RequestQueueManager.PickCards(
 				parameters.Game,
-				parameters.TargetPlayer,
 				parameters.ActivePlayer,
 				parameters.TargetPlayer,
 				parameters.TargetPlayer.Hand,
@@ -43,14 +42,14 @@ namespace Innovation.Cards
 				Action1_Step2
 			);
 
-			return false;
+			return new CardActionResults(false, true);
 		}
 
-		private bool Action1_Step2(CardActionParameters parameters)
+		private CardActionResults Action1_Step2(CardActionParameters parameters)
 		{
 			ICard selectedCard = parameters.Answer.SingleCard;
 			if (selectedCard == null)
-				return false;
+				return new CardActionResults(false, false);
 
 			parameters.TargetPlayer.Hand.Remove(selectedCard);
 			Return.Action(selectedCard, parameters.Game);
@@ -58,11 +57,11 @@ namespace Innovation.Cards
 			int ageToDraw = selectedCard.Age + 1;
 			var cardToScore = Draw.Action(ageToDraw, parameters.Game);
 			if (cardToScore == null)
-				return true;
+				return new CardActionResults(true, false);
 
 			Score.Action(cardToScore, parameters.TargetPlayer);
 
-			return true;
+			return new CardActionResults(true, false);
 		}
 	}
 }

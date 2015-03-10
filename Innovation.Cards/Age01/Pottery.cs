@@ -28,16 +28,15 @@ namespace Innovation.Cards
 			}
 		}
 
-		bool Action1(CardActionParameters parameters)
+		CardActionResults Action1(CardActionParameters parameters)
 		{
 			ValidateParameters(parameters);
 
 			if (parameters.TargetPlayer.Hand.Count == 0)
-				return false;
+				return new CardActionResults(false, false);
 
 			RequestQueueManager.PickCards(
 				parameters.Game,
-				parameters.TargetPlayer,
 				parameters.ActivePlayer,
 				parameters.TargetPlayer,
 				parameters.TargetPlayer.Hand,
@@ -46,14 +45,16 @@ namespace Innovation.Cards
 				Action1_Step2
 			);
 
-			return false;
+			return new CardActionResults(false, true);
 		}
-		bool Action1_Step2(CardActionParameters parameters)
+		CardActionResults Action1_Step2(CardActionParameters parameters)
 		{
 			var selectedCards = parameters.Answer.MultipleCards;
 
 			if (selectedCards.Count == 0)
-				return false;
+				return new CardActionResults(false, false);
+			if (selectedCards.Count != 3)
+				throw new ArgumentNullException("Must choose three cards.");
 
 			foreach (ICard card in selectedCards)
 			{
@@ -63,24 +64,24 @@ namespace Innovation.Cards
 
 			var drawnCard = Draw.Action(selectedCards.Count, parameters.Game);
 			if (drawnCard == null)
-				return true;
+				return new CardActionResults(true, false);
 
 			Score.Action(drawnCard, parameters.TargetPlayer);
 
-			return true;
+			return new CardActionResults(true, false);
 		}
 
-		bool Action2(CardActionParameters parameters)
+		CardActionResults Action2(CardActionParameters parameters)
 		{
 			ValidateParameters(parameters);
 
 			var drawnCard = Draw.Action(1, parameters.Game);
 			if (drawnCard == null)
-				return true;
+				return new CardActionResults(true, false);
 
 			parameters.TargetPlayer.Hand.Add(drawnCard);
 
-			return true;
+			return new CardActionResults(true, false);
 		}
 	}
 }
