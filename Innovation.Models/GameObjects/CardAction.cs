@@ -4,8 +4,6 @@ using Innovation.Models.Interfaces;
 
 namespace Innovation.Models
 {
-	public delegate CardActionResults CardActionDelegate(CardActionParameters parameters);
-
 	public class CardAction
 	{
 		public ActionType ActionType { get; set; }

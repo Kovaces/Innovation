@@ -1,4 +1,5 @@
-﻿using Innovation.Actions.Handlers;
+﻿using System.Web.Helpers;
+using Innovation.Actions.Handlers;
 using Innovation.Cards;
 using Innovation.Models;
 using Innovation.Models.Enums;
@@ -10,6 +11,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace Innovation.Web.Innovation
 {
@@ -74,7 +76,8 @@ namespace Innovation.Web.Innovation
 				PickMultipleCardsHandler = PickCards, 
 				AskQuestionHandler = AskQuestion, 
 				PickPlayersHandler = PickPlayers, 
-				StartTurnHandler = PlayerStartTurn
+				StartTurnHandler = PlayerStartTurn,
+				RevealCardHandler = RevealCard,
 			};
 
 			_players.TryAdd(player.Id, player);
@@ -93,7 +96,8 @@ namespace Innovation.Web.Innovation
 				Name = gameName,
 				Id = new Guid().ToString(),
 				Players = playerIds.Select(id => GetPlayerById(id)).ToList(),
-				GameOverHandler = GameOver
+				GameOverHandler = GameOver,
+				SyncGameStateHandler = SyncGameState,
 			};
 
 			_games.TryAdd(gameName, game);
@@ -106,6 +110,12 @@ namespace Innovation.Web.Innovation
 			
 			Game game;
 			_games.TryRemove(gameName, out game);
+		}
+
+		public void SyncGameState(string gameId)
+		{
+			var game = GetGameById(gameId);
+			Clients.Group(game.Name).syncGameState(JsonConvert.SerializeObject(game));
 		}
 
 		//Player
@@ -183,6 +193,11 @@ namespace Innovation.Web.Innovation
 			ValidateResponseParameters(gameId, playerId, out game, out player);
 
 			RequestQueueManager.ReceiveSplayResponse(game, player, selectedColor);
+		}
+
+		public void RevealCard(string playerId, ICard card)
+		{
+			Clients.User(playerId).revealCard(JsonConvert.SerializeObject(card));
 		}
 
 		//data

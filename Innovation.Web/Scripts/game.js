@@ -42,8 +42,8 @@ function showCreateGame() {
     $('#chatParent').addClass('transparent');
     $('#createGameModal').css("z-index", 999);
     $('#createGameModal').show(250);
-    $('#gameName').val('')
-    $('#selectedPlayers').val('')
+	$('#gameName').val('');
+	$('#selectedPlayers').val('');
 
     return false;
 }

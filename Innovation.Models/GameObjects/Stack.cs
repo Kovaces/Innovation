@@ -6,21 +6,23 @@ namespace Innovation.Models
 {
 	public class Stack
 	{
+		//ctor
 		public Stack()
 		{
 			Cards = new List<ICard>();
 			SplayedDirection = SplayDirection.None;
 		}
 
+		//properties
 		public List<ICard> Cards { get; set; } //TODO: make this private and create methods with validations for adding cards to the stack to ensure consistant color
 		public SplayDirection SplayedDirection { get; set; }
 
+		//methods
 		public ICard GetTopCard()
 		{
 			return Cards.Any() ? Cards.Last() : null;
 		}
 
-		// put implementation in here so if we change it later, no other classes need to know details
 		public void AddCardToTop(ICard card)
 		{
 			Cards.Add(card);
@@ -44,7 +46,6 @@ namespace Innovation.Models
 		{
 			return GetSymbolCounts()[symbol];
 		}
-
 		public Dictionary<Symbol, int> GetSymbolCounts()
 		{
 			var retVal = new Dictionary<Symbol, int>()
@@ -62,7 +63,6 @@ namespace Innovation.Models
 			
 			return retVal;
 		}
-		
 		private void CountSymbols(Dictionary<Symbol, int> retVal, ICard card)
 		{
 			if (Cards.Last() == card)
