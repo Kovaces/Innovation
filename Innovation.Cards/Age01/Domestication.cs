@@ -56,14 +56,14 @@ namespace Innovation.Cards
 			if (cardToMeld == null)
 				throw new ArgumentNullException("Must choose card.");
 
-			parameters.TargetPlayer.Hand.Remove(cardToMeld);
+			parameters.TargetPlayer.RemoveCardFromHand(cardToMeld);
 			Meld.Action(cardToMeld, parameters.TargetPlayer);
 
 			var drawnCard = Draw.Action(1, parameters.Game);
 			if (drawnCard == null)
 				return new CardActionResults(true, false);
 
-			parameters.TargetPlayer.Hand.Add(drawnCard);
+			parameters.TargetPlayer.AddCardToHand(drawnCard);
 
 			return new CardActionResults(true, false);
 		}

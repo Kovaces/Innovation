@@ -77,7 +77,7 @@ namespace Innovation.Cards
 			if (drawnCard == null)
 				return new CardActionResults(true, false);
 
-			parameters.TargetPlayer.Hand.Add(drawnCard);
+			parameters.TargetPlayer.AddCardToHand(drawnCard);
 
 			return new CardActionResults(true, false);
 		}

@@ -86,7 +86,7 @@ namespace Innovation.Cards
 			if (card == null)
 				return new CardActionResults(false, false);
 
-			parameters.TargetPlayer.Hand.Remove(card);
+			parameters.TargetPlayer.RemoveCardFromHand(card);
 			Score.Action(card, parameters.TargetPlayer);
 
 			return new CardActionResults(true, false);

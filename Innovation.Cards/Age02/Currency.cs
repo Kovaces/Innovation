@@ -55,7 +55,7 @@ namespace Innovation.Cards
 
 			foreach (ICard card in cardsToReturn)
 			{
-				parameters.TargetPlayer.Hand.Remove(card);
+				parameters.TargetPlayer.RemoveCardFromHand(card);
 				Return.Action(card, parameters.Game);
 			}
 

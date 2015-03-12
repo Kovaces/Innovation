@@ -34,7 +34,7 @@ namespace Innovation.Cards
 			if (drawnCard == null)
 				return new CardActionResults(true, false);
 
-			parameters.TargetPlayer.Hand.Add(drawnCard);
+			parameters.TargetPlayer.AddCardToHand(drawnCard);
 
 			var highestAgeInHand = parameters.TargetPlayer.Hand.Max(c => c.Age);
 			var highestCards = parameters.TargetPlayer.Hand.Where(c => c.Age.Equals(highestAgeInHand)).ToList();
@@ -58,8 +58,8 @@ namespace Innovation.Cards
 			if (selectedCard == null)
 				throw new ArgumentNullException("Must choose card.");
 
-			parameters.TargetPlayer.Hand.Remove(selectedCard);
-			parameters.ActivePlayer.Hand.Add(selectedCard);
+			parameters.TargetPlayer.RemoveCardFromHand(selectedCard);
+			parameters.ActivePlayer.AddCardToHand(selectedCard);
 
 			ActionQueueManager.PopNextAction(parameters.Game);
 			return new CardActionResults(true, false);

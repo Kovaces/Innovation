@@ -32,12 +32,12 @@ namespace Innovation.Cards
 			var drawnCard = Draw.Action(1, parameters.Game);
 			if (drawnCard == null)
 				return new CardActionResults(true, false);
-			parameters.TargetPlayer.Hand.Add(drawnCard);
+			parameters.TargetPlayer.AddCardToHand(drawnCard);
 
 			drawnCard = Draw.Action(1, parameters.Game);
 			if (drawnCard == null)
 				return new CardActionResults(true, false);
-			parameters.TargetPlayer.Hand.Add(drawnCard);
+			parameters.TargetPlayer.AddCardToHand(drawnCard);
 
 			return new CardActionResults(true, false);
 		}

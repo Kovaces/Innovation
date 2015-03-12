@@ -30,7 +30,7 @@ namespace Innovation.Cards
 
 			int numberOfLeafs = parameters.TargetPlayer.Tableau.GetSymbolCount(Symbol.Leaf);
 			for (int i = 0; i < numberOfLeafs / 2; i++)
-				parameters.TargetPlayer.Hand.Add(Draw.Action(2, parameters.Game));
+				parameters.TargetPlayer.AddCardToHand(Draw.Action(2, parameters.Game));
 
 			return new CardActionResults(numberOfLeafs >= 2, false);
 		}

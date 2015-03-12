@@ -40,14 +40,14 @@ namespace Innovation.Cards
 
 			foreach (ICard card in cardsInHandToTransfer)
 			{
-				parameters.TargetPlayer.Hand.Remove(card);
+				parameters.TargetPlayer.RemoveCardFromHand(card);
 				parameters.TargetPlayer.Tableau.ScorePile.Add(card);
 			}
 
 			foreach (ICard card in cardsInPileToTransfer)
 			{
 				parameters.TargetPlayer.Tableau.ScorePile.Remove(card);
-				parameters.TargetPlayer.Hand.Add(card);
+				parameters.TargetPlayer.AddCardToHand(card);
 			}
 
 			return new CardActionResults(true, false);

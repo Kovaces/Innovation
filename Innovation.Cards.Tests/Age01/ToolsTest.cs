@@ -138,7 +138,7 @@ namespace Innovation.Cards.Tests
 		{
 			//testGame.Players[0].AlwaysParticipates = true;
 			//testGame.Players[0].SelectsCards = new List<int>() { 0 };
-			testGame.Players[0].Hand.Add(
+			testGame.Players[0].AddCardToHand(
 				new Card { Name = "Test Yellow Card", Color = Color.Yellow, Age = 3, Top = Symbol.Blank, Left = Symbol.Crown, Center = Symbol.Tower, Right = Symbol.Tower }
 			);
 

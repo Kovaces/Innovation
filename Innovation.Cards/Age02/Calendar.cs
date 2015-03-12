@@ -34,8 +34,8 @@ namespace Innovation.Cards
 			if (cardsInScorePile <= cardsInHand)
 				return new CardActionResults(false, false);
 			
-			parameters.TargetPlayer.Hand.Add(Draw.Action(3, parameters.Game));
-			parameters.TargetPlayer.Hand.Add(Draw.Action(3, parameters.Game));
+			parameters.TargetPlayer.AddCardToHand(Draw.Action(3, parameters.Game));
+			parameters.TargetPlayer.AddCardToHand(Draw.Action(3, parameters.Game));
 
 			return new CardActionResults(true, false);
 		}

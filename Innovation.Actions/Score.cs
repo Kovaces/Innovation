@@ -11,7 +11,7 @@ namespace Innovation.Actions
 			if (card == null)
 				throw new NullReferenceException("Card cannot be null");
 
-			player.Tableau.ScorePile.Add(card);
+			player.AddCardToScorePile(card);
 		}
 	}
 }

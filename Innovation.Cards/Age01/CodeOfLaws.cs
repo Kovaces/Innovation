@@ -55,7 +55,7 @@ namespace Innovation.Cards
 			if (cardToTuck == null)
 				return new CardActionResults(false, false);
 				
-			parameters.TargetPlayer.Hand.Remove(cardToTuck);
+			parameters.TargetPlayer.RemoveCardFromHand(cardToTuck);
 			Tuck.Action(cardToTuck, parameters.TargetPlayer);
 
 			RequestQueueManager.AskToSplay(

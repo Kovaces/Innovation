@@ -57,11 +57,11 @@ namespace Innovation.Cards
 
 			foreach (ICard card in cardsToTransfer)
 			{
-				parameters.TargetPlayer.Hand.Remove(card);
-				parameters.ActivePlayer.Hand.Add(card);
+				parameters.TargetPlayer.RemoveCardFromHand(card);
+				parameters.ActivePlayer.AddCardToHand(card);
 			}
 
-			parameters.TargetPlayer.Hand.Add(Draw.Action(2, parameters.Game));
+			parameters.TargetPlayer.AddCardToHand(Draw.Action(2, parameters.Game));
 
 			return new CardActionResults(true, false);
 		}

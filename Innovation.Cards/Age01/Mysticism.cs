@@ -41,10 +41,10 @@ namespace Innovation.Cards
 				if (drawnCard == null)
 					return new CardActionResults(true, false);
 
-				parameters.TargetPlayer.Hand.Add(drawnCard);
+				parameters.TargetPlayer.AddCardToHand(drawnCard);
 			}
 			else
-				parameters.TargetPlayer.Hand.Add(card);
+				parameters.TargetPlayer.AddCardToHand(card);
 
 			return new CardActionResults(true, false);
 		}

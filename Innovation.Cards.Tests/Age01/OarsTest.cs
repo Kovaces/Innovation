@@ -128,7 +128,7 @@ namespace Innovation.Cards.Tests
 
 			//testGame.Players[1].SelectsCards = new List<int>() { 0 };
 
-			testGame.Players[1].Hand.Remove(testGame.Players[1].Hand.First());
+			testGame.Players[1].RemoveCardFromHand(testGame.Players[1].Hand.First());
 
 			var result = new Oars().Actions.ToList()[0].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[1], Game = testGame, ActivePlayer = testGame.Players[0], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
 
@@ -185,7 +185,7 @@ namespace Innovation.Cards.Tests
 
 			//testGame.Players[1].SelectsCards = new List<int>() { 0 };
 
-			testGame.Players[1].Hand.Remove(testGame.Players[1].Hand.First());
+			testGame.Players[1].RemoveCardFromHand(testGame.Players[1].Hand.First());
 
 			new Oars().Actions.ToList()[0].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[1], Game = testGame, ActivePlayer = testGame.Players[0], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
 			var result = new Oars().Actions.ToList()[1].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[1], Game = testGame, ActivePlayer = testGame.Players[1], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });

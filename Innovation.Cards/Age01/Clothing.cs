@@ -57,7 +57,7 @@ namespace Innovation.Cards
 			if (drawnCard == null)
 				throw new ArgumentNullException("Must choose card.");
 
-			parameters.TargetPlayer.Hand.Remove(drawnCard);
+			parameters.TargetPlayer.RemoveCardFromHand(drawnCard);
 			Meld.Action(drawnCard, parameters.TargetPlayer);
 
 			return new CardActionResults(true, false);

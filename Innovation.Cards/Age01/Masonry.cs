@@ -53,7 +53,7 @@ namespace Innovation.Cards
 			var selectedCards = parameters.Answer.MultipleCards;
 			foreach (var card in selectedCards)
 			{
-				parameters.TargetPlayer.Hand.Remove(card);
+				parameters.TargetPlayer.RemoveCardFromHand(card);
 				Meld.Action(card, parameters.TargetPlayer);
 			}
 

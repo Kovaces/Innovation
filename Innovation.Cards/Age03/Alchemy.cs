@@ -44,7 +44,7 @@ namespace Innovation.Cards
 			{
 				ICard card = Draw.Action(4, parameters.Game);
 				parameters.TargetPlayer.RevealCard(card);
-				parameters.TargetPlayer.Hand.Add(card);
+				parameters.TargetPlayer.AddCardToHand(card);
 				cardsDrawn.Add(card);
 			}
 
@@ -52,7 +52,7 @@ namespace Innovation.Cards
 			if (cardsDrawn.Any(c => c.Color == Color.Red))
 			{
 				parameters.TargetPlayer.Hand.ForEach(c => Return.Action(c, parameters.Game));
-				parameters.TargetPlayer.Hand.RemoveRange(0, parameters.TargetPlayer.Hand.Count());
+				parameters.TargetPlayer.Hand.ForEach(c => parameters.TargetPlayer.RemoveCardFromHand(c));
 			}
 
 			return new CardActionResults(true, false);
@@ -85,7 +85,7 @@ namespace Innovation.Cards
 				throw new ArgumentNullException("Must choose a card.");
 
 			Meld.Action(cardChosen, parameters.TargetPlayer);
-			parameters.TargetPlayer.Hand.Remove(cardChosen);
+			parameters.TargetPlayer.RemoveCardFromHand(cardChosen);
 
 			if (!parameters.TargetPlayer.Hand.Any())
 				return new CardActionResults(true, false);
@@ -109,7 +109,7 @@ namespace Innovation.Cards
 				throw new ArgumentNullException("Must choose a card.");
 
 			Score.Action(cardChosen, parameters.TargetPlayer);
-			parameters.TargetPlayer.Hand.Remove(cardChosen);
+			parameters.TargetPlayer.RemoveCardFromHand(cardChosen);
 
 			return new CardActionResults(true, false);
 		}

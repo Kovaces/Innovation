@@ -87,7 +87,7 @@ namespace Innovation.Models
 
 		public void AddCardToHand(ICard card)
 		{
-			Hand.Add(card);
+			AddCardToHand(card);
 			UpdateClientHandler(Id);
 		}
 		public void RemoveCardFromHand(ICard card)
@@ -112,6 +112,16 @@ namespace Innovation.Models
 		public void SplayStack(Color stackColor, SplayDirection direction)
 		{
 			Tableau.Stacks[stackColor].Splay(direction);
+			UpdateClientHandler(Id);
+		}
+		public void AddCardToScorePile(ICard card)
+		{
+			Tableau.ScorePile.Add(card);
+			UpdateClientHandler(Id);
+		}
+		public void RemoveCardFromScorePile(ICard card)
+		{
+			Tableau.ScorePile.Remove(card);
 			UpdateClientHandler(Id);
 		}
 	}

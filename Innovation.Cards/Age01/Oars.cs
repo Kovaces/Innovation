@@ -55,14 +55,14 @@ namespace Innovation.Cards
 			if (card == null)
 				throw new ArgumentNullException("Must choose card.");
 
-			parameters.TargetPlayer.Hand.Remove(card);
+			parameters.TargetPlayer.RemoveCardFromHand(card);
 			Score.Action(card, parameters.ActivePlayer);
 
 			var drawnCard = Draw.Action(1, parameters.Game);
 			if (drawnCard == null)
 				return new CardActionResults(true, false);
 
-			parameters.TargetPlayer.Hand.Add(drawnCard);
+			parameters.TargetPlayer.AddCardToHand(drawnCard);
 
             parameters.Game.StashPropertyBagValue("OarsAction1Taken", true);
 
@@ -80,7 +80,7 @@ namespace Innovation.Cards
 			if (drawnCard == null)
 				return new CardActionResults(true, false);
 
-			parameters.TargetPlayer.Hand.Add(drawnCard);
+			parameters.TargetPlayer.AddCardToHand(drawnCard);
 
 			return new CardActionResults(true, false);
 		}

@@ -52,7 +52,7 @@ namespace Innovation.Cards
 			if (card == null)
 				return new CardActionResults(false, false);
 
-			parameters.TargetPlayer.Hand.Remove(card);
+			parameters.TargetPlayer.RemoveCardFromHand(card);
 			
 			Return.Action(card, parameters.Game);
 			

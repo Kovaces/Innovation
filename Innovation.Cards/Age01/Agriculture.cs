@@ -51,7 +51,7 @@ namespace Innovation.Cards
 			if (selectedCard == null)
 				return new CardActionResults(false, false);
 
-			parameters.TargetPlayer.Hand.Remove(selectedCard);
+			parameters.TargetPlayer.RemoveCardFromHand(selectedCard);
 			Return.Action(selectedCard, parameters.Game);
 
 			int ageToDraw = selectedCard.Age + 1;

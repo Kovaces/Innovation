@@ -45,7 +45,7 @@ namespace Innovation.Cards
 				parameters.TargetPlayer.RevealCard(drawnCard);
 			}
 
-			parameters.TargetPlayer.Hand.Add(drawnCard);
+			parameters.TargetPlayer.AddCardToHand(drawnCard);
 
 			return new CardActionResults(true, false);
 		}

@@ -57,7 +57,7 @@ namespace Innovation.Cards
 
 			foreach (ICard card in cardsToReturn)
 			{
-				parameters.TargetPlayer.Hand.Remove(card);
+				parameters.TargetPlayer.RemoveCardFromHand(card);
 				Return.Action(card, parameters.Game);
 			}
 
@@ -97,23 +97,23 @@ namespace Innovation.Cards
 			if (cardToReturn == null)
 				return new CardActionResults(false, false);
 
-			parameters.TargetPlayer.Hand.Remove(cardToReturn);
+			parameters.TargetPlayer.RemoveCardFromHand(cardToReturn);
 			Return.Action(cardToReturn, parameters.Game);
 
 			var drawnCard = Draw.Action(1, parameters.Game);
 			if (drawnCard == null)
 				return new CardActionResults(true, false);
-			parameters.TargetPlayer.Hand.Add(drawnCard);
+			parameters.TargetPlayer.AddCardToHand(drawnCard);
 
 			drawnCard = Draw.Action(1, parameters.Game);
 			if (drawnCard == null)
 				return new CardActionResults(true, false);
-			parameters.TargetPlayer.Hand.Add(drawnCard);
+			parameters.TargetPlayer.AddCardToHand(drawnCard);
 
 			drawnCard = Draw.Action(1, parameters.Game);
 			if (drawnCard == null)
 				return new CardActionResults(true, false);
-			parameters.TargetPlayer.Hand.Add(drawnCard);
+			parameters.TargetPlayer.AddCardToHand(drawnCard);
 
 			return new CardActionResults(true, false);
 		}

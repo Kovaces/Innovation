@@ -16,7 +16,7 @@ namespace Innovation.Actions.ActionWorkers
 			int age = queuedAction.TargetPlayer.Tableau.GetTopCards().Select(x => x.Age).Max();
 			ICard drawnCard = Draw.Action(age, queuedAction.Game);
 			if (drawnCard != null)
-				queuedAction.TargetPlayer.Hand.Add(drawnCard);
+				queuedAction.TargetPlayer.AddCardToHand(drawnCard);
 		}
 	}
 }

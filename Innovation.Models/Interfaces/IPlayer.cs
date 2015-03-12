@@ -31,5 +31,7 @@ namespace Innovation.Models.Interfaces
 		void RemoveCardFromStack(ICard card);
 		void TuckCard(ICard card);
 		void SplayStack(Color stackColor, SplayDirection direction);
+		void AddCardToScorePile(ICard card);
+		void RemoveCardFromScorePile(ICard card);
 	}
 }

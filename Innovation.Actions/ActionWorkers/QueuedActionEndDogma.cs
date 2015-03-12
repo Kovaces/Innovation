@@ -15,7 +15,7 @@ namespace Innovation.Actions.ActionWorkers
 			// a single dogma action has completed.  give away free cards and clean up
 
 			if ((bool)queuedAction.Game.GetPropertyBagValue("OtherPlayersActed"))
-				queuedAction.ActivePlayer.Hand.Add(Draw.Action(queuedAction.ActivePlayer.Tableau.GetHighestAge(), queuedAction.Game));
+				queuedAction.ActivePlayer.AddCardToHand(Draw.Action(queuedAction.ActivePlayer.Tableau.GetHighestAge(), queuedAction.Game));
 
 			queuedAction.Game.ClearPropertyBag();
 
