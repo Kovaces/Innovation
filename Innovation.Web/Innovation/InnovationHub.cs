@@ -26,26 +26,26 @@ namespace Innovation.Web.Innovation
 		} 
 
 		//game state
-		public async void CreateGame(string gameName, string playerId, string[] playerIds)
+		public async void CreateGame(string gameName, string[] playerIds)
 		{
 			await Groups.Add(Context.ConnectionId, gameName);
 			_innovation.CreateGame(gameName, playerIds);
 		}
 
 		//player interaction
-		public void PickCardsResponse(string gameId, string playerId, string[] cardIds)
+		public void PickCardsResponse(string gameId, string[] cardIds)
 		{
-			_innovation.PickCardsResponse(gameId, playerId, cardIds);
+			_innovation.PickCardsResponse(gameId, Context.ConnectionId, cardIds);
 		}
 
-		public void PickPlayerResponse(string gameId, string playerId, string[] selectedPlayers)
+		public void PickPlayerResponse(string gameId, string[] selectedPlayers)
 		{
-			_innovation.PickPlayersResponse(gameId, playerId, selectedPlayers);
+			_innovation.PickPlayersResponse(gameId, Context.ConnectionId, selectedPlayers);
 		}
 
-		public void AskQuestionResponse(string gameId, string playerId, bool response)
+		public void AskQuestionResponse(string gameId, bool response)
 		{
-			_innovation.AskQuestionResponse(gameId, playerId, response);
+			_innovation.AskQuestionResponse(gameId, Context.ConnectionId, response);
 		}
 
 		// data

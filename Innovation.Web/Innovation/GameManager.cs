@@ -108,8 +108,8 @@ namespace Innovation.Web.Innovation
 
 		private static void DealStartingCards(Game game)
 		{
-			game.Players.ForEach(p => p.Hand.Add(Draw.Action(1, game)));
-			game.Players.ForEach(p => p.Hand.Add(Draw.Action(1, game)));
+			game.Players.ForEach(p => p.AddCardToHand(Draw.Action(1, game)));
+			game.Players.ForEach(p => p.AddCardToHand(Draw.Action(1, game)));
 		}
 	}
 }

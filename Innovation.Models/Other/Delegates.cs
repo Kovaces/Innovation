@@ -11,6 +11,7 @@ namespace Innovation.Models
 	public delegate void AskQuestionOutgoing(string playerId, string question);
 	public delegate void PickPlayersOutgoing(string playerId, IEnumerable<IPlayer> playerList, int minimumNumberToSelect, int maximumNumberToSelect);
 	public delegate void StartTurn(string playerId);
+	public delegate void UpdateClient(string playerId);
 
 	//Game
 	public delegate void GameOver(string gameName, string winner);

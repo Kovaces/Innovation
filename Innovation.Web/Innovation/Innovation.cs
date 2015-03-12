@@ -59,6 +59,19 @@ namespace Innovation.Web.Innovation
 			
 			return tempGame;
 		}
+		private Game GetGameByPlayerId(string playerId)
+		{
+			IPlayer player;
+			player = GetPlayerById(playerId);
+
+			var game = _games.Values.FirstOrDefault(g => g.Players.Contains(player));
+
+			if (game == null)
+				throw new InvalidOperationException("Player : " + player.Name + "not part of any games.");
+
+			return game;
+		}
+
 		private void ValidateResponseParameters(string gameId, string playerId, out Game game, out IPlayer player)
 		{
 			game = GetGameById(gameId);
@@ -78,6 +91,7 @@ namespace Innovation.Web.Innovation
 				PickPlayersHandler = PickPlayers, 
 				StartTurnHandler = PlayerStartTurn,
 				RevealCardHandler = RevealCard,
+				UpdateClientHandler = UpdateClient,
 			};
 
 			_players.TryAdd(player.Id, player);
@@ -101,7 +115,9 @@ namespace Innovation.Web.Innovation
 			};
 
 			_games.TryAdd(gameName, game);
-			
+
+			Clients.Group(game.Name).setGameId(game.Id);
+
 			Task.Factory.StartNew(() => GameManager.StartGame(game));
 		}
 		public void GameOver(string gameName, string winner)
@@ -135,7 +151,7 @@ namespace Innovation.Web.Innovation
 		public void PickCards(string playerId, IEnumerable<ICard> cardsToSelectFrom, int minimumNumberToSelect, int maximumNumberToSelect)
 		{
 			Clients.User(playerId).pickCard(
-				Newtonsoft.Json.JsonConvert.SerializeObject(cardsToSelectFrom.Select(x => x.Id).ToList())
+				JsonConvert.SerializeObject(cardsToSelectFrom.Select(x => x.Id).ToList())
 				, minimumNumberToSelect
 				, maximumNumberToSelect
 			);
@@ -198,6 +214,12 @@ namespace Innovation.Web.Innovation
 		public void RevealCard(string playerId, ICard card)
 		{
 			Clients.User(playerId).revealCard(JsonConvert.SerializeObject(card));
+		}
+
+		public void UpdateClient(string playerId)
+		{
+			var game = GetGameByPlayerId(playerId);
+			Clients.Group(game.Name).syncGameState(JsonConvert.SerializeObject(game));
 		}
 
 		//data

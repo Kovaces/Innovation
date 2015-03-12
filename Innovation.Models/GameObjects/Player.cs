@@ -38,6 +38,8 @@ namespace Innovation.Models
 		public PickPlayersOutgoing PickPlayersHandler { get; set; }
 		[JsonIgnore]
 		public StartTurn StartTurnHandler { get; set; }
+		[JsonIgnore]
+		public UpdateClient UpdateClientHandler { get; set; }
 
 		//methods
 		public void RevealCard(ICard card)
@@ -81,6 +83,36 @@ namespace Innovation.Models
 		{
 			ActionsTaken = 0;
 			StartTurnHandler(Id);
+		}
+
+		public void AddCardToHand(ICard card)
+		{
+			Hand.Add(card);
+			UpdateClientHandler(Id);
+		}
+		public void RemoveCardFromHand(ICard card)
+		{
+			Hand.Remove(card);
+			UpdateClientHandler(Id);
+		}
+		public void AddCardToStack(ICard card)
+		{
+			Tableau.Stacks[card.Color].AddCardToTop(card);
+			UpdateClientHandler(Id);
+		}
+		public void RemoveCardFromStack(ICard card)
+		{
+			Tableau.Stacks[card.Color].RemoveCard(card);
+		}
+		public void TuckCard(ICard card)
+		{
+			Tableau.Stacks[card.Color].AddCardToBottom(card);
+			UpdateClientHandler(Id);
+		}
+		public void SplayStack(Color stackColor, SplayDirection direction)
+		{
+			Tableau.Stacks[stackColor].Splay(direction);
+			UpdateClientHandler(Id);
 		}
 	}
 }

@@ -13,11 +13,9 @@ namespace Innovation.Models.Interfaces
 		string Name { get; set; }
 		ITableau Tableau { get; set; }
 		List<ICard> Hand { get; set; }
-		string Team { get; set; } //the base rules support team play but implementing that is low on the priority list
-
+		string Team { get; set; }
 		int ActionsTaken { get; set; }
-
-
+		
 		void PickCardFromHand();
 		void PickCard(IEnumerable<ICard> cardsToSelectFrom);
 		void PickMultipleCards(IEnumerable<ICard> cardsToSelectFrom, int minimumNumberToSelect, int maximumNumberToSelect);
@@ -25,7 +23,13 @@ namespace Innovation.Models.Interfaces
 		void AskToSplay(IEnumerable<Color> colorsToSplay, SplayDirection directionToSplay);
 		void AskQuestion(string question);
 		void PickPlayer(List<IPlayer> playerList, int minimumNumberToSelect, int maximumNumberToSelect);
-
 		void StartTurn();
+		
+		void AddCardToHand(ICard card);
+		void RemoveCardFromHand(ICard card);
+		void AddCardToStack(ICard card);
+		void RemoveCardFromStack(ICard card);
+		void TuckCard(ICard card);
+		void SplayStack(Color stackColor, SplayDirection direction);
 	}
 }
