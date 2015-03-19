@@ -87,7 +87,7 @@ namespace Innovation.Models
 
 		public void AddCardToHand(ICard card)
 		{
-			AddCardToHand(card);
+			Hand.Add(card);
 			UpdateClientHandler(Id);
 		}
 		public void RemoveCardFromHand(ICard card)

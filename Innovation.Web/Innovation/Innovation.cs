@@ -119,6 +119,7 @@ namespace Innovation.Web.Innovation
 			Clients.Group(game.Name).setGameId(game.Id);
 
 			Task.Factory.StartNew(() => GameManager.StartGame(game));
+			SyncGameState(game);
 		}
 		public void GameOver(string gameName, string winner)
 		{
@@ -131,6 +132,10 @@ namespace Innovation.Web.Innovation
 		public void SyncGameState(string gameId)
 		{
 			var game = GetGameById(gameId);
+			SyncGameState(game);
+		}
+		public void SyncGameState(Game game)
+		{
 			Clients.Group(game.Name).syncGameState(JsonConvert.SerializeObject(game));
 		}
 
@@ -244,6 +249,20 @@ namespace Innovation.Web.Innovation
 								}),
 								Image = string.Empty
 							}).ToList();
+		}
+		internal object GetPlayerList()
+		{
+			return _players.Values
+							.Where(x => x.Name != null)
+							.Select(c => new
+							{
+								Id = c.Id,
+								Name = c.Name
+							}).ToList();
+		}
+		internal void SetNameToClient(string clientId, string name)
+		{
+			_players[clientId].Name = name;
 		}
 	}
 }

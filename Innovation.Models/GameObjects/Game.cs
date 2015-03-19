@@ -15,6 +15,8 @@ namespace Innovation.Models
 		//ctor
 		public Game()
 		{
+			ActionQueue = new ActionQueue();
+			RequestQueue = new RequestQueue();
 			GameEnded = false;
 		}
 

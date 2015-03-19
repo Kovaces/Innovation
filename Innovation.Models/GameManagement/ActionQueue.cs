@@ -9,7 +9,7 @@ namespace Innovation.Models
 {
 	public class ActionQueue
 	{
-		private List<QueuedAction> _Actions { get; set; }
+		private List<QueuedAction> _Actions = new List<QueuedAction>();
 
 		public void Clear()
 		{

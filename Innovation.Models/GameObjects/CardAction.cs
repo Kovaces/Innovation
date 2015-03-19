@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Innovation.Models.Enums;
 using Innovation.Models.Interfaces;
+using Newtonsoft.Json;
 
 namespace Innovation.Models
 {
@@ -9,6 +10,7 @@ namespace Innovation.Models
 		public ActionType ActionType { get; set; }
 		public Symbol Symbol { get; set; }
 		public string ActionText { get; set; }
+		[JsonIgnore]
 		public CardActionDelegate ActionHandler { get; set; }
 
 		public CardAction(ActionType actionType, Symbol symbol, string actionText, CardActionDelegate actionHandler)
