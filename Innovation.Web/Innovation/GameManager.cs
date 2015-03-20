@@ -41,6 +41,11 @@ namespace Innovation.Web.Innovation
 			game.AgeDecks.ForEach(d => d.Shuffle());
 
 			//TODO: Create Special Achievement Decks
+			//Monument	- Claim immediately if you tuck 6 cards or score 6 cards during a turn
+			//Empire	- Claim immediately if you have 3 or more icons of all 6 types
+			//World		- Claim immediately if you have 12 or more clocks on your board
+			//Wonder	- Claim immediately if you have 5 colors on your board, and each is splayed either up or right
+			//Universe	- Claim immediately if you have 5 top cards, and each is value 8 or higher
 
 			game.AgeAchievementDeck = CreateAgeAchievementDeck(game);
 
