@@ -190,6 +190,7 @@
 		    </div>
 	    </div>
 -->
+
         <div class="createGame container-fluid modal" id="createGameModal" >
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -201,10 +202,10 @@
                         <div class="row">Pick Players:</div>
                         <div class="row">Game Name: 
                             <input type="text" id="gameName" />
-                            <input type="text" id="selectedPlayers" />
+                            <input type="text" id="selectedPlayers" text="{{currentPlayerId}},"/>
                         </div>
                         <div class="container-fluid" id="createGamePlayers">
-                            <button class="unselected-player label" onclick="selectCreateGamePlayer(this);" value="{{p.Id}}" ng-repeat="p in players">
+                            <button ng-repeat="p in players" ng-class="(p.Id == currentPlayerId) ? 'selected-player label' : 'unselected-player label'" onclick="selectCreateGamePlayer(this);" value="{{p.Id}}">
                                 {{p.Name}} <span class="glyphicon glyphicon-user" />
                             </button>
                         </div>
@@ -223,12 +224,12 @@
 				    <!-- Nav tabs -->
 				    <ul class="nav nav-tabs" role="tablist">
 					    <li role="presentation" class="active"><a href="#playerSpace{{currentPlayerId}}" aria-controls="playerSpace{{currentPlayerId}}" role="tab" data-toggle="tab">Mine</a></li>
-                        <li role="presentation" ng-repeat="p in game.Players | filter:{PlayerId:'!'+currentPlayerId}">
+                        <li role="presentation" ng-repeat="p in game.Players | filter:{Id:'!'+currentPlayerId}">
                             <a href="#playerSpace{{p.Id}}" aria-controls="playerSpace{{p.Id}}" role="tab" data-toggle="tab"> {{p.Name}}</a>
 					    </li>
 				    </ul>
 				    <div class="tab-content">
-					    <div role="tabpanel" class="tab-pane {{p.Id === currentPlayerId ? "active" : ""}}" id="playerSpace{{p.Id}}" ng-repeat="p in game.Players">
+					    <div role="tabpanel" ng-class="(p.Id === currentPlayerId) ? 'tab-pane active' : 'tab-pane'" id="playerSpace{{p.Id}}" ng-repeat="p in game.Players">
 						    <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-1 main">
 							    <h1 class="page-header">{{p.Id === currentPlayerId ? "My" : p.Name}} Tableau</h1>
 
@@ -325,6 +326,7 @@
                 scope.$apply(function () {
                     scope.currentPlayerName = $('#displayname').val();
                     scope.currentPlayerId = $.connection.hub.id;
+                    currentPlayerId = $.connection.hub.id;
                 });
             });
 

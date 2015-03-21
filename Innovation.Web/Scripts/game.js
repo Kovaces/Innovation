@@ -1,6 +1,7 @@
 ﻿var cards = null;
 var game = null;
 var players = null;
+var currentPlayerId = null;
 
 function initialize() {
     receiveChat('server', 'initialize');
@@ -89,7 +90,7 @@ function showCreateGame() {
     $('#createGameModal').css("z-index", 999);
     $('#createGameModal').modal('show');
     $('#gameName').val('');
-	$('#selectedPlayers').val('');
+    $('#selectedPlayers').val(currentPlayerId + ',');
 
     return false;
 }
@@ -121,6 +122,9 @@ function receiveChat(name, message) {
 function selectCreateGamePlayer(p) {
     var ele = $(p);
     var listEle = $("#selectedPlayers");
+
+    if (p.value == currentPlayerId)
+        return false;
 
     var numSelectedPlayers = 0;
     ele.siblings().each(function() {

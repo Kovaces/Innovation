@@ -1,0 +1,13 @@
+﻿<div class="cardParent">
+    <div class="card-icon card-top-icon">{{topIcon}}</div>
+    <div class="card-icon card-left-icon">{{leftIcon}}</div>
+    <div class="card-icon card-middle-icon">{{middleIcon}}</div>
+    <div class="card-icon card-right-icon">{{rightIcon}}</div>
+    <div class="card-name">{{name}}</div>
+    <div class="card-action-space" 
+        <div ng-repeat="a in actions">
+            <div class="card-action-icon">{{a.icon}}</div>
+            <div class="card-action-text">{{a.text}}</div>
+        </div>
+    </div>
+</div>
