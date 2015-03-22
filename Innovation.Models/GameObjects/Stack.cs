@@ -6,7 +6,7 @@ namespace Innovation.Models
 {
 	public class Stack
 	{
-		//ctor
+		//constructor
 		public Stack()
 		{
 			Cards = new List<ICard>();

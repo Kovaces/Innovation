@@ -21,7 +21,7 @@ namespace Innovation.Web.Innovation
 
 		private readonly ConcurrentDictionary<string, Game> _games = new ConcurrentDictionary<string, Game>();
 		private readonly ConcurrentDictionary<string, IPlayer> _players = new ConcurrentDictionary<string, IPlayer>();
-		
+
 		private IHubConnectionContext<dynamic> Clients { get; set; }
 
 		private Innovation(IHubConnectionContext<dynamic> clients)
@@ -40,9 +40,9 @@ namespace Innovation.Web.Innovation
 		private IPlayer GetPlayerById(string id)
 		{
 			IPlayer tempPlayer = null;
-			
+
 			_players.TryGetValue(id, out tempPlayer);
-			
+
 			if (tempPlayer == null)
 				throw new ArgumentNullException("Invalid Player.  [" + id + "]");
 
@@ -51,12 +51,12 @@ namespace Innovation.Web.Innovation
 		private Game GetGameById(string id)
 		{
 			Game tempGame = null;
-			
+
 			_games.TryGetValue(id, out tempGame);
 
 			if (tempGame == null)
-				throw new ArgumentNullException("Invalid Game.  " + id + "]");
-			
+				throw new ArgumentNullException("Invalid Game.  [" + id + "]");
+
 			return tempGame;
 		}
 		private Game GetGameByPlayerId(string playerId)
@@ -67,7 +67,7 @@ namespace Innovation.Web.Innovation
 			var game = _games.Values.FirstOrDefault(g => g.Players.Contains(player));
 
 			if (game == null)
-				throw new InvalidOperationException("Player : " + player.Name + "not part of any games.");
+				throw new InvalidOperationException("Player : [" + player.Name + "] not part of any games.");
 
 			return game;
 		}
@@ -79,16 +79,16 @@ namespace Innovation.Web.Innovation
 			if (!game.Players.Contains(player))
 				throw new ArgumentNullException("Player [" + playerId + "] not in game [" + gameId + "]");
 		}
-		
+
 		//User
 		public void AddUser(string userId)
 		{
 			var player = new Player
 			{
-				Id = userId, 
-				PickMultipleCardsHandler = PickCards, 
-				AskQuestionHandler = AskQuestion, 
-				PickPlayersHandler = PickPlayers, 
+				Id = userId,
+				PickMultipleCardsHandler = PickCards,
+				AskQuestionHandler = AskQuestion,
+				PickPlayersHandler = PickPlayers,
 				StartTurnHandler = PlayerStartTurn,
 				RevealCardHandler = RevealCard,
 				UpdateClientHandler = UpdateClient,
@@ -124,7 +124,7 @@ namespace Innovation.Web.Innovation
 		public void GameOver(string gameName, string winner)
 		{
 			Clients.Group(gameName).gameOverNotification(GetPlayerById(winner).Name);
-			
+
 			Game game;
 			_games.TryRemove(gameName, out game);
 		}
@@ -136,7 +136,45 @@ namespace Innovation.Web.Innovation
 		}
 		public void SyncGameState(Game game)
 		{
-			Clients.Group(game.Name).syncGameState(JsonConvert.SerializeObject(game));
+			var thing = new
+			{
+				ActivePlayer = (game.ActivePlayer == null ? null : game.ActivePlayer.Id),
+				AgeAchievementDeck = (game.AgeAchievementDeck == null ? null : new
+				{
+					Age = game.AgeAchievementDeck.Age,
+					Cards = game.AgeAchievementDeck.Cards.Select(x => new
+					{
+						Id = x.Id
+					})
+				}),
+				Id = game.Id,
+				Name = game.Name,
+				Players = game.Players.Select(x => new
+				{
+					ActionsTaken = x.ActionsTaken,
+					Id = x.Id,
+					Name = x.Name,
+					Tableau = new
+					{
+						NumberOfAchievements = x.Tableau.NumberOfAchievements,
+						ScorePile = x.Tableau.ScorePile.Select(p => new
+						{
+							Id = p.Id
+						}),
+						Stacks = x.Tableau.Stacks.Keys.Select(s => new
+						{
+							Color = s,
+							SplayedDirection = x.Tableau.Stacks[s].SplayedDirection,
+							Cards = x.Tableau.Stacks[s].Cards.Select(c => new
+							{
+								Id = c.Id
+							}),
+						}),
+					}
+				})
+			};
+
+			Clients.Group(game.Name).syncGameState(JsonConvert.SerializeObject(thing));
 		}
 
 		//Player
@@ -152,7 +190,7 @@ namespace Innovation.Web.Innovation
 
 			ActionQueueManager.PerformAction(game, player, selectedAction);
 		}
-		
+
 		public void PickCards(string playerId, IEnumerable<ICard> cardsToSelectFrom, int minimumNumberToSelect, int maximumNumberToSelect)
 		{
 			Clients.User(playerId).pickCard(
@@ -166,10 +204,10 @@ namespace Innovation.Web.Innovation
 			Game game;
 			IPlayer player;
 			ValidateResponseParameters(gameId, playerId, out game, out player);
-			
+
 			RequestQueueManager.ReceiveCardResponse(game, player, cardIds.ToList());
 		}
-		
+
 		public void AskQuestion(string playerId, string question)
 		{
 			Clients.User(playerId).askQuestion(question);
@@ -182,7 +220,7 @@ namespace Innovation.Web.Innovation
 
 			RequestQueueManager.ReceiveBooleanResponse(game, player, response);
 		}
-		
+
 		public void PickPlayers(string playerId, IEnumerable<IPlayer> playerList, int minimumNumberToSelect, int maximumNumberToSelect)
 		{
 			Clients.User(playerId).pickPlayers(
@@ -199,7 +237,7 @@ namespace Innovation.Web.Innovation
 
 			RequestQueueManager.ReceivePlayerResponse(game, player, selectedPlayers.ToList());
 		}
-		
+
 		public void AskToSplay(string playerId, IEnumerable<Color> colors, SplayDirection splayDirection)
 		{
 			Clients.User(playerId).askToSplay(
@@ -233,7 +271,7 @@ namespace Innovation.Web.Innovation
 			return CardList.GetCardList()
 							.Select(c => new
 							{
-								CardId = c.Id,
+								Id = c.Id,
 								Name = c.Name,
 								Color = c.Color,
 								Age = c.Age,
@@ -253,7 +291,6 @@ namespace Innovation.Web.Innovation
 		internal object GetPlayerList()
 		{
 			return _players.Values
-							.Where(x => x.Name != null)
 							.Select(c => new
 							{
 								Id = c.Id,

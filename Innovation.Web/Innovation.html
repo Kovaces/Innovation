@@ -20,7 +20,7 @@
 	  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 	<![endif]-->
 
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
+    <script src="/scripts/angular-1.3.15.min.js"></script>
 </head>
 
 <body ng-app="myapp">
@@ -56,141 +56,6 @@
 
     <div ng-controller="mainGameController">
 
-<!--
-	    <div class="container-fluid hidden">
-		    <div class="row">
-			    <div role="tabpanel">
-				    <ul class="nav nav-tabs" role="tablist">
-					    <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Mine</a></li>
-					    <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">Player 1</a></li>
-					    <li role="presentation"><a href="#messages" aria-controls="messages" role="tab" data-toggle="tab">Player 2</a></li>
-					    <li role="presentation"><a href="#settings" aria-controls="settings" role="tab" data-toggle="tab">Player 3</a></li>
-				    </ul>
-				    <div class="tab-content">
-					    <div role="tabpanel" class="tab-pane active" id="myhome">
-						    <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-1 main">
-							    <h1 class="page-header">My Tableau</h1>
-
-							    <div class="row placeholders">
-								    <div class="col-xs-6 col-sm-2 placeholder">
-									    <img data-src="holder.js/200x200/auto/sky" class="img-responsive" alt="Generic placeholder thumbnail">
-									    <h4>Blue Stack</h4>
-								    </div>
-								    <div class="col-xs-6 col-sm-2 placeholder">
-									    <img data-src="holder.js/200x200/auto/vine" class="img-responsive" alt="Generic placeholder thumbnail">
-									    <h4>Green Stack</h4>
-								    </div>
-								    <div class="col-xs-6 col-sm-2 placeholder">
-									    <img data-src="holder.js/200x200/auto/sky" class="img-responsive" alt="Generic placeholder thumbnail">
-									    <h4>Red Stack</h4>
-								    </div>
-								    <div class="col-xs-6 col-sm-2 placeholder">
-									    <img data-src="holder.js/200x200/auto/vine" class="img-responsive" alt="Generic placeholder thumbnail">
-									    <h4>Purple Stack</h4>
-								    </div>
-								    <div class="col-xs-6 col-sm-2 placeholder">
-									    <img data-src="holder.js/200x200/auto/vine" class="img-responsive" alt="Generic placeholder thumbnail">
-									    <h4>Yellow Stack</h4>
-								    </div>
-							    </div>
-						    </div>
-					    </div>
-					    <div role="tabpanel" class="tab-pane" id="profile">
-						    <div role="tabpanel" class="tab-pane active" id="p1home">
-							    <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-1 main">
-								    <h1 class="page-header">P1 Tableau</h1>
-
-								    <div class="row placeholders">
-									    <div class="col-xs-6 col-sm-2 placeholder">
-										    <img data-src="holder.js/200x200/auto/sky" class="img-responsive" alt="Generic placeholder thumbnail">
-										    <h4>Blue Stack</h4>
-									    </div>
-									    <div class="col-xs-6 col-sm-2 placeholder">
-										    <img data-src="holder.js/200x200/auto/vine" class="img-responsive" alt="Generic placeholder thumbnail">
-										    <h4>Green Stack</h4>
-									    </div>
-									    <div class="col-xs-6 col-sm-2 placeholder">
-										    <img data-src="holder.js/200x200/auto/sky" class="img-responsive" alt="Generic placeholder thumbnail">
-										    <h4>Red Stack</h4>
-									    </div>
-									    <div class="col-xs-6 col-sm-2 placeholder">
-										    <img data-src="holder.js/200x200/auto/vine" class="img-responsive" alt="Generic placeholder thumbnail">
-										    <h4>Purple Stack</h4>
-									    </div>
-									    <div class="col-xs-6 col-sm-2 placeholder">
-										    <img data-src="holder.js/200x200/auto/vine" class="img-responsive" alt="Generic placeholder thumbnail">
-										    <h4>Yellow Stack</h4>
-									    </div>
-								    </div>
-							    </div>
-						    </div>
-					    </div>
-					    <div role="tabpanel" class="tab-pane" id="messages">
-						    <div role="tabpanel" class="tab-pane active" id="p2home">
-							    <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-1 main">
-								    <h1 class="page-header">P2 Tableau</h1>
-
-								    <div class="row placeholders">
-									    <div class="col-xs-6 col-sm-2 placeholder">
-										    <img data-src="holder.js/200x200/auto/sky" class="img-responsive" alt="Generic placeholder thumbnail">
-										    <h4>Blue Stack</h4>
-									    </div>
-									    <div class="col-xs-6 col-sm-2 placeholder">
-										    <img data-src="holder.js/200x200/auto/vine" class="img-responsive" alt="Generic placeholder thumbnail">
-										    <h4>Green Stack</h4>
-									    </div>
-									    <div class="col-xs-6 col-sm-2 placeholder">
-										    <img data-src="holder.js/200x200/auto/sky" class="img-responsive" alt="Generic placeholder thumbnail">
-										    <h4>Red Stack</h4>
-									    </div>
-									    <div class="col-xs-6 col-sm-2 placeholder">
-										    <img data-src="holder.js/200x200/auto/vine" class="img-responsive" alt="Generic placeholder thumbnail">
-										    <h4>Purple Stack</h4>
-									    </div>
-									    <div class="col-xs-6 col-sm-2 placeholder">
-										    <img data-src="holder.js/200x200/auto/vine" class="img-responsive" alt="Generic placeholder thumbnail">
-										    <h4>Yellow Stack</h4>
-									    </div>
-								    </div>
-							    </div>
-						    </div>
-					    </div>
-					    <div role="tabpanel" class="tab-pane" id="settings">
-						    <div role="tabpanel" class="tab-pane active" id="p3home">
-							    <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-1 main">
-								    <h1 class="page-header">P3 Tableau</h1>
-
-								    <div class="row placeholders">
-									    <div class="col-xs-6 col-sm-2 placeholder">
-										    <img data-src="holder.js/200x200/auto/sky" class="img-responsive" alt="Generic placeholder thumbnail">
-										    <h4>Blue Stack</h4>
-									    </div>
-									    <div class="col-xs-6 col-sm-2 placeholder">
-										    <img data-src="holder.js/200x200/auto/vine" class="img-responsive" alt="Generic placeholder thumbnail">
-										    <h4>Green Stack</h4>
-									    </div>
-									    <div class="col-xs-6 col-sm-2 placeholder">
-										    <img data-src="holder.js/200x200/auto/sky" class="img-responsive" alt="Generic placeholder thumbnail">
-										    <h4>Red Stack</h4>
-									    </div>
-									    <div class="col-xs-6 col-sm-2 placeholder">
-										    <img data-src="holder.js/200x200/auto/vine" class="img-responsive" alt="Generic placeholder thumbnail">
-										    <h4>Purple Stack</h4>
-									    </div>
-									    <div class="col-xs-6 col-sm-2 placeholder">
-										    <img data-src="holder.js/200x200/auto/vine" class="img-responsive" alt="Generic placeholder thumbnail">
-										    <h4>Yellow Stack</h4>
-									    </div>
-								    </div>
-							    </div>
-						    </div>
-					    </div>
-				    </div>
-			    </div>
-		    </div>
-	    </div>
--->
-
         <div class="createGame container-fluid modal" id="createGameModal" >
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -211,7 +76,7 @@
                         </div>
                         <div class="modal-footer">
                             <div class="bottom right"><button type="button" class="btn btn-primary" onclick="return clickCreateGame();">Create!</button></div>
-                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -223,39 +88,59 @@
 			    <div role="tabpanel">
 				    <!-- Nav tabs -->
 				    <ul class="nav nav-tabs" role="tablist">
-					    <li role="presentation" class="active"><a href="#playerSpace{{currentPlayerId}}" aria-controls="playerSpace{{currentPlayerId}}" role="tab" data-toggle="tab">Mine</a></li>
+					    <li role="presentation" class="active"><a href="#playerSpace{{currentPlayerId}}" aria-controls="playerSpace{{currentPlayerId}}" role="tab" data-toggle="tab" onclick="blur(this);">Mine</a></li>
                         <li role="presentation" ng-repeat="p in game.Players | filter:{Id:'!'+currentPlayerId}">
-                            <a href="#playerSpace{{p.Id}}" aria-controls="playerSpace{{p.Id}}" role="tab" data-toggle="tab"> {{p.Name}}</a>
+                            <a href="#playerSpace{{p.Id}}" aria-controls="playerSpace{{p.Id}}" role="tab" data-toggle="tab" onclick="blur(this);"> {{p.Name}}</a>
 					    </li>
 				    </ul>
 				    <div class="tab-content">
 					    <div role="tabpanel" ng-class="(p.Id === currentPlayerId) ? 'tab-pane active' : 'tab-pane'" id="playerSpace{{p.Id}}" ng-repeat="p in game.Players">
-						    <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-1 main">
-							    <h1 class="page-header">{{p.Id === currentPlayerId ? "My" : p.Name}} Tableau</h1>
+                            <div class="container-fluid">
+						        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-1 main" id="playerTableau{{p.Id}}">
+							        <h1 class="page-header">{{p.Id === currentPlayerId ? "My (" + p.Name + ")" : p.Name}} Tableau</h1>
 
-							    <div class="row placeholders">
-								    <div class="col-xs-6 col-sm-2 placeholder">
-									    <img data-src="holder.js/200x200/auto/sky" class="img-responsive" alt="Generic placeholder thumbnail">
-									    <h4>Blue Stack</h4>
-								    </div>
-								    <div class="col-xs-6 col-sm-2 placeholder">
-									    <img data-src="holder.js/200x200/auto/vine" class="img-responsive" alt="Generic placeholder thumbnail">
-									    <h4>Green Stack</h4>
-								    </div>
-								    <div class="col-xs-6 col-sm-2 placeholder">
-									    <img data-src="holder.js/200x200/auto/sky" class="img-responsive" alt="Generic placeholder thumbnail">
-									    <h4>Red Stack</h4>
-								    </div>
-								    <div class="col-xs-6 col-sm-2 placeholder">
-									    <img data-src="holder.js/200x200/auto/vine" class="img-responsive" alt="Generic placeholder thumbnail">
-									    <h4>Purple Stack</h4>
-								    </div>
-								    <div class="col-xs-6 col-sm-2 placeholder">
-									    <img data-src="holder.js/200x200/auto/vine" class="img-responsive" alt="Generic placeholder thumbnail">
-									    <h4>Yellow Stack</h4>
-								    </div>
-							    </div>
-						    </div>
+							        <div class="row placeholders">
+								        <div class="col-xs-6 col-sm-2" id="playerTableauBlue{{p.Id}}">
+									        <h4>Blue Stack</h4>
+                                            <div ng-repeat="c in p.Tableau.Stacks.Blue.Cards">
+									            <card-draw card="getCardById(c.Id)" />
+                                            </div>
+								        </div>
+								        <div class="col-xs-6 col-sm-2 placeholder">
+									        <h4>Green Stack</h4>
+                                            <div ng-repeat="c in p.Tableau.Stacks.Green.Cards">
+									            <card-draw card="getCardById(c.Id)" />
+                                            </div>
+								        </div>
+								        <div class="col-xs-6 col-sm-2 placeholder">
+									        <h4>Red Stack</h4>
+                                            <div ng-repeat="c in p.Tableau.Stacks.Red.Cards">
+									            <card-draw card="getCardById(c.Id)" />
+                                            </div>
+								        </div>
+								        <div class="col-xs-6 col-sm-2 placeholder">
+									        <h4>Purple Stack</h4>
+                                            <div ng-repeat="c in p.Tableau.Stacks.Purple.Cards">
+									            <card-draw card="getCardById(c.Id)" />
+                                            </div>
+								        </div>
+								        <div class="col-xs-6 col-sm-2 placeholder">
+									        <h4>Yellow Stack</h4>
+                                            <div ng-repeat="c in p.Tableau.Stacks.Yellow.Cards">
+									            <card-draw card="getCardById(c.Id)" />
+                                            </div>
+								        </div>
+							        </div>
+                                    <div style="background-color:lightgray;min-height:100px;width:100%">
+                                        <h4>Hand</h4>
+                                        <div class="col-sm-9 col-md-10 col-md-offset-1 card-hand" id="playerHand{{p.Id}}">
+                                            <div ng-repeat="c in p.Hand">                                        
+                                                <card-draw card="getCardById(c.Id)" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 					    </div>
                     </div>
                 </div>
@@ -265,8 +150,8 @@
         <div id="chatParent" class="chat-parent-pregame">
             <div class="chat-row2 row">
                 <div id="playerListGroup" class="chat-player-list col-md-1">
-                    <ul id="playerList" class="player-item" ng-repeat="p in players">
-                        <li class="player-item">{{p.Name}}</li>
+                    <ul id="playerList">
+                        <li class="player-item" ng-repeat="p in players">{{p.Name}}</li>
                     </ul>
                 </div>
                 <div id="chatMessages" class="chat-messages col-md-11" >
@@ -275,7 +160,7 @@
             </div>
             <div class="chat-input-group row">
                 <div class="col-md-11">
-                    <input id="gameState" type="hidden" />
+                    <input id="gameState" type="hidden" value=""/>
                     <input id="displayname" type="hidden" data-ng-model="currentPlayerName" />
                     <input id="message" type="text" class="chat-input" onkeypress="return chatKey(event);" />
                 </div>
@@ -289,13 +174,14 @@
 	<!-- Bootstrap core JavaScript
 	================================================== -->
 	<!-- Placed at the end of the document so the pages load faster -->
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-	<script src="Scripts/game.js"></script>
+	<script src="Scripts/jquery-1.11.2.min.js"></script>
 	<script src="Scripts/bootstrap.min.js"></script>
     <script src="Scripts/jquery.signalR-2.2.0.min.js"></script>
     <!--Reference the autogenerated SignalR hub script. -->
     <script src="signalr/hubs"></script>
     <!--Add script to update the page and send messages.--> 
+	<script src="Scripts/game.js"></script>
+	<script src="Scripts/directives.js"></script>
     <script type="text/javascript">
         var chat = null;
         $(function () {
@@ -325,24 +211,41 @@
                 var scope = angular.element($("#gameWindow")).scope();
                 scope.$apply(function () {
                     scope.currentPlayerName = $('#displayname').val();
-                    scope.currentPlayerId = $.connection.hub.id;
+                    currentPlayerId = '95816a87-ab2a-4058-859f-f68a11a8a8f3';  //$.connection.hub.id;
                     currentPlayerId = $.connection.hub.id;
+                    scope.currentPlayerId = currentPlayerId;
                 });
             });
-
-            var scope = angular.element($("#gameWindow")).scope();
-            scope.$apply(function () { scope.game = game; });
+            $.connection.hub.disconnected(function () {
+                receiveChat('CONNECTION', 'DISCONNECTED');
+            });
         });
 
-        angular.module("myapp", [])
-        .controller("mainGameController", function ($scope) {
-            $scope.players = players;
-            var gameState = $("#gameState").val();
-            if (gameState != '')
-                game = JSON.parse(gameState);
-            $scope.game = game;
+        var myApp = angular.module("myapp", []);
+
+        myApp.directive('cardDraw', function () {
+            return {
+                restrict: 'E',
+                require: '^ngCard',
+                templateUrl : "/card.html",
+
+                scope: {
+                    card: '=',
+                },
+            }
+        });
+
+        myApp.controller("mainGameController", function ($scope) {
             $scope.currentPlayerName = $("#displayname").val();
             $scope.currentPlayerId = null;
+
+            $scope.getCardById = function (id) {
+                if (cards == null)
+                    return;
+                for (var i = 0; i < $scope.cards.length; i++)
+                    if ($scope.cards[i].Id == id)
+                        return $scope.cards[i];
+            }
         });
 
         window.addEventListener("beforeunload", function (e) {
