@@ -19,7 +19,7 @@ body {
 }
 .chat-parent-ingame {
     position:absolute;
-    top:calc(100% - 200px);
+    top:calc(100% - 400px);
     bottom:25px;
     left:15px;
     right:15px;
@@ -169,7 +169,7 @@ body {
 {
     position: absolute;
     top: 60px;
-    bottom: 204px;
+    bottom: 404px;
     left: 15px;
     right: 15px;
     border: solid black 1px;

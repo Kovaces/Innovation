@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNet.SignalR;
+﻿using System;
+using Microsoft.AspNet.SignalR;
 
 namespace Innovation.Web.Innovation
 {
@@ -36,12 +37,12 @@ namespace Innovation.Web.Innovation
 		}
 
 		//game state
-		public async void CreateGame(string gameName, string[] playerIds)
+		public void CreateGame(string gameName, string[] playerIds)
 		{
 			Clients.All.broadcastMessage("svrMsg", "Creating game " + gameName + " with players " + playerIds.Length + ".");
 
 			foreach (string playerId in playerIds)
-				await Groups.Add(playerId, gameName);
+				Groups.Add(playerId, gameName);
 
 			Clients.Group(gameName).broadcastMessage("grpMsg", "You're in a group! -" + gameName + "-");
 

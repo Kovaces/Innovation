@@ -187,8 +187,9 @@
         $(function () {
             // Declare a proxy to reference the hub. 
             chat = $.connection.innovationHub;
+
             // Create a function that the hub can call to broadcast messages.
-            chat.client.broadcastMessage = function (name, message) { receiveChat(name, message); }
+            chat.client.broadcastMessage = function (name, message) { receiveChat(name, '++' + message); }
             chat.client.receivePlayerList = function (message) { receivePlayerList(message); }
             chat.client.syncGameState = function (message) { syncGameState(message); }
             chat.client.setGameId = function (message) { setGameId(message); }
@@ -200,6 +201,14 @@
             // Set initial focus to message input box.  
             $('#message').focus();
             // Start the connection.
+
+            $.connection.hub.disconnected(function () {
+                receiveChat('CONNECTION', 'DISCONNECTED');
+                if ($.connection.hub.lastError) {
+                    receiveChat('SERVER', "Disconnected. Reason: " + $.connection.hub.lastError.message);
+                } else
+                    receiveChat('SERVER', "Disconnected. Reason unknown");
+            });
 
             $.connection.hub.start().done(function () {
                 initialize();
@@ -216,9 +225,7 @@
                     scope.currentPlayerId = currentPlayerId;
                 });
             });
-            $.connection.hub.disconnected(function () {
-                receiveChat('CONNECTION', 'DISCONNECTED');
-            });
+
         });
 
         var myApp = angular.module("myapp", []);
@@ -240,11 +247,17 @@
             $scope.currentPlayerId = null;
 
             $scope.getCardById = function (id) {
-                if (cards == null)
+                receiveChat('CARD', 'FIND CARD -' + id + '-');
+                if ($scope.cards == null) {
+                    receiveChat('CARD', 'NULL CARDS');
                     return;
+                }
                 for (var i = 0; i < $scope.cards.length; i++)
-                    if ($scope.cards[i].Id == id)
+                    if ($scope.cards[i].Id == id) {
+                        receiveChat('CARD', 'found CARD -' + $scope.cards[i] + '-');
+
                         return $scope.cards[i];
+                    }
             }
         });
 

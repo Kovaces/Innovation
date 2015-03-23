@@ -58,10 +58,11 @@ function receivePlayerList(message) {
 
 function syncGameState(message) {
     if (typeof message !== "undefined") {
-        receiveChat('server', 'receive gameState = -' + message.substring(0,100) + '-');
-        var game = JSON.parse(message);
-        $("#gameState").val(message);
+        //receiveChat('server', 'receive gameState = -' + message + '-');
+        receiveChat('server', 'receive gameState = ' + message.length);
+        receiveChat('server', 'receive gameState = ' + message);
 
+        var game = JSON.parse(message);
         var scope = angular.element($("#gameWindow")).scope();
         scope.$apply(function () { scope.game = game; });
     }
@@ -151,7 +152,7 @@ function selectCreateGamePlayer(p) {
             numSelectedPlayers++;
     });
 
-    if (numSelectedPlayers >= 2)
+    if (numSelectedPlayers >= 4)
         return;
 
     if (ele.hasClass('selected-player')) {
@@ -170,14 +171,14 @@ function clickCreateGame() {
     playerStrings = playerStrings.substring(0, playerStrings.length - 1);
 
     var playerIds = playerStrings.split(',');
-    if (playerIds.length < 2) {
+    if (playerIds.length < 1) {
         alert('select more people');
         return false;
     }
 
     var gameName = $('#gameName').val();
-    if (gameName.length < 5) {
-        alert('The game name must be at least 5 characters.');
+    if (gameName.length < 1) {
+        alert('The game name must be at least 1 characters.');
         return false;
     }
 
