@@ -207,6 +207,7 @@
     <Content Include="Scripts\angular-1.3.15.min.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="Scripts\angular-sanitize-1.3.15.min.js" />
     <Content Include="Scripts\directives.js" />
     <Content Include="Scripts\game.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />

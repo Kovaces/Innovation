@@ -239,11 +239,21 @@ body {
 {
     height: 14px;
     width: 14px;
-    float: left;
 
     position: relative;
     top:initial;
     left:initial;
+    border: solid 1px white;
+    border-radius: 1px;
+}
+.card-action-left
+{
+    float: left;
+}
+.card-action-inline
+{
+
+    display: inline-block;
 }
 .card-action-text
 {
@@ -255,6 +265,18 @@ body {
     top:initial;
     left:initial;
 }
+.card-action-age
+{
+    background-color:black;
+    color: white;
+    font-size: 10px;
+    width: 16px;
+    text-align: center;
+    border: solid 1px white;
+    border-radius: 1px;
+    display: inline-block;
+}
+
 .card-age
 {
     position: absolute;

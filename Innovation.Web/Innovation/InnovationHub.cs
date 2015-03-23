@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.AspNet.SignalR;
 
 namespace Innovation.Web.Innovation
@@ -42,7 +44,11 @@ namespace Innovation.Web.Innovation
 			Clients.All.broadcastMessage("svrMsg", "Creating game " + gameName + " with players " + playerIds.Length + ".");
 
 			foreach (string playerId in playerIds)
-				Groups.Add(playerId, gameName);
+			{
+				Task waiter = Groups.Add(playerId, gameName);
+				while (!waiter.IsCompleted)
+					Thread.Sleep(20);
+			}
 
 			Clients.Group(gameName).broadcastMessage("grpMsg", "You're in a group! -" + gameName + "-");
 

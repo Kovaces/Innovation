@@ -8,8 +8,9 @@
     <div class="card-age">{{card.Age}}</div>
     <div class="card-action-space" >
         <div ng-repeat="a in card.Actions" class="row">
-            <div class="card-action-icon"><img class="card-action-icon" src="{{a.actionIcon}}" /></div>
-            <div class="card-action-text"> : {{a.ActionText}}</div>
+            <div><img class="card-action-icon card-action-left" src="{{a.actionIcon}}" /></div>
+            <!--<div class="card-action-text"> : {{a.ActionText}}</div>-->
+            <div class="card-action-text" ng-bind-html="a.htmlText"></div>
         </div>
     </div>
 </img>

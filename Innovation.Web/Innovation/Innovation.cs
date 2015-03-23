@@ -91,7 +91,6 @@ namespace Innovation.Web.Innovation
 				PickPlayersHandler = PickPlayers,
 				StartTurnHandler = PlayerStartTurn,
 				RevealCardHandler = RevealCard,
-				UpdateClientHandler = UpdateClient,
 			};
 
 			_players.TryAdd(player.Id, player);
@@ -108,10 +107,9 @@ namespace Innovation.Web.Innovation
 			var game = new Game()
 			{
 				Name = gameName,
-				Id = new Guid().ToString(),
+				Id = Guid.NewGuid().ToString(),
 				Players = playerIds.Select(id => GetPlayerById(id)).ToList(),
 				GameOverHandler = GameOver,
-				SyncGameStateHandler = SyncGameState,
 			};
 
 			_games.TryAdd(gameName, game);
@@ -119,7 +117,12 @@ namespace Innovation.Web.Innovation
 			Clients.Group(game.Name).setGameId(game.Id);
 
 			Task.Factory.StartNew(() => GameManager.StartGame(game));
+
 			SyncGameState(game);
+
+			game.SyncGameStateHandler = SyncGameState;
+			foreach (Player p in game.Players)
+				p.UpdateClientHandler = UpdateClient;
 		}
 		public void GameOver(string gameName, string winner)
 		{
@@ -154,6 +157,10 @@ namespace Innovation.Web.Innovation
 					ActionsTaken = x.ActionsTaken,
 					Id = x.Id,
 					Name = x.Name,
+					Hand = (x.Hand == null ? null : x.Hand.Select(h => new
+					{
+						h.Id
+					})),
 					Tableau = new
 					{
 						NumberOfAchievements = x.Tableau.NumberOfAchievements,
@@ -262,7 +269,7 @@ namespace Innovation.Web.Innovation
 		public void UpdateClient(string playerId)
 		{
 			var game = GetGameByPlayerId(playerId);
-			Clients.Group(game.Name).syncGameState(JsonConvert.SerializeObject(game));
+			SyncGameState(game);
 		}
 
 		//data

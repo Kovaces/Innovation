@@ -16,8 +16,30 @@
                 cards[c].rightIcon = getCardIcon(cards[c].Right);
                 cards[c].bgcolor = getCardColor(cards[c].Color);
                 cards[c].colorText = getCardColorText(cards[c].Color);
-                for (var a = 0; a < cards[c].Actions.length; a++)
+                for (var a = 0; a < cards[c].Actions.length; a++) {
                     cards[c].Actions[a].actionIcon = getCardIcon(cards[c].Actions[a].Symbol);
+
+                    if (cards[c].Actions[a].ActionText.indexOf('[') > -1) {
+                        var at = cards[c].Actions[a].ActionText;
+                        at = replaceAll(at, 'I demand ', 'I <b>demand</b> ');
+                        at = replaceAll(at, '\\[CLOCK\\]', '<img src="/images/clock.png" class="card-action-icon card-action-inline"/>');
+                        at = replaceAll(at, '\\[CROWN\\]', '<img src="/images/crown.png" class="card-action-icon card-action-inline"/>');
+                        at = replaceAll(at, '\\[LEAF\\]', '<img src="/images/leaf.png" class="card-action-icon card-action-inline"/>');
+                        at = replaceAll(at, '\\[LIGHTBULB\\]', '<img src="/images/lightbulb.png" class="card-action-icon card-action-inline"/>');
+                        at = replaceAll(at, '\\[TOWER\\]', '<img src="/images/tower.png" class="card-action-icon card-action-inline"/>');
+                        at = replaceAll(at, '\\[1\\]', '<span class="card-action-age">1</span>');
+                        at = replaceAll(at, '\\[2\\]', '<span class="card-action-age">2</span>');
+                        at = replaceAll(at, '\\[3\\]', '<span class="card-action-age">3</span>');
+                        at = replaceAll(at, '\\[4\\]', '<span class="card-action-age">4</span>');
+                        at = replaceAll(at, '\\[5\\]', '<span class="card-action-age">5</span>');
+                        at = replaceAll(at, '\\[6\\]', '<span class="card-action-age">6</span>');
+                        at = replaceAll(at, '\\[7\\]', '<span class="card-action-age">7</span>');
+                        at = replaceAll(at, '\\[8\\]', '<span class="card-action-age">8</span>');
+                        at = replaceAll(at, '\\[9\\]', '<span class="card-action-age">9</span>');
+                        at = replaceAll(at, '\\[10\\]', '<span class="card-action-age">10</span>');
+                        cards[c].Actions[a].ActionText = at;
+                    }
+                }
             }
 
             var scope = angular.element($("#gameWindow")).scope();
@@ -60,11 +82,12 @@ function syncGameState(message) {
     if (typeof message !== "undefined") {
         //receiveChat('server', 'receive gameState = -' + message + '-');
         receiveChat('server', 'receive gameState = ' + message.length);
-        receiveChat('server', 'receive gameState = ' + message);
 
         var game = JSON.parse(message);
         var scope = angular.element($("#gameWindow")).scope();
         scope.$apply(function () { scope.game = game; });
+
+        receiveChat('server', 'receive gameState done');
     }
 }
 function setGameId(message) {
@@ -188,11 +211,11 @@ function clickCreateGame() {
 }
 
 function getCardColor(colorId) {
-    if (colorId == 1) return "#decafa";
+    if (colorId == 1) return "#c8e4ff";
     else if (colorId == 2) return "#baeaa4";
-    else if (colorId == 3) return "#decafa";
-    else if (colorId == 4) return "#f5a2a2";
-    else if (colorId == 5) return "#d9df99";
+    else if (colorId == 3) return "#be60ba";
+    else if (colorId == 4) return "#d56261";
+    else if (colorId == 5) return "#d9ff79";
 
     return "#000000";
 }
@@ -224,5 +247,6 @@ function paddy(n, p, c) {
     var pad = new Array(1 + p).join(pad_char);
     return (pad + n).slice(-pad.length);
 }
-
-
+function replaceAll(str, find, replace) {
+    return str.replace(new RegExp(find, 'g'), replace);
+}
