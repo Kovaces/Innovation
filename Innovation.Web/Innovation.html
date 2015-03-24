@@ -260,15 +260,15 @@
                 }
                 for (var i = 0; i < $scope.cards.length; i++)
                     if ($scope.cards[i].Id == id) {
-                        receiveChat('CARD', 'found CARD -' + $scope.cards[i].Name + '-');
+                        //receiveChat('CARD', 'found CARD -' + $scope.cards[i].Name + '-');
 
-                        if (typeof $scope.cards[i].Actions[0].htmlText === "undefined") {
-                            for (var a = 0; a < $scope.cards[i].Actions.length; a++) {
-                                receiveChat('CARD', 'action text ' + $scope.cards[i].Actions[a].ActionText);
-                                $scope.cards[i].Actions[a].htmlText = $sce.trustAsHtml(' : ' + $scope.cards[i].Actions[a].ActionText);
-                                //receiveChat('CARD', 'html text ' + $scope.cards[i].Actions[a].htmlText);
-                            }
-                        }
+                        //if (typeof $scope.cards[i].Actions[0].htmlText === "undefined") {
+                        //    for (var a = 0; a < $scope.cards[i].Actions.length; a++) {
+                        //        receiveChat('CARD', 'action text ' + $scope.cards[i].Actions[a].ActionText);
+                        //        $scope.cards[i].Actions[a].htmlText = $sce.trustAsHtml(' : ' + $scope.cards[i].Actions[a].ActionText);
+                        //        //receiveChat('CARD', 'html text ' + $scope.cards[i].Actions[a].htmlText);
+                        //    }
+                        //}
 
                         return $scope.cards[i];
                     }

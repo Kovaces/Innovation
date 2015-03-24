@@ -10,7 +10,7 @@
             receiveChat('server', 'receive ' + cards.length + ' cards.');
 
             for (var c = 0; c < cards.length; c++) {
-                cards[c].image = "/images/" + cards[c].Age + "/" + cards[c].Id.replace('C_','') + "-300x214.jpg";
+                cards[c].image = "/images/cards/" + paddy(cards[c].Age,2) + "/" + cards[c].Id.replace('C_','') + "-300x214.jpg";
                 //cards[c].topIcon = getCardIcon(cards[c].Top);
                 //cards[c].leftIcon = getCardIcon(cards[c].Left);
                 //cards[c].centerIcon = getCardIcon(cards[c].Center);
