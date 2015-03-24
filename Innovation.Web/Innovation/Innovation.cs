@@ -263,7 +263,8 @@ namespace Innovation.Web.Innovation
 
 		public void RevealCard(string playerId, ICard card)
 		{
-			Clients.User(playerId).revealCard(JsonConvert.SerializeObject(card));
+			Game game = GetGameByPlayerId(playerId);
+			Clients.Group(game.Name).revealCard(playerId, JsonConvert.SerializeObject(card));
 		}
 
 		public void UpdateClient(string playerId)

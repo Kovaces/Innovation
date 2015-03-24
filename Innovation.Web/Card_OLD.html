@@ -1,0 +1,16 @@
+﻿<div class="cardParent" ng-style="{'background-color':card.bgcolor}">
+    <img class="card-icon card-top-icon" src="{{card.topIcon}}" />
+    <img class="card-icon card-left-icon" src="{{card.leftIcon}}" />
+    <img class="card-icon card-center-icon" src="{{card.centerIcon}}" />
+    <img class="card-icon card-right-icon" src="{{card.rightIcon}}" />
+    <div class="card-name">{{card.Name}}</div>
+    <div class="card-color">{{card.colorText}}</div>
+    <div class="card-age">{{card.Age}}</div>
+    <div class="card-action-space" >
+        <div ng-repeat="a in card.Actions" class="row">
+            <div><img class="card-action-icon card-action-left" src="{{a.actionIcon}}" /></div>
+            <!--<div class="card-action-text"> : {{a.ActionText}}</div>-->
+            <div class="card-action-text" ng-bind-html="a.htmlText"></div>
+        </div>
+    </div>
+</div>

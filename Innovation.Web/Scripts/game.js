@@ -10,36 +10,37 @@
             receiveChat('server', 'receive ' + cards.length + ' cards.');
 
             for (var c = 0; c < cards.length; c++) {
-                cards[c].topIcon = getCardIcon(cards[c].Top);
-                cards[c].leftIcon = getCardIcon(cards[c].Left);
-                cards[c].centerIcon = getCardIcon(cards[c].Center);
-                cards[c].rightIcon = getCardIcon(cards[c].Right);
-                cards[c].bgcolor = getCardColor(cards[c].Color);
-                cards[c].colorText = getCardColorText(cards[c].Color);
-                for (var a = 0; a < cards[c].Actions.length; a++) {
-                    cards[c].Actions[a].actionIcon = getCardIcon(cards[c].Actions[a].Symbol);
+                cards[c].image = "/images/" + cards[c].Age + "/" + cards[c].Id.replace('C_','') + "-300x214.jpg";
+                //cards[c].topIcon = getCardIcon(cards[c].Top);
+                //cards[c].leftIcon = getCardIcon(cards[c].Left);
+                //cards[c].centerIcon = getCardIcon(cards[c].Center);
+                //cards[c].rightIcon = getCardIcon(cards[c].Right);
+                //cards[c].bgcolor = getCardColor(cards[c].Color);
+                //cards[c].colorText = getCardColorText(cards[c].Color).substring(0,1);
+                //for (var a = 0; a < cards[c].Actions.length; a++) {
+                //    cards[c].Actions[a].actionIcon = getCardIcon(cards[c].Actions[a].Symbol);
 
-                    if (cards[c].Actions[a].ActionText.indexOf('[') > -1) {
-                        var at = cards[c].Actions[a].ActionText;
-                        at = replaceAll(at, 'I demand ', 'I <b>demand</b> ');
-                        at = replaceAll(at, '\\[CLOCK\\]', '<img src="/images/clock.png" class="card-action-icon card-action-inline"/>');
-                        at = replaceAll(at, '\\[CROWN\\]', '<img src="/images/crown.png" class="card-action-icon card-action-inline"/>');
-                        at = replaceAll(at, '\\[LEAF\\]', '<img src="/images/leaf.png" class="card-action-icon card-action-inline"/>');
-                        at = replaceAll(at, '\\[LIGHTBULB\\]', '<img src="/images/lightbulb.png" class="card-action-icon card-action-inline"/>');
-                        at = replaceAll(at, '\\[TOWER\\]', '<img src="/images/tower.png" class="card-action-icon card-action-inline"/>');
-                        at = replaceAll(at, '\\[1\\]', '<span class="card-action-age">1</span>');
-                        at = replaceAll(at, '\\[2\\]', '<span class="card-action-age">2</span>');
-                        at = replaceAll(at, '\\[3\\]', '<span class="card-action-age">3</span>');
-                        at = replaceAll(at, '\\[4\\]', '<span class="card-action-age">4</span>');
-                        at = replaceAll(at, '\\[5\\]', '<span class="card-action-age">5</span>');
-                        at = replaceAll(at, '\\[6\\]', '<span class="card-action-age">6</span>');
-                        at = replaceAll(at, '\\[7\\]', '<span class="card-action-age">7</span>');
-                        at = replaceAll(at, '\\[8\\]', '<span class="card-action-age">8</span>');
-                        at = replaceAll(at, '\\[9\\]', '<span class="card-action-age">9</span>');
-                        at = replaceAll(at, '\\[10\\]', '<span class="card-action-age">10</span>');
-                        cards[c].Actions[a].ActionText = at;
-                    }
-                }
+                //    if (cards[c].Actions[a].ActionText.indexOf('[') > -1) {
+                //        var at = cards[c].Actions[a].ActionText;
+                //        at = replaceAll(at, 'I demand ', 'I <b>demand</b> ');
+                //        at = replaceAll(at, '\\[CLOCK\\]', '<img src="/images/clock.png" class="card-action-icon card-action-inline"/>');
+                //        at = replaceAll(at, '\\[CROWN\\]', '<img src="/images/crown.png" class="card-action-icon card-action-inline"/>');
+                //        at = replaceAll(at, '\\[LEAF\\]', '<img src="/images/leaf.png" class="card-action-icon card-action-inline"/>');
+                //        at = replaceAll(at, '\\[LIGHTBULB\\]', '<img src="/images/lightbulb.png" class="card-action-icon card-action-inline"/>');
+                //        at = replaceAll(at, '\\[TOWER\\]', '<img src="/images/tower.png" class="card-action-icon card-action-inline"/>');
+                //        at = replaceAll(at, '\\[1\\]', '<span class="card-action-age">1</span>');
+                //        at = replaceAll(at, '\\[2\\]', '<span class="card-action-age">2</span>');
+                //        at = replaceAll(at, '\\[3\\]', '<span class="card-action-age">3</span>');
+                //        at = replaceAll(at, '\\[4\\]', '<span class="card-action-age">4</span>');
+                //        at = replaceAll(at, '\\[5\\]', '<span class="card-action-age">5</span>');
+                //        at = replaceAll(at, '\\[6\\]', '<span class="card-action-age">6</span>');
+                //        at = replaceAll(at, '\\[7\\]', '<span class="card-action-age">7</span>');
+                //        at = replaceAll(at, '\\[8\\]', '<span class="card-action-age">8</span>');
+                //        at = replaceAll(at, '\\[9\\]', '<span class="card-action-age">9</span>');
+                //        at = replaceAll(at, '\\[10\\]', '<span class="card-action-age">10</span>');
+                //        cards[c].Actions[a].ActionText = at;
+                //    }
+                //}
             }
 
             var scope = angular.element($("#gameWindow")).scope();
@@ -220,11 +221,11 @@ function getCardColor(colorId) {
     return "#000000";
 }
 function getCardColorText(colorId) {
-    if (colorId == 1) return "B";
-    else if (colorId == 2) return "G";
-    else if (colorId == 3) return "P";
-    else if (colorId == 4) return "R";
-    else if (colorId == 5) return "Y";
+    if (colorId == 1) return "Blue";
+    else if (colorId == 2) return "Green";
+    else if (colorId == 3) return "Purple";
+    else if (colorId == 4) return "Red";
+    else if (colorId == 5) return "Yellow";
 
     return "?";
 }
@@ -240,6 +241,44 @@ function getCardIcon(iconId) {
     return "images/blank.png";
 }
 
+function getDirection(direction) {
+    if (direction == 1) return "Left";
+    else if (direction == 2) return "Right";
+    else if (direction == 3) return "Up";
+
+    return "None";
+}
+
+
+function pickCard(cards, minSelect, maxSelect) {
+    var str = 'Select ' + minSelect + '-' + maxSelect + ' from these cards: ';
+    var strb = '';
+    for (var i = 0; i < cards.length; i++)
+        strb += (strb == '' ? '' : ', ') + cards[i];
+    receiveChat('CHOICES', str + strb);
+}
+
+function askQuestion(question) {
+    receiveChat('CHOICES', 'Got question : ' + question);
+}
+
+function pickPlayers(players, minSelect, maxSelect) {
+    var str = 'Select ' + minSelect + '-' + maxSelect + ' from these players: ';
+    var strb = '';
+    for (var i = 0; i < cards.length; i++)
+        strb += (strb == '' ? '' : ', ') + cards[i];
+    receiveChat('CHOICES', str + strb);
+}
+
+function askToSplay(colors, direction) {
+    var str = 'Splay any of these colors ' + getDirection(direction) + ' : ';
+    var strb = '';
+    for (var i = 0; i < colors.length; i++)
+        strb += (strb == '' ? '' : ', ') + getCardColorText(colors[i]);
+    receiveChat('CHOICES', str + strb);
+}
+
+
 
 
 function paddy(n, p, c) {
@@ -250,3 +289,7 @@ function paddy(n, p, c) {
 function replaceAll(str, find, replace) {
     return str.replace(new RegExp(find, 'g'), replace);
 }
+
+
+
+

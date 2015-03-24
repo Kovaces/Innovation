@@ -195,6 +195,11 @@
             chat.client.syncGameState = function (message) { syncGameState(message); }
             chat.client.setGameId = function (message) { setGameId(message); }
 
+            chat.client.pickCard = function (cards, minSelect, maxSelect) { pickCard(cards, minSelect, maxSelect); }
+            chat.client.askQuestion = function (question) { askQuestion(question); }
+            chat.client.pickPlayers = function (players, minSelect, maxSelect) { pickPlayers(players, minSelect, maxSelect); }
+            chat.client.askToSplay = function (colors, direction) { askToSplay(colors, direction); }
+
             // Get the user name and store it to prepend to messages.
             while ($('#displayname').val() == '') {
                 $('#displayname').val(prompt('Enter your name:', ''));

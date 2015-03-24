@@ -15,7 +15,7 @@ namespace Innovation.Web.Innovation
 			_innovation = instance;
 		}
 
-		//signalR ovverides
+		//signalR overides
 		public override System.Threading.Tasks.Task OnConnected()
 		{
 			_innovation.AddUser(Context.ConnectionId);
