@@ -179,12 +179,17 @@ body {
 
 .card-parent
 {
-    position: relative;
-    margin: 3px 7px 2px 3px;
-    width: 300px;
-    height: 214px;
-    border-radius: 10px;
-    border: solid white 2px;
+    position:relative;
+    width: 283px;
+    height: 197px;
+    margin: 0px 5px 0px 44px;
+    
+    overflow:hidden;
+}
+.card-image
+{
+    margin-top: -8px;
+    margin-left: -23px;
 }
 .card-icon
 {
@@ -295,3 +300,36 @@ body {
     color: white;
     text-align: center;
 }
+
+.game-interaction
+{
+    position:absolute;
+    min-height:230px;
+    left: 2px;
+    bottom: 2px;
+    right: 2px;
+    background-color: teal;
+    border: 2px solid black;
+}
+.game-interaction-title
+{
+    padding-left: 10px;
+    font: bold 14px;
+    color: white;
+}
+.game-interaction-confirm
+{
+    position:absolute;
+    bottom: 2px;
+    right: 2px;
+    border: 1px solid black;
+}
+.card-unselected
+{
+    background-color: #000000;
+    opacity: 0.3;
+}
+.card-selected
+{
+}
+

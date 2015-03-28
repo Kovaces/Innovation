@@ -86,6 +86,9 @@
 
         <div id="gameWindow" class="mainGameWindow hidden">
     	    <div class="container-fluid">
+                <div class="row">
+                    <div class="ageheader col-md-1" ng-repeat="a in game.AgeDecks">{{a.Age}}:{{a.CardCount}}</div>
+                </div>
 			    <div role="tabpanel">
 				    <!-- Nav tabs -->
 				    <ul class="nav nav-tabs" role="tablist">
@@ -101,34 +104,10 @@
 							        <h1 class="page-header">{{p.Id === currentPlayerId ? "My (" + p.Name + ")" : p.Name}} Tableau</h1>
 
 							        <div class="row placeholders">
-								        <div class="col-xs-6 col-sm-2" id="playerTableauBlue{{p.Id}}">
-									        <h4>Blue Stack</h4>
-                                            <div ng-repeat="c in p.Tableau.Stacks.Blue.Cards">
-									            <card-draw card="getCardById(c.Id)" />
-                                            </div>
-								        </div>
-								        <div class="col-xs-6 col-sm-2 placeholder">
-									        <h4>Green Stack</h4>
-                                            <div ng-repeat="c in p.Tableau.Stacks.Green.Cards">
-									            <card-draw card="getCardById(c.Id)" />
-                                            </div>
-								        </div>
-								        <div class="col-xs-6 col-sm-2 placeholder">
-									        <h4>Red Stack</h4>
-                                            <div ng-repeat="c in p.Tableau.Stacks.Red.Cards">
-									            <card-draw card="getCardById(c.Id)" />
-                                            </div>
-								        </div>
-								        <div class="col-xs-6 col-sm-2 placeholder">
-									        <h4>Purple Stack</h4>
-                                            <div ng-repeat="c in p.Tableau.Stacks.Purple.Cards">
-									            <card-draw card="getCardById(c.Id)" />
-                                            </div>
-								        </div>
-								        <div class="col-xs-6 col-sm-2 placeholder">
-									        <h4>Yellow Stack</h4>
-                                            <div ng-repeat="c in p.Tableau.Stacks.Yellow.Cards">
-									            <card-draw card="getCardById(c.Id)" />
+								        <div class="col-xs-6 col-sm-2" id="playerTableauBlue{{p.Id}}" ng-repeat="s in p.Tableau.Stacks">
+									        <h4>{{getCardColorText(s.Color)}} Stack</h4>
+                                            <div ng-repeat="c in s.Cards">
+									            <card-draw card="getCardById(c)" />
                                             </div>
 								        </div>
 							        </div>
@@ -136,13 +115,24 @@
                                         <h4>Hand</h4>
                                         <div class="col-sm-9 col-md-10 col-md-offset-1 card-hand" id="playerHand{{p.Id}}">
                                             <div ng-repeat="c in p.Hand">                                        
-                                                <card-draw card="getCardById(c.Id)" />
+                                                <card-draw card="getCardById(c)" />
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 					    </div>
+                    </div>
+                </div>
+                <div id="playerInteractionSpace" class="game-interaction" ng-show="question">
+                    <div ng-show="question.type=='card'" id="playerInteractionPickCards">
+                        <div class="game-interaction-title">{{question.text}}</div>
+                        <div class="game-interaction-clickables row">
+                            <div class="card-unselected" ng-repeat="c in question.cards" onclick="pickCardResponse(this);">
+                                <card-draw card="getCardById(c)" />
+                            </div>
+                        </div>
+                        <div class="game-interaction-confirm"><button class="btn-primary" ng-click="submitCards()">OK</button></div>
                     </div>
                 </div>
             </div>
@@ -254,6 +244,15 @@
             $scope.currentPlayerName = $("#displayname").val();
             $scope.currentPlayerId = null;
 
+            //$scope.question = {
+            //    'type':'card',
+            //    'minSelect': 1,
+            //    'maxSelect': 2,
+            //    'text': 'Select 1 card from the following:',
+            //    'cards': ['C_Archery','C_Masonry']
+            //};
+
+
             $scope.getCardById = function (id) {
                 if ($scope.cards == null) {
                     return;
@@ -273,6 +272,38 @@
                         return $scope.cards[i];
                     }
             }
+
+            $scope.pickCardResponse = function(cardId) {
+                receiveChat('PICKR', cardId);
+
+                //var thing = cardId.split('|||');
+                //chat.server.pickCardsResponse($scope.game.Id, thing);
+            }
+            $scope.submitCards = function () {
+                receiveChat('PICKR', 'submit');
+                var selectedCards = $('#playerInteractionPickCards').find('.card-selected');
+                if (selectedCards.length >= $scope.question.minSelect && selectedCards.length <= $scope.question.maxSelect) {
+                    var selectedIds = [];
+                    for (var a = 0; a < selectedCards.length; a++) {
+                        var thing = $(selectedCards[a]).find('img');
+                        selectedIds[selectedIds.length] = $(thing).data("cardid");
+                    }
+
+                    chat.server.pickCardsResponse($scope.game.Id, selectedIds);
+                    $scope.question = null;
+                    $("#playerInteractionSpace").hide();
+                }
+            }
+            $scope.getCardColorText = function (colorId) {
+                if (colorId == 1) return "Blue";
+                else if (colorId == 2) return "Green";
+                else if (colorId == 3) return "Purple";
+                else if (colorId == 4) return "Red";
+                else if (colorId == 5) return "Yellow";
+
+                return "?";
+            }
+
         }]);
 
         window.addEventListener("beforeunload", function (e) {

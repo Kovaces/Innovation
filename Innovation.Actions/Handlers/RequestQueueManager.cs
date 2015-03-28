@@ -100,7 +100,7 @@ namespace Innovation.Actions.Handlers
 
 			Dogma.Action(card, parameters.TargetPlayer, parameters.Game);
 
-			return new CardActionResults(true,false);
+			return new CardActionResults(false,false);
 		}
 
 		public static CardActionResults MeldResponse(CardActionParameters parameters)
@@ -111,7 +111,8 @@ namespace Innovation.Actions.Handlers
 
 			Meld.Action(card, parameters.TargetPlayer);
 
-			return new CardActionResults(true, false);
+			parameters.Game.SyncGameStateHandler(parameters.Game.Id);
+			return new CardActionResults(false, false);
 		}
 
 
@@ -168,7 +169,11 @@ namespace Innovation.Actions.Handlers
 					TargetPlayer = request.TargetPlayer,
 					PlayerSymbolCounts = request.PlayerSymbolCounts,
 
-					Answer = new GenericAnswer() { MultipleCards = selectedCards }
+					Answer = new GenericAnswer()
+					{
+						MultipleCards = selectedCards,
+						SingleCard = (selectedCards.Count == 1 ? selectedCards[0] : null)
+					}
 				}
 			);
 		}

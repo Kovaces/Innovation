@@ -9,7 +9,7 @@ namespace Innovation.Web.Innovation
 	{
 		private readonly Innovation _innovation;
 
-		public InnovationHub() : this(Innovation.Instance){	}
+		public InnovationHub() : this(Innovation.Instance) { }
 		public InnovationHub(Innovation instance)
 		{
 			_innovation = instance;
@@ -41,34 +41,63 @@ namespace Innovation.Web.Innovation
 		//game state
 		public void CreateGame(string gameName, string[] playerIds)
 		{
-			Clients.All.broadcastMessage("svrMsg", "Creating game " + gameName + " with players " + playerIds.Length + ".");
-
-			foreach (string playerId in playerIds)
+			try
 			{
-				Task waiter = Groups.Add(playerId, gameName);
-				while (!waiter.IsCompleted)
-					Thread.Sleep(20);
+				Clients.All.broadcastMessage("svrMsg", "Creating game " + gameName + " with players " + playerIds.Length + ".");
+
+				foreach (string playerId in playerIds)
+				{
+					Task waiter = Groups.Add(playerId, gameName);
+					while (!waiter.IsCompleted)
+						Thread.Sleep(20);
+				}
+
+				Clients.Group(gameName).broadcastMessage("grpMsg", "You're in a group! -" + gameName + "-");
+
+				_innovation.CreateGame(gameName, playerIds);
 			}
-
-			Clients.Group(gameName).broadcastMessage("grpMsg", "You're in a group! -" + gameName + "-");
-
-			_innovation.CreateGame(gameName, playerIds);
+			catch (Exception ex)
+			{
+				Clients.Client(Context.ConnectionId).broadcaseMessage("ERROR", ex.Message);
+			}
 		}
 
 		//player interaction
 		public void PickCardsResponse(string gameId, string[] cardIds)
 		{
-			_innovation.PickCardsResponse(gameId, Context.ConnectionId, cardIds);
+			try
+			{
+				_innovation.PickCardsResponse(gameId, Context.ConnectionId, cardIds);
+			}
+			catch (Exception ex)
+			{
+				Clients.Client(Context.ConnectionId).broadcaseMessage("ERROR", ex.Message);
+			}
 		}
 
 		public void PickPlayerResponse(string gameId, string[] selectedPlayers)
 		{
-			_innovation.PickPlayersResponse(gameId, Context.ConnectionId, selectedPlayers);
+			try
+			{
+				_innovation.PickPlayersResponse(gameId, Context.ConnectionId, selectedPlayers);
+			}
+			catch (Exception ex)
+			{
+				Clients.Client(Context.ConnectionId).broadcaseMessage("ERROR", ex.Message);
+			}
 		}
 
 		public void AskQuestionResponse(string gameId, bool response)
 		{
-			_innovation.AskQuestionResponse(gameId, Context.ConnectionId, response);
+			try
+			{
+				_innovation.AskQuestionResponse(gameId, Context.ConnectionId, response);
+			}
+			catch (Exception ex)
+			{
+				Clients.Client(Context.ConnectionId).broadcaseMessage("ERROR", ex.Message);
+			}
+
 		}
 
 		// data
@@ -92,7 +121,7 @@ namespace Innovation.Web.Innovation
 				Newtonsoft.Json.JsonConvert.SerializeObject(thing)
 			);
 		}
-		
+
 		// default chat action
 		public void Send(string name, string message)
 		{

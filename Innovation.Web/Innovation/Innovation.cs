@@ -112,7 +112,7 @@ namespace Innovation.Web.Innovation
 				GameOverHandler = GameOver,
 			};
 
-			_games.TryAdd(gameName, game);
+			_games.TryAdd(game.Id, game);
 
 			Clients.Group(game.Name).setGameId(game.Id);
 
@@ -145,37 +145,29 @@ namespace Innovation.Web.Innovation
 				AgeAchievementDeck = (game.AgeAchievementDeck == null ? null : new
 				{
 					Age = game.AgeAchievementDeck.Age,
-					Cards = game.AgeAchievementDeck.Cards.Select(x => new
-					{
-						Id = x.Id
-					})
+					Cards = game.AgeAchievementDeck.Cards.Select(x => x.Id)
 				}),
 				Id = game.Id,
 				Name = game.Name,
+				AgeDecks = (game.AgeDecks == null ? null : game.AgeDecks.Select(x=> new {
+					Age = x.Age,
+					CardCount = x.Cards.Count
+				})),
 				Players = game.Players.Select(x => new
 				{
 					ActionsTaken = x.ActionsTaken,
 					Id = x.Id,
 					Name = x.Name,
-					Hand = (x.Hand == null ? null : x.Hand.Select(h => new
-					{
-						h.Id
-					})),
+					Hand = (x.Hand == null ? null : x.Hand.Select(h => h.Id)),
 					Tableau = new
 					{
 						NumberOfAchievements = x.Tableau.NumberOfAchievements,
-						ScorePile = x.Tableau.ScorePile.Select(p => new
-						{
-							Id = p.Id
-						}),
+						ScorePile = x.Tableau.ScorePile.Select(p => p.Id),
 						Stacks = x.Tableau.Stacks.Keys.Select(s => new
 						{
 							Color = s,
 							SplayedDirection = x.Tableau.Stacks[s].SplayedDirection,
-							Cards = x.Tableau.Stacks[s].Cards.Select(c => new
-							{
-								Id = c.Id
-							}),
+							Cards = x.Tableau.Stacks[s].Cards.Select(c => c.Id),
 						}),
 					}
 				})
@@ -200,7 +192,8 @@ namespace Innovation.Web.Innovation
 
 		public void PickCards(string playerId, IEnumerable<ICard> cardsToSelectFrom, int minimumNumberToSelect, int maximumNumberToSelect)
 		{
-			Clients.User(playerId).pickCard(
+			Clients.Client(playerId).broadcastMessage("pickr", "pick a card!");
+			Clients.Client(playerId).pickCard(
 				JsonConvert.SerializeObject(cardsToSelectFrom.Select(x => x.Id).ToList())
 				, minimumNumberToSelect
 				, maximumNumberToSelect
