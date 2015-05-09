@@ -12,22 +12,19 @@ namespace Innovation.Actions
 		/// If these conditions are true the Achieve action will remove the top Achievement card and return true otherwise false.
 		/// </summary>
 		/// <param name="player">Player performing the action</param>
-		/// <param name="game">Game the action is being performed in</param>
+		/// <param name="achievementDeck">The game's age achievement deck</param>
 		/// <returns></returns>
-		public static bool Action(IPlayer player, Game game)
+		public static bool Action(IPlayer player, Deck achievementDeck)
 		{
-			if (game.GameEnded)
+			if (!achievementDeck.Cards.Any())
 				return false;
 
-			if (!game.AgeAchievementDeck.Cards.Any())
-				return false;
-
-			var topAvailableAchievementAge = game.AgeAchievementDeck.Cards.First().Age;
+			var topAvailableAchievementAge = achievementDeck.Cards.First().Age;
 
 			if (!((player.Tableau.GetHighestAge() >= topAvailableAchievementAge) && (player.Tableau.GetScore() >= (topAvailableAchievementAge*5))))
 				return false;
-			
-			game.AgeAchievementDeck.Draw();
+
+			achievementDeck.Draw();
 			return true;
 		}
 	}

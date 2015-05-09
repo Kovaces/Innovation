@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using Innovation.Actions;
-using Innovation.Models;
+﻿using Innovation.Actions;
 using Innovation.Models.Enums;
+using Innovation.Models.Interfaces;
+using System.Collections.Generic;
 
 namespace Innovation.Cards
 {
@@ -15,7 +14,7 @@ namespace Innovation.Cards
 		public override Symbol Left { get { return Symbol.Tower; } }
 		public override Symbol Center { get { return Symbol.Tower; } }
 		public override Symbol Right { get { return Symbol.Tower; } }
-		public override IEnumerable<CardAction> Actions
+		public override IEnumerable<ICardAction> Actions
 		{
 			get
 			{
@@ -25,21 +24,16 @@ namespace Innovation.Cards
                 };
 			}
 		}
-		CardActionResults Action1(CardActionParameters parameters)
+		void Action1(ICardActionParameters input)
 		{
+			var parameters = input as CardActionParameters;
+
 			ValidateParameters(parameters);
 
-			var drawnCard = Draw.Action(1, parameters.Game);
-			if (drawnCard == null)
-				return new CardActionResults(true, false);
-			parameters.TargetPlayer.AddCardToHand(drawnCard);
+			parameters.TargetPlayer.AddCardToHand(Draw.Action(1, parameters.AgeDecks));
+			parameters.TargetPlayer.AddCardToHand(Draw.Action(1, parameters.AgeDecks));
 
-			drawnCard = Draw.Action(1, parameters.Game);
-			if (drawnCard == null)
-				return new CardActionResults(true, false);
-			parameters.TargetPlayer.AddCardToHand(drawnCard);
-
-			return new CardActionResults(true, false);
+			PlayerActed(parameters);
 		}
 	}
 }

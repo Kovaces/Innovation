@@ -1,10 +1,11 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
-using Innovation.Models;
+﻿using Innovation.Actions;
 using Innovation.Models.Enums;
-using Innovation.Actions;
-using Innovation.Actions.Handlers;
+using Innovation.Models.Interfaces;
+using Innovation.Players;
+using System.Collections.Generic;
+using System.Linq;
+using Innovation.Models;
+
 namespace Innovation.Cards
 {
 	public class Clothing : CardBase
@@ -17,7 +18,7 @@ namespace Innovation.Cards
 		public override Symbol Center { get { return Symbol.Leaf; } }
 		public override Symbol Right { get { return Symbol.Leaf; } }
 
-		public override IEnumerable<CardAction> Actions
+		public override IEnumerable<ICardAction> Actions
 		{
 			get
 			{
@@ -29,57 +30,57 @@ namespace Innovation.Cards
 			}
 		}
 
-		CardActionResults Action1(CardActionParameters parameters)
+		void Action1(ICardActionParameters input)
 		{
+			var parameters = input as CardActionParameters;
+
 			ValidateParameters(parameters);
 
-			List<Color> topCardColors = parameters.TargetPlayer.Tableau.GetStackColors();
-			List<ICard> cardsToMeld = parameters.TargetPlayer.Hand.Where(x => !topCardColors.Contains(x.Color)).ToList();
+			if (!parameters.TargetPlayer.Hand.Any())
+				return;
+
+			if (!parameters.TargetPlayer.Tableau.GetStackColors().Any())
+				return;
+
+			var topCardColors = parameters.TargetPlayer.Tableau.GetStackColors();
+			var cardsToMeld = parameters.TargetPlayer.Hand.Where(x => !topCardColors.Contains(x.Color)).ToList();
 
 			if (cardsToMeld.Count == 0)
-				return new CardActionResults(false, false);
+				return;
 
-			RequestQueueManager.PickCards(
-				parameters.Game,
-				parameters.ActivePlayer,
-				parameters.TargetPlayer,
-				cardsToMeld,
-				1, 1,
-				parameters.PlayerSymbolCounts,
-				Action1_Step2
-			);
+			var selectedCard = ((Player)parameters.TargetPlayer).Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = cardsToMeld, MinimumCardsToPick = 1, MaximumCardsToPick = 1 }).First();
 
-			return new CardActionResults(false, true);
-		}
-		CardActionResults Action1_Step2(CardActionParameters parameters)
-		{
-			ICard drawnCard = parameters.Answer.SingleCard;
-			if (drawnCard == null)
-				throw new ArgumentNullException("Must choose card.");
+			parameters.TargetPlayer.RemoveCardFromHand(selectedCard);
 
-			parameters.TargetPlayer.RemoveCardFromHand(drawnCard);
-			Meld.Action(drawnCard, parameters.TargetPlayer);
+			Meld.Action(selectedCard, parameters.TargetPlayer);
 
-			return new CardActionResults(true, false);
+			PlayerActed(parameters);
 		}
 
-		CardActionResults Action2(CardActionParameters parameters)
+		void Action2(ICardActionParameters input)
 		{
+			var parameters = input as CardActionParameters;
+
 			ValidateParameters(parameters);
 
-			List<Color> targetPlayerTopCardColors = parameters.TargetPlayer.Tableau.GetStackColors();
-			List<Color> otherPlayerTopCardColors = parameters.Game.Players.Where(p => p != parameters.TargetPlayer).SelectMany(r => r.Tableau.GetStackColors()).Distinct().ToList();
+			var targetPlayerTopCardColors = parameters.TargetPlayer.Tableau.GetStackColors();
+
+			if (!targetPlayerTopCardColors.Any())
+				return;
+
+			var otherPlayerTopCardColors = parameters.Players.Where(p => p != parameters.TargetPlayer).SelectMany(r => r.Tableau.GetStackColors()).Distinct().ToList();
 
 			var numberOfCardsToDraw = targetPlayerTopCardColors.Count(x => !otherPlayerTopCardColors.Contains(x));
+
+			if (numberOfCardsToDraw == 0)
+				return;
+
 			for (var i = 0; i < numberOfCardsToDraw; i++)
 			{
-				var card = Draw.Action(1, parameters.Game);
-				if (card == null)
-					return new CardActionResults(true, false);
-				Score.Action(card, parameters.TargetPlayer);
+				Score.Action(Draw.Action(1, parameters.AgeDecks), parameters.TargetPlayer);
 			}
 
-			return new CardActionResults((numberOfCardsToDraw > 0), false);
+			PlayerActed(parameters);
 		}
 	}
 }

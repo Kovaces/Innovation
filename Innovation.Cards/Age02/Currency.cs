@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using Innovation.Actions;
 using Innovation.Models;
 using Innovation.Models.Enums;
-using Innovation.Actions.Handlers;
+using Innovation.Models.Interfaces;
+using Innovation.Players;
+
 namespace Innovation.Cards
 {
     public class Currency : CardBase
@@ -16,7 +18,7 @@ namespace Innovation.Cards
         public override Symbol Left { get { return Symbol.Crown; } }
         public override Symbol Center { get { return Symbol.Blank; } }
         public override Symbol Right { get { return Symbol.Crown; } }
-        public override IEnumerable<CardAction> Actions
+        public override IEnumerable<ICardAction> Actions
 		{
 			get
 			{
@@ -26,45 +28,33 @@ namespace Innovation.Cards
                 };
 			}
 		}
-		CardActionResults Action1(CardActionParameters parameters)
+		void Action1(ICardActionParameters input)
 		{
+			var parameters = input as CardActionParameters;
+
 			ValidateParameters(parameters);
 
-			if (parameters.TargetPlayer.Hand.Count == 0)
-				return new CardActionResults(false, false);
+			if (parameters.TargetPlayer.Hand.Any())
+				return;
 
-			RequestQueueManager.PickCards(
-				parameters.Game,
-				parameters.ActivePlayer,
-				parameters.TargetPlayer,
-				parameters.TargetPlayer.Tableau.ScorePile,
-				0,
-				parameters.TargetPlayer.Hand.Count,
-				parameters.PlayerSymbolCounts,
-				Action1_Step2
-			);
+			var answer = ((Player)parameters.TargetPlayer).Interaction.AskQuestion(parameters.TargetPlayer.Id, "You may return any number of cards from your hand. If you do, draw and score a [2] for every different value card you returned.");
+			if (!answer.HasValue || !answer.Value)
+				return;
 
-			return new CardActionResults(false, true);
-		}
-		CardActionResults Action1_Step2(CardActionParameters parameters)
-		{
-			var cardsToReturn = parameters.Answer.MultipleCards;
+			var cardsToReturn = ((Player)parameters.TargetPlayer).Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = parameters.TargetPlayer.Hand, MinimumCardsToPick = 1, MaximumCardsToPick = parameters.TargetPlayer.Hand.Count }).ToList();
 
-			if (cardsToReturn.Count == 0)
-				return new CardActionResults(false, false);
-
-			foreach (ICard card in cardsToReturn)
+			foreach (var card in cardsToReturn)
 			{
 				parameters.TargetPlayer.RemoveCardFromHand(card);
-				Return.Action(card, parameters.Game);
+				Return.Action(card, parameters.AgeDecks);
 			}
 
-			int differentAges = cardsToReturn.Select(x => x.Age).Distinct().Count();
-			
-			for (int i = 0; i < differentAges; i++)
-				Score.Action(Draw.Action(2, parameters.Game), parameters.TargetPlayer);
+			var differentAges = cardsToReturn.Select(x => x.Age).Distinct().Count();
 
-			return new CardActionResults(true, false);
+			for (var i = 0; i < differentAges; i++)
+				Score.Action(Draw.Action(2, parameters.AgeDecks), parameters.TargetPlayer);
+
+			PlayerActed(parameters);
 		}
 	}
 }

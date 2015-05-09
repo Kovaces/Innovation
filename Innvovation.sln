@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Innovation.Cards", "Innovation.Cards\Innovation.Cards.csproj", "{596DC48F-02C4-4FBE-8AC0-7113EDF99C9D}"
 EndProject
@@ -22,6 +22,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Innovation.Web", "Innovation.Web\Innovation.Web.csproj", "{282E9D2B-338D-480C-B273-554DCEB379B5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Innovation.Web.Tests", "Innovation.Web.Tests\Innovation.Web.Tests.csproj", "{E23140F1-301E-42B5-8877-9E73315B8BAA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Innovation", "Innovation\Innovation.csproj", "{9997D4D1-B08D-421A-9774-948A831FE963}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Innovation.Players", "PlayerInteraction\Innovation.Players.csproj", "{063B4F4D-9814-402D-83DE-CE3333D40036}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -65,6 +69,14 @@ Global
 		{E23140F1-301E-42B5-8877-9E73315B8BAA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E23140F1-301E-42B5-8877-9E73315B8BAA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E23140F1-301E-42B5-8877-9E73315B8BAA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9997D4D1-B08D-421A-9774-948A831FE963}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9997D4D1-B08D-421A-9774-948A831FE963}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9997D4D1-B08D-421A-9774-948A831FE963}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9997D4D1-B08D-421A-9774-948A831FE963}.Release|Any CPU.Build.0 = Release|Any CPU
+		{063B4F4D-9814-402D-83DE-CE3333D40036}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{063B4F4D-9814-402D-83DE-CE3333D40036}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{063B4F4D-9814-402D-83DE-CE3333D40036}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{063B4F4D-9814-402D-83DE-CE3333D40036}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

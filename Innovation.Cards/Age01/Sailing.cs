@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using Innovation.Actions;
-using Innovation.Models;
+﻿using Innovation.Actions;
 using Innovation.Models.Enums;
+using Innovation.Models.Interfaces;
+using System.Collections.Generic;
+
 namespace Innovation.Cards
 {
 	public class Sailing : CardBase
@@ -14,7 +14,7 @@ namespace Innovation.Cards
 		public override Symbol Left { get { return Symbol.Crown; } }
 		public override Symbol Center { get { return Symbol.Blank; } }
 		public override Symbol Right { get { return Symbol.Leaf; } }
-		public override IEnumerable<CardAction> Actions
+		public override IEnumerable<ICardAction> Actions
 		{
 			get
 			{
@@ -24,17 +24,15 @@ namespace Innovation.Cards
                 };
 			}
 		}
-		CardActionResults Action1(CardActionParameters parameters)
+		void Action1(ICardActionParameters input)
 		{
+			var parameters = input as CardActionParameters;
+
 			ValidateParameters(parameters);
 
-			var drawnCard = Draw.Action(1, parameters.Game);
-			if (drawnCard == null)
-				return new CardActionResults(true, false);
+			Meld.Action(Draw.Action(1, parameters.AgeDecks), parameters.TargetPlayer);
 
-			Meld.Action(drawnCard, parameters.TargetPlayer);
-
-			return new CardActionResults(true, false);
+			PlayerActed(parameters);
 		}
 	}
 }

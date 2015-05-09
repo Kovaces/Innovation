@@ -1,14 +1,15 @@
 ﻿using System.Web.Helpers;
-using Innovation.Actions.Handlers;
 using Innovation.Cards;
 using Innovation.Models;
 using Innovation.Models.Enums;
 using Innovation.Models.Interfaces;
+using Innovation.Players;
 using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -20,7 +21,7 @@ namespace Innovation.Web.Innovation
 		private readonly static Lazy<Innovation> _instance = new Lazy<Innovation>(() => new Innovation(GlobalHost.ConnectionManager.GetHubContext<InnovationHub>().Clients));
 
 		private readonly ConcurrentDictionary<string, Game> _games = new ConcurrentDictionary<string, Game>();
-		private readonly ConcurrentDictionary<string, IPlayer> _players = new ConcurrentDictionary<string, IPlayer>();
+		private readonly ConcurrentDictionary<string, Player> _players = new ConcurrentDictionary<string, Player>();
 
 		private IHubConnectionContext<dynamic> Clients { get; set; }
 
@@ -37,9 +38,9 @@ namespace Innovation.Web.Innovation
 			get { return _instance.Value; }
 		}
 
-		private IPlayer GetPlayerById(string id)
+		private Player GetPlayerById(string id)
 		{
-			IPlayer tempPlayer = null;
+			Player tempPlayer = null;
 
 			_players.TryGetValue(id, out tempPlayer);
 
@@ -61,7 +62,7 @@ namespace Innovation.Web.Innovation
 		}
 		private Game GetGameByPlayerId(string playerId)
 		{
-			IPlayer player;
+            Player player;
 			player = GetPlayerById(playerId);
 
 			var game = _games.Values.FirstOrDefault(g => g.Players.Contains(player));
@@ -72,7 +73,7 @@ namespace Innovation.Web.Innovation
 			return game;
 		}
 
-		private void ValidateResponseParameters(string gameId, string playerId, out Game game, out IPlayer player)
+		private void ValidateResponseParameters(string gameId, string playerId, out Game game, out Player player)
 		{
 			game = GetGameById(gameId);
 			player = GetPlayerById(playerId);
@@ -83,45 +84,54 @@ namespace Innovation.Web.Innovation
 		//User
 		public void AddUser(string userId)
 		{
+            var interaction = new PlayerInteraction
+            {
+                AskQuestionHandler = new AskQuestion { Handler = AskQuestion },
+                PickCardsHandler = new PickCards { Handler = PickCards },
+                PickColorHandler = new PickColor { Handler = PickColor },
+                PickPlayerHandler = new PickPlayer { Handler = PickPlayer },
+                RevealCardHandler = new RevealCard { Handler = RevealCard }
+            };
+
 			var player = new Player
 			{
 				Id = userId,
-				PickMultipleCardsHandler = PickCards,
-				AskQuestionHandler = AskQuestion,
-				PickPlayersHandler = PickPlayers,
-				StartTurnHandler = PlayerStartTurn,
-				RevealCardHandler = RevealCard,
+				UpdateClientHandler = UpdateClient,
+                Interaction = interaction,
 			};
 
 			_players.TryAdd(player.Id, player);
 		}
 		public void RemoveUser(string userId)
 		{
-			IPlayer player;
+			Player player;
 			_players.TryRemove(userId, out player);
 		}
 
 		//Game
 		public void CreateGame(string gameName, string[] playerIds)
 		{
+			
+			
 			var game = new Game()
 			{
 				Name = gameName,
 				Id = Guid.NewGuid().ToString(),
 				Players = playerIds.Select(id => GetPlayerById(id)).ToList(),
-				GameOverHandler = GameOver,
+                SynchGameState = SyncGameState,
+                StartTurn = PlayerStartTurn,
+                EndTurn = PlayerEndTurn
 			};
 
 			_games.TryAdd(game.Id, game);
 
 			Clients.Group(game.Name).setGameId(game.Id);
 
-			Task.Factory.StartNew(() => GameManager.StartGame(game));
+			Task.Factory.StartNew(() => GameManager.StartGame(game)).Wait();
 
 			SyncGameState(game);
 
-			game.SyncGameStateHandler = SyncGameState;
-			foreach (Player p in game.Players)
+			foreach (var p in game.Players)
 				p.UpdateClientHandler = UpdateClient;
 		}
 		public void GameOver(string gameName, string winner)
@@ -181,31 +191,40 @@ namespace Innovation.Web.Innovation
 		{
 			Clients.User(playerId).startTurn();
 		}
-		internal void PickAction(string gameId, string playerId, string selectedAction)
+        public void PlayerEndTurn(string playerId)
+        {
+            Clients.User(playerId).startTurn();
+        }
+
+        internal void PlayerPickAction(string gameId, string playerId, string selectedAction)
 		{
 			Game game;
-			IPlayer player;
+            Player player;
 			ValidateResponseParameters(gameId, playerId, out game, out player);
 
-			ActionQueueManager.PerformAction(game, player, selectedAction);
+			ActionEnum action;
+            if (!Enum.TryParse(selectedAction, true, out action))
+                throw new InvalidEnumArgumentException();
+
+			game.TakeAction(action);
 		}
 
-		public void PickCards(string playerId, IEnumerable<ICard> cardsToSelectFrom, int minimumNumberToSelect, int maximumNumberToSelect)
+		public void PickCards(string playerId, PickCardParameters pickCardParameters)
 		{
 			Clients.Client(playerId).broadcastMessage("pickr", "pick a card!");
 			Clients.Client(playerId).pickCard(
-				JsonConvert.SerializeObject(cardsToSelectFrom.Select(x => x.Id).ToList())
-				, minimumNumberToSelect
-				, maximumNumberToSelect
+				JsonConvert.SerializeObject(pickCardParameters.CardsToPickFrom.Select(x => x.Id).ToList())
+				, pickCardParameters.MinimumCardsToPick
+				, pickCardParameters.MaximumCardsToPick
 			);
 		}
 		internal void PickCardsResponse(string gameId, string playerId, string[] cardIds)
 		{
 			Game game;
-			IPlayer player;
+			Player player;
 			ValidateResponseParameters(gameId, playerId, out game, out player);
 
-			RequestQueueManager.ReceiveCardResponse(game, player, cardIds.ToList());
+            player.Interaction.PickCardsHandler.Response(CardList.GetCardList().Where(c => cardIds.ToList().Contains(c.Id)));
 		}
 
 		public void AskQuestion(string playerId, string question)
@@ -215,49 +234,53 @@ namespace Innovation.Web.Innovation
 		internal void AskQuestionResponse(string gameId, string playerId, bool response)
 		{
 			Game game;
-			IPlayer player;
+            Player player;
 			ValidateResponseParameters(gameId, playerId, out game, out player);
 
-			RequestQueueManager.ReceiveBooleanResponse(game, player, response);
+            player.Interaction.AskQuestionHandler.Response(response);
 		}
 
-		public void PickPlayers(string playerId, IEnumerable<IPlayer> playerList, int minimumNumberToSelect, int maximumNumberToSelect)
+        public void PickPlayer(string playerId, IEnumerable<Player> playerList)
 		{
 			Clients.User(playerId).pickPlayers(
 				Newtonsoft.Json.JsonConvert.SerializeObject(playerList.Select(x => x.Id).ToList())
-				, minimumNumberToSelect
-				, maximumNumberToSelect
+				, 1
+				, 1
 			);
 		}
-		internal void PickPlayersResponse(string gameId, string playerId, string[] selectedPlayers)
-		{
-			Game game;
-			IPlayer player;
-			ValidateResponseParameters(gameId, playerId, out game, out player);
+        internal void PickPlayerResponse(string gameId, string playerId, string selectedPlayerId)
+        {
+            Game game;
+            Player player;
+            ValidateResponseParameters(gameId, playerId, out game, out player);
 
-			RequestQueueManager.ReceivePlayerResponse(game, player, selectedPlayers.ToList());
-		}
-
-		public void AskToSplay(string playerId, IEnumerable<Color> colors, SplayDirection splayDirection)
+            player.Interaction.PickPlayerHandler.Response(_players.First(p => p.Key.Equals(selectedPlayerId)).Value);
+        }
+		
+        public void PickColor(string playerId, IEnumerable<Color> colors)
 		{
-			Clients.User(playerId).askToSplay(
-				Newtonsoft.Json.JsonConvert.SerializeObject(colors.ToList()),
-				Newtonsoft.Json.JsonConvert.SerializeObject(splayDirection)
-			);
+			;
 		}
-		internal void PickSplayResponse(string gameId, string playerId, string selectedColor)
-		{
-			Game game;
-			IPlayer player;
-			ValidateResponseParameters(gameId, playerId, out game, out player);
+        internal void PickColorResponse(string gameId, string playerId, string selectedColor)
+        {
+            Game game;
+            Player player;
+            ValidateResponseParameters(gameId, playerId, out game, out player);
 
-			RequestQueueManager.ReceiveSplayResponse(game, player, selectedColor);
-		}
+            Color color;
+            if (!Enum.TryParse(selectedColor, true, out color))
+                throw new InvalidEnumArgumentException();
+
+            player.Interaction.PickColorHandler.Response(color);
+        }
 
 		public void RevealCard(string playerId, ICard card)
 		{
 			Game game = GetGameByPlayerId(playerId);
 			Clients.Group(game.Name).revealCard(playerId, JsonConvert.SerializeObject(card));
+            
+            Player player = GetPlayerById(playerId);
+            player.Interaction.RevealCardHandler.Response(true);
 		}
 
 		public void UpdateClient(string playerId)
@@ -304,3 +327,35 @@ namespace Innovation.Web.Innovation
 		}
 	}
 }
+
+//public void PickPlayers(string playerId, IEnumerable<Player> playerList, int minimumNumberToSelect, int maximumNumberToSelect)
+//{
+//    Clients.User(playerId).pickPlayers(
+//        Newtonsoft.Json.JsonConvert.SerializeObject(playerList.Select(x => x.Id).ToList())
+//        , minimumNumberToSelect
+//        , maximumNumberToSelect
+//    );
+//}
+//internal void PickPlayersResponse(string gameId, string playerId, string[] selectedPlayers)
+//{
+//    Game game;
+//    Player player;
+//    ValidateResponseParameters(gameId, playerId, out game, out player);
+
+//    player.Interaction.PickPlayerHandler.Response(_players.First(p => selectedPlayers.First().Equals(p.Key)).Value);
+//}
+//public void AskToSplay(string playerId, IEnumerable<Color> colors, SplayDirection splayDirection)
+//{
+//    Clients.User(playerId).askToSplay(
+//        Newtonsoft.Json.JsonConvert.SerializeObject(colors.ToList()),
+//        Newtonsoft.Json.JsonConvert.SerializeObject(splayDirection)
+//    );
+//}
+//internal void PickSplayResponse(string gameId, string playerId, string selectedColor)
+//{
+//    Game game;
+//    Player player;
+//    ValidateResponseParameters(gameId, playerId, out game, out player);
+
+//    RequestQueueManager.ReceiveSplayResponse(game, player, selectedColor);
+//}

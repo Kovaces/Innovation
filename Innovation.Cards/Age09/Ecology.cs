@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using Innovation.Models;
 using Innovation.Models.Enums;
+using Innovation.Models.Interfaces;
+
 namespace Innovation.Cards
 {
     public class Ecology : CardBase
@@ -13,7 +15,7 @@ namespace Innovation.Cards
 		public override Symbol Left { get { return Symbol.Lightbulb; } }
 		public override Symbol Center { get { return Symbol.Lightbulb; } }
 		public override Symbol Right { get { return Symbol.Blank; } }
-		public override IEnumerable<CardAction> Actions
+		public override IEnumerable<ICardAction> Actions
         {
             get
             {
@@ -22,6 +24,6 @@ namespace Innovation.Cards
                 };
             }
         }
-        CardActionResults Action1(CardActionParameters parameters) { throw new NotImplementedException(); }
+        void Action1(ICardActionParameters input) { throw new NotImplementedException(); }
     }
 }

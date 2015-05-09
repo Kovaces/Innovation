@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using Innovation.Actions;
 using Innovation.Models;
 using Innovation.Models.Enums;
+using Innovation.Models.Interfaces;
+
 namespace Innovation.Cards
 {
     public class Calendar : CardBase
@@ -14,7 +16,7 @@ namespace Innovation.Cards
         public override Symbol Left { get { return Symbol.Leaf; } }
         public override Symbol Center { get { return Symbol.Leaf; } }
         public override Symbol Right { get { return Symbol.Lightbulb; } }
-        public override IEnumerable<CardAction> Actions
+        public override IEnumerable<ICardAction> Actions
         {
             get
             {
@@ -24,20 +26,22 @@ namespace Innovation.Cards
                 };
             }
         }
-		CardActionResults Action1(CardActionParameters parameters)
+		void Action1(ICardActionParameters input)
 		{
+			var parameters = input as CardActionParameters;
+
 			ValidateParameters(parameters);
 
 			int cardsInScorePile = parameters.TargetPlayer.Tableau.ScorePile.Count;
 			int cardsInHand = parameters.TargetPlayer.Hand.Count;
 
 			if (cardsInScorePile <= cardsInHand)
-				return new CardActionResults(false, false);
+				return;
 			
-			parameters.TargetPlayer.AddCardToHand(Draw.Action(3, parameters.Game));
-			parameters.TargetPlayer.AddCardToHand(Draw.Action(3, parameters.Game));
+			parameters.TargetPlayer.AddCardToHand(Draw.Action(3, parameters.AgeDecks));
+			parameters.TargetPlayer.AddCardToHand(Draw.Action(3, parameters.AgeDecks));
 
-			return new CardActionResults(true, false);
+			PlayerActed(parameters);
 		}
     }
 }

@@ -5,6 +5,7 @@ using Innovation.Actions;
 using Innovation.Models;
 using Innovation.Models.Enums;
 using Innovation.Models.Interfaces;
+using Innovation.Models.Other;
 
 namespace Innovation.Cards
 {
@@ -17,7 +18,7 @@ namespace Innovation.Cards
 		public override Symbol Left { get { return Symbol.Lightbulb; } }
 		public override Symbol Center { get { return Symbol.Clock; } }
 		public override Symbol Right { get { return Symbol.Blank; } }
-		public override IEnumerable<CardAction> Actions
+		public override IEnumerable<ICardAction> Actions
 		{
 			get
 			{
@@ -28,26 +29,30 @@ namespace Innovation.Cards
 			}
 		}
 
-		CardActionResults Action1(CardActionParameters parameters)
+		void Action1(ICardActionParameters input)
 		{
+			var parameters = input as CardActionParameters;
+
 			ValidateParameters(parameters);
 
-			Score.Action(Draw.Action(10, parameters.Game), parameters.TargetPlayer);
+			Score.Action(Draw.Action(10, parameters.AgeDecks), parameters.TargetPlayer);
 
-			return new CardActionResults(true, false);
+			PlayerActed(parameters);
 		}
 
-		CardActionResults Action2(CardActionParameters parameters)
+		void Action2(ICardActionParameters input)
 		{
+			var parameters = input as CardActionParameters;
+
 			ValidateParameters(parameters);
 
-			var topCards = parameters.Game.Players.SelectMany(p => p.Tableau.GetTopCards()).ToList();
+			var topCards = parameters.Players.SelectMany(p => p.Tableau.GetTopCards()).ToList();
+
 			if (topCards.Exists(c => c.Name.Equals("Robotics")) && topCards.Exists(c => c.Name.Equals("Software")))
-				return new CardActionResults(false, false);
-
-			parameters.Game.TriggerEndOfGame(parameters.Game.Players.OrderBy(p => p.Tableau.GetScore()).ToList().First());
-
-			return new CardActionResults(true, false);
+			{
+				parameters.AddToStorage(ContextStorage.WinnerKey, parameters.Players.OrderBy(p => p.Tableau.GetScore()).ToList().First());
+				throw new EndOfGameException();
+			}
 		}
 	}
 }

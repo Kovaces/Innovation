@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Innovation.Actions;
-using Innovation.Actions.Handlers;
+using Innovation.Models.Interfaces;
 using Innovation.Models;
 using Innovation.Models.Enums;
+using Innovation.Players;
+
 namespace Innovation.Cards
 {
     public class Mathematics : CardBase
@@ -15,7 +18,7 @@ namespace Innovation.Cards
         public override Symbol Left { get { return Symbol.Lightbulb; } }
         public override Symbol Center { get { return Symbol.Crown; } }
         public override Symbol Right { get { return Symbol.Lightbulb; } }
-        public override IEnumerable<CardAction> Actions
+        public override IEnumerable<ICardAction> Actions
         {
             get
             {
@@ -25,40 +28,28 @@ namespace Innovation.Cards
                 };
             }
         }
-        CardActionResults Action1(CardActionParameters parameters) 
+        void Action1(ICardActionParameters input) 
 		{
+			var parameters = input as CardActionParameters;
+
 			ValidateParameters(parameters);
 
-			if (parameters.TargetPlayer.Hand.Count == 0)
-				return new CardActionResults(false, false);
+			if (parameters.TargetPlayer.Hand.Any())
+				return;
 
-			RequestQueueManager.PickCards(
-				parameters.Game,
-				parameters.ActivePlayer,
-				parameters.TargetPlayer,
-				parameters.TargetPlayer.Hand,
-				1, 1,
-				parameters.PlayerSymbolCounts,
-				Action1_Step2
-			);
+			var answer = ((Player)parameters.TargetPlayer).Interaction.AskQuestion(parameters.TargetPlayer.Id, "You may return a card from your hand. If you do, draw and meld a card of value one higher than the card you returned.");
+			if (!answer.HasValue || !answer.Value)
+				return;
 
-			return new CardActionResults(false, true);
-		}
+			var cardToReturn = ((Player)parameters.TargetPlayer).Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = parameters.TargetPlayer.Hand, MinimumCardsToPick = 1, MaximumCardsToPick = 1 }).First();
 
-		CardActionResults Action1_Step2(CardActionParameters parameters) 
-		{
-			var card = parameters.Answer.SingleCard;
+			parameters.TargetPlayer.RemoveCardFromHand(cardToReturn);
 
-			if (card == null)
-				return new CardActionResults(false, false);
+			Return.Action(cardToReturn, parameters.AgeDecks);
 
-			parameters.TargetPlayer.RemoveCardFromHand(card);
-			
-			Return.Action(card, parameters.Game);
-			
-			Meld.Action(Draw.Action(card.Age + 1, parameters.Game), parameters.TargetPlayer);
+			Meld.Action(Draw.Action(cardToReturn.Age + 1, parameters.AgeDecks), parameters.TargetPlayer);
 
-			return new CardActionResults(true, false);
+			PlayerActed(parameters);
 		}
     }
 }

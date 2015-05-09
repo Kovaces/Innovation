@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using Innovation.Actions;
-using Innovation.Actions.Handlers;
+using Innovation.Models.Interfaces;
 using Innovation.Models;
 using Innovation.Models.Enums;
+using Innovation.Players;
+
 namespace Innovation.Cards
 {
 	public class Databases : CardBase
@@ -16,7 +18,7 @@ namespace Innovation.Cards
 		public override Symbol Left { get { return Symbol.Clock; } }
 		public override Symbol Center { get { return Symbol.Clock; } }
 		public override Symbol Right { get { return Symbol.Clock; } }
-		public override IEnumerable<CardAction> Actions
+		public override IEnumerable<ICardAction> Actions
 		{
 			get
 			{
@@ -26,35 +28,20 @@ namespace Innovation.Cards
 			}
 		}
 
-		CardActionResults Action1(CardActionParameters parameters)
+		void Action1(ICardActionParameters input)
 		{
+			var parameters = input as CardActionParameters;
+
 			ValidateParameters(parameters);
 
-			if (parameters.TargetPlayer.Tableau.ScorePile.Count == 0)
-				return new CardActionResults(false, false);
+			if (!parameters.TargetPlayer.Tableau.ScorePile.Any())
+				return;
 
-			RequestQueueManager.PickCards(
-				parameters.Game,
-				parameters.ActivePlayer,
-				parameters.TargetPlayer,
-				parameters.TargetPlayer.Tableau.ScorePile,
-				(int)Math.Ceiling(parameters.TargetPlayer.Tableau.ScorePile.Count / 2.0d),
-				(int)Math.Ceiling(parameters.TargetPlayer.Tableau.ScorePile.Count / 2.0d),
-				parameters.PlayerSymbolCounts,
-				Action1_Step2
-			);
+			var numberOfCardsToReturn = (int) Math.Ceiling(parameters.TargetPlayer.Tableau.ScorePile.Count/2.0d);
+			var selectedCards = ((Player)parameters.TargetPlayer).Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = parameters.TargetPlayer.Tableau.ScorePile, MinimumCardsToPick = numberOfCardsToReturn, MaximumCardsToPick = numberOfCardsToReturn }).ToList();
 
-			return new CardActionResults(false, true);
-		}
-		CardActionResults Action1_Step2(CardActionParameters parameters)
-		{
-			var selectedCards = parameters.Answer.MultipleCards;
-			if (selectedCards.Count == 0)
-				throw new ArgumentNullException("Must choose at least one card.");
-
-			selectedCards.ForEach(c => Return.Action(c, parameters.Game));
-
-			return new CardActionResults(true, false);
+			selectedCards.ForEach(c => parameters.TargetPlayer.RemoveCardFromScorePile(c));
+			selectedCards.ForEach(c => Return.Action(c, parameters.AgeDecks));
 		}
 	}
 }

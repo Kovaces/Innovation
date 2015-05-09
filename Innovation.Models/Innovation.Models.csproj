@@ -43,20 +43,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GameManagement\ActionQueue.cs" />
-    <Compile Include="Other\Delegates.cs" />
+    <Compile Include="GameObjects\CardActionParameters.cs" />
+    <Compile Include="Other\EndOfGameException.cs" />
+    <Compile Include="Other\ContextStorage.cs" />
+    <Compile Include="Interfaces\ICardAction.cs" />
+    <Compile Include="Interfaces\ICardActionParameters.cs" />
     <Compile Include="Interfaces\ICard.cs" />
-    <Compile Include="GameObjects\CardAction.cs" />
     <Compile Include="GameObjects\Deck.cs" />
-    <Compile Include="GameObjects\Game.cs" />
     <Compile Include="Interfaces\IPlayer.cs" />
     <Compile Include="Interfaces\ITableau.cs" />
-    <Compile Include="GameObjects\Player.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Other\Enums.cs" />
-    <Compile Include="GameManagement\QueuedAction.cs" />
-    <Compile Include="GameManagement\Request.cs" />
-    <Compile Include="GameManagement\RequestQueue.cs" />
     <Compile Include="GameObjects\Stack.cs" />
     <Compile Include="GameObjects\Tableau.cs" />
     <Compile Include="Other\ShuffleExtensions.cs" />

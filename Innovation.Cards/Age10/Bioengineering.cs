@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Innovation.Actions.Handlers;
+using Innovation.Actions;
+using Innovation.Models.Interfaces;
 using Innovation.Models;
 using Innovation.Models.Enums;
+using Innovation.Models.Other;
+using Innovation.Players;
+
 namespace Innovation.Cards
 {
 	public class Bioengineering : CardBase
@@ -15,7 +19,7 @@ namespace Innovation.Cards
 		public override Symbol Left { get { return Symbol.Clock; } }
 		public override Symbol Center { get { return Symbol.Clock; } }
 		public override Symbol Right { get { return Symbol.Blank; } }
-		public override IEnumerable<CardAction> Actions
+		public override IEnumerable<ICardAction> Actions
 		{
 			get
 			{
@@ -26,47 +30,35 @@ namespace Innovation.Cards
 			}
 		}
 
-		CardActionResults Action1(CardActionParameters parameters)
+		void Action1(ICardActionParameters input)
 		{
+			var parameters = input as CardActionParameters;
+
 			ValidateParameters(parameters);
 
-			var transferCards = parameters.Game.Players.SelectMany(p => p.Tableau.GetTopCards().Where(c => c.HasSymbol(Symbol.Leaf))).ToList();
+			var transferCards = parameters.Players.SelectMany(p => p.Tableau.GetTopCards().Where(c => c.HasSymbol(Symbol.Leaf))).ToList();
 			if (transferCards.Count == 0)
-				return new CardActionResults(false,false);
+				return;
 
-			RequestQueueManager.PickCards(
-				parameters.Game,
-				parameters.ActivePlayer,
-				parameters.TargetPlayer,
-				transferCards,
-				1,
-				1,
-				parameters.PlayerSymbolCounts,
-				Action1_Step2
-			);
+			var selectedCard = ((Player)parameters.TargetPlayer).Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = transferCards, MinimumCardsToPick = 1, MaximumCardsToPick = 1 }).First();
 
-			return new CardActionResults(false, true);
-		}
-		CardActionResults Action1_Step2(CardActionParameters parameters)
-		{
-			var selectedCard = parameters.Answer.SingleCard;
-			if (selectedCard == null)
-				throw new ArgumentNullException("Must choose a card.");
-
-			parameters.Game.Players.ForEach(p => p.Tableau.Stacks[selectedCard.Color].RemoveCard(selectedCard));
+			parameters.Players.First(p => p.Tableau.Stacks[selectedCard.Color].Cards.Contains(selectedCard)).Tableau.Stacks[selectedCard.Color].RemoveCard(selectedCard);
 			parameters.TargetPlayer.Tableau.Stacks[selectedCard.Color].AddCardToTop(selectedCard);
 
-			return new CardActionResults(true, false);
+			PlayerActed(parameters);
 		}
 
-		CardActionResults Action2(CardActionParameters parameters)
+		void Action2(ICardActionParameters input)
 		{
+			var parameters = input as CardActionParameters;
+
 			ValidateParameters(parameters);
 
-			if (parameters.Game.Players.Exists(p => p.Tableau.GetSymbolCount(Symbol.Leaf) < 3))
-				parameters.Game.TriggerEndOfGame(parameters.Game.Players.OrderByDescending(p => p.Tableau.GetSymbolCount(Symbol.Leaf)).ToList().First());
-
-			return new CardActionResults(false, false);
+			if (parameters.Players.ToList().Exists(p => p.Tableau.GetSymbolCount(Symbol.Leaf) < 3))
+			{
+				parameters.AddToStorage(ContextStorage.WinnerKey, parameters.Players.OrderByDescending(p => p.Tableau.GetSymbolCount(Symbol.Leaf)).ToList().First());
+				throw new EndOfGameException();
+			}
 		}
 	}
 }

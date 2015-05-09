@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using Innovation.Models;
 using Innovation.Models.Enums;
 using Innovation.Actions;
-using Innovation.Actions.Handlers;
+using Innovation.Models.Interfaces;
+using Innovation.Players;
+
 namespace Innovation.Cards
 {
     public class Monotheism : CardBase
@@ -16,7 +18,7 @@ namespace Innovation.Cards
         public override Symbol Left { get { return Symbol.Tower; } }
         public override Symbol Center { get { return Symbol.Tower; } }
         public override Symbol Right { get { return Symbol.Tower; } }
-        public override IEnumerable<CardAction> Actions
+        public override IEnumerable<ICardAction> Actions
         {
             get
             {
@@ -26,50 +28,35 @@ namespace Innovation.Cards
                 };
             }
         }
-        CardActionResults Action1(CardActionParameters parameters)
+        void Action1(ICardActionParameters input)
 		{
+			var parameters = input as CardActionParameters;
+
 			ValidateParameters(parameters);
 
-			List<Color> activePlayerTopColors = parameters.ActivePlayer.Tableau.GetStackColors();
-			List<ICard> possibleTransferCards = parameters.TargetPlayer.Tableau.GetTopCards().Where(x => !activePlayerTopColors.Contains(x.Color)).ToList();
+			var activePlayerTopColors = parameters.ActivePlayer.Tableau.GetStackColors();
+			var possibleTransferCards = parameters.TargetPlayer.Tableau.GetTopCards().Where(x => !activePlayerTopColors.Contains(x.Color)).ToList();
 
 			if (possibleTransferCards.Count == 0)
-				return new CardActionResults(false, false);
+				return;
 
-			RequestQueueManager.PickCards(
-				parameters.Game,
-				parameters.ActivePlayer,
-				parameters.TargetPlayer,
-				possibleTransferCards,
-				1, 1,
-				parameters.PlayerSymbolCounts,
-				Action1_Step2
-			);
-
-			return new CardActionResults(false, true);
-		}
-		CardActionResults Action1_Step2(CardActionParameters parameters)
-		{
-			ICard cardToTransfer = parameters.Answer.SingleCard;
-			if (cardToTransfer == null)
-				throw new ArgumentNullException("Must choose a card.");
+			var cardToTransfer = ((Player)parameters.TargetPlayer).Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = possibleTransferCards, MinimumCardsToPick = 1, MaximumCardsToPick = 1 }).First();
 
 			parameters.TargetPlayer.Tableau.Stacks[cardToTransfer.Color].RemoveCard(cardToTransfer);
 			parameters.ActivePlayer.Tableau.ScorePile.Add(cardToTransfer);
 
-			Tuck.Action(Draw.Action(1, parameters.Game), parameters.TargetPlayer);
-
-			return new CardActionResults(true, false);
+			Tuck.Action(Draw.Action(1, parameters.AgeDecks), parameters.TargetPlayer);
 		}
 
-
-        CardActionResults Action2(CardActionParameters parameters) 
+		void Action2(ICardActionParameters input) 
 		{
+			var parameters = input as CardActionParameters;
+
 			ValidateParameters(parameters);
 
-			Tuck.Action(Draw.Action(1, parameters.Game), parameters.TargetPlayer);
+			Tuck.Action(Draw.Action(1, parameters.AgeDecks), parameters.TargetPlayer);
 
-			return new CardActionResults(true, false);
+			PlayerActed(parameters);
 		}
     }
 }

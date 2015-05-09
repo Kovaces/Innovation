@@ -1,5 +1,4 @@
-﻿using Innovation;
-using Innovation.Models;
+﻿using Innovation.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,31 +10,26 @@ namespace Innovation.Actions
 		/// <summary>
 		/// The Draw action. If there is a card of the Age to draw available, take the top card of that Age.
 		/// Otherwise increment the age and check again. 
-		/// If a player attempts to draw a card from the Age 10 deck and there are no cards, the game ends
 		/// </summary>
 		/// <param name="age">The Age of the Card to Draw</param>
-		/// <param name="game">The Game to perform the Action in</param>
-		public static ICard Action(int age, Game game)
+		/// <param name="ageDecks">The list of age decks to draw from</param>
+		public static ICard Action(int age, IEnumerable<Deck> ageDecks)
 		{
-			return (!game.GameEnded) ? GetCard(age, game) : null;
+			return GetCard(age, ageDecks);
 		}
 
-		private static ICard GetCard(int age, Game game)
+		private static ICard GetCard(int age, IEnumerable<Deck> ageDecks)
 		{
 			age = Math.Min(Math.Max(age, 1), 10);
 
-			var ageDeck = game.AgeDecks.First(d => d.Age.Equals(age));
+			var ageDeck = ageDecks.First(d => d.Age.Equals(age));
 			var drawnCard = ageDeck.Draw();
 
-			if (drawnCard == null)
-			{
-				if (age != 10)
-					drawnCard = GetCard(++age, game);
-				else
-				{
-					game.TriggerEndOfGame();
-				}
-			}
+			if ((age != 10) && (drawnCard == null))
+				drawnCard = GetCard(++age, ageDecks);
+
+			if ((age == 10) && (drawnCard == null))
+				throw new CardDrawException();
 
 			return drawnCard;
 		}

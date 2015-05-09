@@ -1,28 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Innovation.Models;
+﻿using Innovation.Models;
 using Innovation.Models.Enums;
 using Innovation.Tests.Helpers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Collections.Generic;
 
 namespace Innovation.Actions.Tests
 {
 	[TestClass]
 	public class AchieveTests
 	{
-		private Game testGame;
+		private Deck testAgeAchievementDeck;
 		private Player testPlayer;
 
 		[TestInitialize]
 		public void Setup()
 		{
-			testGame = new Game
-			{
-				AgeAchievementDeck = new Deck(),
-			};
+			testAgeAchievementDeck = new Deck();
 
 			testPlayer = new Player
 			{
@@ -47,15 +40,15 @@ namespace Innovation.Actions.Tests
 		[TestMethod]
 		public void AchieveAction_Base()
 		{
-			testGame.AgeAchievementDeck.Cards.Add(new Card { Age = 1 });
-			Assert.IsTrue(Achieve.Action(testPlayer, testGame));
+			testAgeAchievementDeck.Cards.Add(new Card { Age = 1 });
+			Assert.IsTrue(Achieve.Action(testPlayer, testAgeAchievementDeck));
 		}
 
 		[TestMethod]
 		public void AchieveAction_PlayerHasScoreButNotTopCard()
 		{
-			testGame.AgeAchievementDeck.Cards.Add(new Card { Age = 3 });
-			Assert.IsFalse(Achieve.Action(testPlayer, testGame));
+			testAgeAchievementDeck.Cards.Add(new Card { Age = 3 });
+			Assert.IsFalse(Achieve.Action(testPlayer, testAgeAchievementDeck));
 		}
 
 		[TestMethod]
@@ -66,8 +59,8 @@ namespace Innovation.Actions.Tests
 				new Card {Age = 1},
 			};
 
-			testGame.AgeAchievementDeck.Cards.Add(new Card { Age = 2 });
-			Assert.IsFalse(Achieve.Action(testPlayer, testGame));
+			testAgeAchievementDeck.Cards.Add(new Card { Age = 2 });
+			Assert.IsFalse(Achieve.Action(testPlayer, testAgeAchievementDeck));
 		}
 	}
 }

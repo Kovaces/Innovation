@@ -5,7 +5,7 @@ using Innovation.Actions;
 using Innovation.Models;
 using Innovation.Models.Enums;
 using Innovation.Models.Interfaces;
-using Innovation.Actions.Handlers;
+using Innovation.Players;
 
 namespace Innovation.Cards
 {
@@ -18,7 +18,7 @@ namespace Innovation.Cards
 		public override Symbol Left { get { return Symbol.Tower; } }
 		public override Symbol Center { get { return Symbol.Blank; } }
 		public override Symbol Right { get { return Symbol.Tower; } }
-		public override IEnumerable<CardAction> Actions
+		public override IEnumerable<ICardAction> Actions
 		{
 			get
 			{
@@ -28,92 +28,49 @@ namespace Innovation.Cards
                 };
 			}
 		}
-		CardActionResults Action1(CardActionParameters parameters)
+		void Action1(ICardActionParameters input)
 		{
+			var parameters = input as CardActionParameters;
+
 			ValidateParameters(parameters);
 
-			if (parameters.TargetPlayer.Hand.Count == 0)
-				return new CardActionResults(false, false);
+			if (!parameters.TargetPlayer.Hand.Any())
+				return;
 
-			RequestQueueManager.PickCards(
-				parameters.Game,
-				parameters.ActivePlayer,
-				parameters.TargetPlayer,
-				parameters.TargetPlayer.Hand,
-				1,
-				2,
-				parameters.PlayerSymbolCounts,
-				Action1_Step2
-			);
-
-			return new CardActionResults(false, true);
-		}
-		CardActionResults Action1_Step2(CardActionParameters parameters)
-		{
-			List<ICard> cardsToMeld = parameters.Answer.MultipleCards;
-
-			foreach (ICard card in cardsToMeld)
+			var cardsToMeld = ((Player)parameters.TargetPlayer).Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = parameters.TargetPlayer.Hand, MinimumCardsToPick = 1, MaximumCardsToPick = 2 }).ToList();
+			
+			foreach (var card in cardsToMeld)
 			{
 				parameters.TargetPlayer.RemoveCardFromHand(card);
 				Meld.Action(card, parameters.TargetPlayer);
 			}
 
-			if (cardsToMeld.Count == 2)
-			{
-				if (!parameters.TargetPlayer.Tableau.GetTopCards().Where(x => x.Color == Color.Red).Any())
-					return new CardActionResults(true, false);
+			PlayerActed(parameters);
 
-				RequestQueueManager.AskQuestion(
-					parameters.Game,
-					parameters.ActivePlayer,
-					parameters.TargetPlayer,
-					"Do you want to transfer your top red card to another player's board? If you do, transfer that player's top green card to your board.",
-					parameters.PlayerSymbolCounts,
-					Action1_Step3
-				);
-			}
+			if (cardsToMeld.Count != 2)
+				return;
 
-			return new CardActionResults(true, true);
-		}
-		CardActionResults Action1_Step3(CardActionParameters parameters)
-		{
-			if (parameters.Answer.Boolean)
-			{
-				ICard topRedCard = parameters.TargetPlayer.Tableau.GetTopCards().Where(x => x.Color == Color.Red).FirstOrDefault();
-				if (topRedCard != null)
-				{
-					RequestQueueManager.PickPlayer(
-						parameters.Game,
-						parameters.ActivePlayer,
-						parameters.TargetPlayer,
-						parameters.Game.Players.Where(x => x != parameters.TargetPlayer).ToList(),
-						1, 1,
-						parameters.PlayerSymbolCounts,
-						Action1_Step4
-					);
-				}
-			}
-			return new CardActionResults(true, true);
-		}
-		CardActionResults Action1_Step4(CardActionParameters parameters)
-		{
-			if (parameters.Answer.Players.Count == 0)
-				throw new ArgumentNullException("Must choose a player.");
+			var topRedCard = parameters.TargetPlayer.Tableau.GetTopCards().FirstOrDefault(x => x.Color == Color.Red);
 
-			IPlayer playerToTransferTo = parameters.Answer.Players.First();
+			if (topRedCard == null)
+				return;
 
-			ICard topRedCard = parameters.TargetPlayer.Tableau.GetTopCards().Where(x => x.Color == Color.Red).FirstOrDefault();
+			var answer = ((Player)parameters.TargetPlayer).Interaction.AskQuestion(parameters.TargetPlayer.Id, "You may transfer your top red card to another player's board. If you do, transfer that player's top green card to your board.");
+			if (!answer.HasValue || !answer.Value)
+				return;
+
+			var selectedPlayer = ((Player)parameters.TargetPlayer).Interaction.PickPlayer(parameters.TargetPlayer.Id, (IEnumerable<Player>)parameters.Players);
+			
 			parameters.TargetPlayer.Tableau.Stacks[Color.Red].Cards.Remove(topRedCard);
-			playerToTransferTo.Tableau.Stacks[Color.Red].AddCardToTop(topRedCard);
+			selectedPlayer.Tableau.Stacks[Color.Red].AddCardToTop(topRedCard);
 
-			ICard topGreenCard = playerToTransferTo.Tableau.GetTopCards().Where(x => x.Color == Color.Green).FirstOrDefault();
-			if (topGreenCard != null)
-			{
-				playerToTransferTo.Tableau.Stacks[Color.Green].Cards.Remove(topGreenCard);
-				parameters.TargetPlayer.Tableau.Stacks[Color.Green].AddCardToTop(topGreenCard);
-			}
-
-			return new CardActionResults(true, true);
+			var topGreenCard = selectedPlayer.Tableau.GetTopCards().FirstOrDefault(x => x.Color == Color.Green);
+			
+			if (topGreenCard == null)
+				return;
+			
+			selectedPlayer.Tableau.Stacks[Color.Green].Cards.Remove(topGreenCard);
+			parameters.TargetPlayer.Tableau.Stacks[Color.Green].AddCardToTop(topGreenCard);
 		}
 	}
 }

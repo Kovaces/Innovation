@@ -40,14 +40,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Achieve.cs" />
-    <Compile Include="ActionWorkers\QueuedActionDraw.cs" />
-    <Compile Include="ActionWorkers\QueuedActionImmediateDelegate.cs" />
-    <Compile Include="ActionWorkers\QueuedActionAskQuestion.cs" />
-    <Compile Include="ActionWorkers\QueuedActionPickPlayer.cs" />
-    <Compile Include="ActionWorkers\QueuedActionPickCard.cs" />
-    <Compile Include="ActionWorkers\QueuedActionEndDogma.cs" />
-    <Compile Include="Handlers\ActionQueueManager.cs" />
-    <Compile Include="Handlers\RequestQueueManager.cs" />
+    <Compile Include="CardDrawException.cs" />
     <Compile Include="Tuck.cs" />
     <Compile Include="Score.cs" />
     <Compile Include="Return.cs" />
@@ -60,6 +53,10 @@
     <ProjectReference Include="..\Innovation.Models\Innovation.Models.csproj">
       <Project>{36480362-a948-4c1c-aaa8-3d21eaa25d9b}</Project>
       <Name>Innovation.Models</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PlayerInteraction\Innovation.Players.csproj">
+      <Project>{063b4f4d-9814-402d-83de-ce3333d40036}</Project>
+      <Name>Innovation.Players</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

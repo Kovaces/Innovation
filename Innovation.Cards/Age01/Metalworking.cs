@@ -1,8 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using Innovation.Actions;
+﻿using Innovation.Actions;
 using Innovation.Models;
 using Innovation.Models.Enums;
+using Innovation.Models.Interfaces;
+using System.Collections.Generic;
+
 namespace Innovation.Cards
 {
     public class Metalworking : CardBase
@@ -14,7 +15,7 @@ namespace Innovation.Cards
         public override Symbol Left { get { return Symbol.Tower; } }
         public override Symbol Center { get { return Symbol.Blank; } }
         public override Symbol Right { get { return Symbol.Tower; } }
-        public override IEnumerable<CardAction> Actions
+        public override IEnumerable<ICardAction> Actions
         {
             get
             {
@@ -24,30 +25,24 @@ namespace Innovation.Cards
                 };
             }
         }
-		CardActionResults Action1(CardActionParameters parameters)
+		void Action1(ICardActionParameters input)
 		{
+			var parameters = input as CardActionParameters;
+
 			ValidateParameters(parameters);
 
-			var drawnCard = Draw.Action(1, parameters.Game);
-			if (drawnCard == null)
-				return new CardActionResults(true, false);
-
-			parameters.TargetPlayer.RevealCard(drawnCard);
-
+			var drawnCard = DrawAndReveal(parameters, 1);
+			
 			while (drawnCard.HasSymbol(Symbol.Tower))
 			{
 				Score.Action(drawnCard, parameters.TargetPlayer);
 
-				drawnCard = Draw.Action(1, parameters.Game);
-				if (drawnCard == null)
-					return new CardActionResults(true, false);
-
-				parameters.TargetPlayer.RevealCard(drawnCard);
+				drawnCard = DrawAndReveal(parameters, 1);
 			}
 
 			parameters.TargetPlayer.AddCardToHand(drawnCard);
 
-			return new CardActionResults(true, false);
+			PlayerActed(parameters);
 		}
     }
 }
