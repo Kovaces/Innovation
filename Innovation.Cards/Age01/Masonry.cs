@@ -1,11 +1,11 @@
 ﻿using Innovation.Actions;
-using Innovation.Models.Enums;
-using Innovation.Models.Interfaces;
-using Innovation.Players;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Innovation.Models;
+using Innovation.Interfaces;
+
+
+using Innovation.Player;
 
 namespace Innovation.Cards
 {
@@ -29,9 +29,9 @@ namespace Innovation.Cards
             }
         }
 
-        void Action1(ICardActionParameters input) 
+        void Action1(ICardActionParameters parameters) 
 		{
-			var parameters = input as CardActionParameters;
+			
 
 			ValidateParameters(parameters);
 
@@ -40,12 +40,12 @@ namespace Innovation.Cards
 	        if (cardsWithTowers.Count == 0)
 		        return;
 
-			var answer = ((Player)parameters.TargetPlayer).Interaction.AskQuestion(parameters.TargetPlayer.Id, "You may meld any number of cards from your hand, each with a [TOWER]. If you melded four or more cards in this way, claim the Monument achievement.");
+			var answer = parameters.TargetPlayer.Interaction.AskQuestion(parameters.TargetPlayer.Id, "You may meld any number of cards from your hand, each with a [TOWER]. If you melded four or more cards in this way, claim the Monument achievement.");
 			
 			if (!answer.HasValue || !answer.Value)
 				return;
 
-			var selectedCards = ((Player)parameters.TargetPlayer).Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = cardsWithTowers, MinimumCardsToPick = 1, MaximumCardsToPick = cardsWithTowers.Count }).ToList();
+			var selectedCards = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = cardsWithTowers, MinimumCardsToPick = 1, MaximumCardsToPick = cardsWithTowers.Count }).ToList();
 
 			foreach (var card in selectedCards)
 			{

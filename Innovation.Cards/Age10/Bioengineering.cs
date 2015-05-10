@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using Innovation.Actions;
-using Innovation.Models.Interfaces;
-using Innovation.Models;
-using Innovation.Models.Enums;
+using Innovation.Game;
+using Innovation.Interfaces;
+
 using Innovation.Models.Other;
-using Innovation.Players;
+
+using Innovation.Player;
+using Innovation.Storage;
 
 namespace Innovation.Cards
 {
@@ -30,9 +32,9 @@ namespace Innovation.Cards
 			}
 		}
 
-		void Action1(ICardActionParameters input)
+		void Action1(ICardActionParameters parameters)
 		{
-			var parameters = input as CardActionParameters;
+			
 
 			ValidateParameters(parameters);
 
@@ -40,7 +42,7 @@ namespace Innovation.Cards
 			if (transferCards.Count == 0)
 				return;
 
-			var selectedCard = ((Player)parameters.TargetPlayer).Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = transferCards, MinimumCardsToPick = 1, MaximumCardsToPick = 1 }).First();
+			var selectedCard = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = transferCards, MinimumCardsToPick = 1, MaximumCardsToPick = 1 }).First();
 
 			parameters.Players.First(p => p.Tableau.Stacks[selectedCard.Color].Cards.Contains(selectedCard)).Tableau.Stacks[selectedCard.Color].RemoveCard(selectedCard);
 			parameters.TargetPlayer.Tableau.Stacks[selectedCard.Color].AddCardToTop(selectedCard);
@@ -48,15 +50,15 @@ namespace Innovation.Cards
 			PlayerActed(parameters);
 		}
 
-		void Action2(ICardActionParameters input)
+		void Action2(ICardActionParameters parameters)
 		{
-			var parameters = input as CardActionParameters;
+			
 
 			ValidateParameters(parameters);
 
 			if (parameters.Players.ToList().Exists(p => p.Tableau.GetSymbolCount(Symbol.Leaf) < 3))
 			{
-				parameters.AddToStorage(ContextStorage.WinnerKey, parameters.Players.OrderByDescending(p => p.Tableau.GetSymbolCount(Symbol.Leaf)).ToList().First());
+                parameters.AddToStorage("WinnerKey", parameters.Players.OrderByDescending(p => p.Tableau.GetSymbolCount(Symbol.Leaf)).ToList().First());
 				throw new EndOfGameException();
 			}
 		}

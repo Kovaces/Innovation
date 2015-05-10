@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using Innovation.Actions;
-using Innovation.Models;
-using Innovation.Models.Interfaces;
-using Innovation.Models.Enums;
-using Innovation.Players;
+using Innovation.Interfaces;
+
+
+using Innovation.Player;
 
 namespace Innovation.Cards
 {
@@ -29,15 +29,15 @@ namespace Innovation.Cards
                 };
             }
         }
-		void Action1(ICardActionParameters input)
+		void Action1(ICardActionParameters parameters)
 		{
-			var parameters = input as CardActionParameters;
+			
 
 			ValidateParameters(parameters);
 
 			if (parameters.TargetPlayer.Hand.Any())
 			{
-				var selectedCards = ((Player)parameters.TargetPlayer).Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = parameters.TargetPlayer.Hand, MinimumCardsToPick = Math.Min(parameters.TargetPlayer.Hand.Count, 2), MaximumCardsToPick = 2 });
+				var selectedCards = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = parameters.TargetPlayer.Hand, MinimumCardsToPick = Math.Min(parameters.TargetPlayer.Hand.Count, 2), MaximumCardsToPick = 2 });
 				foreach (var card in selectedCards)
 				{
 					parameters.TargetPlayer.RemoveCardFromHand(card);
@@ -49,9 +49,9 @@ namespace Innovation.Cards
 		}
 		
 
-        void Action2(ICardActionParameters input) 
+        void Action2(ICardActionParameters parameters) 
 		{
-			var parameters = input as CardActionParameters;
+			
 
 			ValidateParameters(parameters);
 

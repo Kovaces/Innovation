@@ -62,14 +62,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Innovation.Actions\Innovation.Actions.csproj">
-      <Project>{155b79cc-0637-4735-ad8e-392c62e31f9a}</Project>
-      <Name>Innovation.Actions</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Innovation.Models\Innovation.Models.csproj">
-      <Project>{36480362-a948-4c1c-aaa8-3d21eaa25d9b}</Project>
-      <Name>Innovation.Models</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Innovation.Tests.Helpers\Innovation.Tests.Helpers.csproj">
       <Project>{a878e64f-8d34-46ce-adb2-6020cf3cea3c}</Project>
       <Name>Innovation.Tests.Helpers</Name>

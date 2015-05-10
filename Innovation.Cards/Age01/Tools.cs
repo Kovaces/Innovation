@@ -1,10 +1,10 @@
 ﻿using System.Linq;
 using System.Collections.Generic;
 using Innovation.Actions;
-using Innovation.Models;
-using Innovation.Models.Enums;
-using Innovation.Models.Interfaces;
-using Innovation.Players;
+using Innovation.Interfaces;
+
+
+using Innovation.Player;
 
 namespace Innovation.Cards
 {
@@ -29,21 +29,21 @@ namespace Innovation.Cards
             }
         }
 
-        void Action1(ICardActionParameters input) 
+        void Action1(ICardActionParameters parameters) 
 		{
-			var parameters = input as CardActionParameters;
+			
 
 			ValidateParameters(parameters);
 
 	        if (parameters.TargetPlayer.Hand.Count < 3)
 		        return;
 
-			var answer = ((Player)parameters.TargetPlayer).Interaction.AskQuestion(parameters.TargetPlayer.Id, "You may return three cards from your hand. If you do, draw and meld a [3].");
+			var answer = parameters.TargetPlayer.Interaction.AskQuestion(parameters.TargetPlayer.Id, "You may return three cards from your hand. If you do, draw and meld a [3].");
 
 			if (!answer.HasValue || !answer.Value)
 				return;
 
-			var selectedCards = ((Player)parameters.TargetPlayer).Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = parameters.TargetPlayer.Hand, MinimumCardsToPick = 3, MaximumCardsToPick = 3 }).ToList();
+			var selectedCards = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = parameters.TargetPlayer.Hand, MinimumCardsToPick = 3, MaximumCardsToPick = 3 }).ToList();
 
 			foreach (var card in selectedCards)
 			{
@@ -57,9 +57,9 @@ namespace Innovation.Cards
 		}
 
 
-        void Action2(ICardActionParameters input) 
+        void Action2(ICardActionParameters parameters) 
 		{
-			var parameters = input as CardActionParameters;
+			
 
 			ValidateParameters(parameters);
 
@@ -68,12 +68,12 @@ namespace Innovation.Cards
 			if (ageThreeCardsInHand.Count == 0)
 				return;
 
-			var answer = ((Player)parameters.TargetPlayer).Interaction.AskQuestion(parameters.TargetPlayer.Id, "You may return a [3] from your hand. If you do, draw three [1].");
+			var answer = parameters.TargetPlayer.Interaction.AskQuestion(parameters.TargetPlayer.Id, "You may return a [3] from your hand. If you do, draw three [1].");
 
 			if (!answer.HasValue || !answer.Value)
 				return;
 
-			var cardToReturn = ((Player)parameters.TargetPlayer).Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = ageThreeCardsInHand, MinimumCardsToPick = 1, MaximumCardsToPick = 1 }).First();
+			var cardToReturn = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = ageThreeCardsInHand, MinimumCardsToPick = 1, MaximumCardsToPick = 1 }).First();
 
 			parameters.TargetPlayer.RemoveCardFromHand(cardToReturn);
 			Return.Action(cardToReturn, parameters.AgeDecks);

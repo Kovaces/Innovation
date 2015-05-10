@@ -1,9 +1,4 @@
-﻿using System.Web.Helpers;
-using Innovation.Cards;
-using Innovation.Models;
-using Innovation.Models.Enums;
-using Innovation.Models.Interfaces;
-using Innovation.Players;
+﻿using Innovation.Cards;
 using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
 using System;
@@ -12,6 +7,9 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
+using Innovation.Game;
+using Innovation.Interfaces;
+using Innovation.Player;
 using Newtonsoft.Json;
 
 namespace Innovation.Web.Innovation
@@ -20,8 +18,8 @@ namespace Innovation.Web.Innovation
 	{
 		private readonly static Lazy<Innovation> _instance = new Lazy<Innovation>(() => new Innovation(GlobalHost.ConnectionManager.GetHubContext<InnovationHub>().Clients));
 
-		private readonly ConcurrentDictionary<string, Game> _games = new ConcurrentDictionary<string, Game>();
-		private readonly ConcurrentDictionary<string, Player> _players = new ConcurrentDictionary<string, Player>();
+		private readonly ConcurrentDictionary<string, Game.Game> _games = new ConcurrentDictionary<string, Game.Game>();
+		private readonly ConcurrentDictionary<string, Player.Player> _players = new ConcurrentDictionary<string, Player.Player>();
 
 		private IHubConnectionContext<dynamic> Clients { get; set; }
 
@@ -38,9 +36,9 @@ namespace Innovation.Web.Innovation
 			get { return _instance.Value; }
 		}
 
-		private Player GetPlayerById(string id)
+		private Player.Player GetPlayerById(string id)
 		{
-			Player tempPlayer = null;
+			Player.Player tempPlayer = null;
 
 			_players.TryGetValue(id, out tempPlayer);
 
@@ -49,9 +47,9 @@ namespace Innovation.Web.Innovation
 
 			return tempPlayer;
 		}
-		private Game GetGameById(string id)
+		private Game.Game GetGameById(string id)
 		{
-			Game tempGame = null;
+			Game.Game tempGame = null;
 
 			_games.TryGetValue(id, out tempGame);
 
@@ -60,9 +58,9 @@ namespace Innovation.Web.Innovation
 
 			return tempGame;
 		}
-		private Game GetGameByPlayerId(string playerId)
+		private Game.Game GetGameByPlayerId(string playerId)
 		{
-            Player player;
+            Player.Player player;
 			player = GetPlayerById(playerId);
 
 			var game = _games.Values.FirstOrDefault(g => g.Players.Contains(player));
@@ -73,7 +71,7 @@ namespace Innovation.Web.Innovation
 			return game;
 		}
 
-		private void ValidateResponseParameters(string gameId, string playerId, out Game game, out Player player)
+		private void ValidateResponseParameters(string gameId, string playerId, out Game.Game game, out Player.Player player)
 		{
 			game = GetGameById(gameId);
 			player = GetPlayerById(playerId);
@@ -93,7 +91,7 @@ namespace Innovation.Web.Innovation
                 RevealCardHandler = new RevealCard { Handler = RevealCard }
             };
 
-			var player = new Player
+			var player = new Player.Player
 			{
 				Id = userId,
 				UpdateClientHandler = UpdateClient,
@@ -104,7 +102,7 @@ namespace Innovation.Web.Innovation
 		}
 		public void RemoveUser(string userId)
 		{
-			Player player;
+			Player.Player player;
 			_players.TryRemove(userId, out player);
 		}
 
@@ -113,7 +111,7 @@ namespace Innovation.Web.Innovation
 		{
 			
 			
-			var game = new Game()
+			var game = new Game.Game()
 			{
 				Name = gameName,
 				Id = Guid.NewGuid().ToString(),
@@ -138,7 +136,7 @@ namespace Innovation.Web.Innovation
 		{
 			Clients.Group(gameName).gameOverNotification(GetPlayerById(winner).Name);
 
-			Game game;
+			Game.Game game;
 			_games.TryRemove(gameName, out game);
 		}
 
@@ -147,7 +145,7 @@ namespace Innovation.Web.Innovation
 			var game = GetGameById(gameId);
 			SyncGameState(game);
 		}
-		public void SyncGameState(Game game)
+		public void SyncGameState(Game.Game game)
 		{
 			var thing = new
 			{
@@ -198,8 +196,8 @@ namespace Innovation.Web.Innovation
 
         internal void PlayerPickAction(string gameId, string playerId, string selectedAction)
 		{
-			Game game;
-            Player player;
+			Game.Game game;
+            Player.Player player;
 			ValidateResponseParameters(gameId, playerId, out game, out player);
 
 			ActionEnum action;
@@ -220,8 +218,8 @@ namespace Innovation.Web.Innovation
 		}
 		internal void PickCardsResponse(string gameId, string playerId, string[] cardIds)
 		{
-			Game game;
-			Player player;
+			Game.Game game;
+			Player.Player player;
 			ValidateResponseParameters(gameId, playerId, out game, out player);
 
             player.Interaction.PickCardsHandler.Response(CardList.GetCardList().Where(c => cardIds.ToList().Contains(c.Id)));
@@ -233,14 +231,14 @@ namespace Innovation.Web.Innovation
 		}
 		internal void AskQuestionResponse(string gameId, string playerId, bool response)
 		{
-			Game game;
-            Player player;
+			Game.Game game;
+            Player.Player player;
 			ValidateResponseParameters(gameId, playerId, out game, out player);
 
             player.Interaction.AskQuestionHandler.Response(response);
 		}
 
-        public void PickPlayer(string playerId, IEnumerable<Player> playerList)
+        public void PickPlayer(string playerId, IEnumerable<Player.Player> playerList)
 		{
 			Clients.User(playerId).pickPlayers(
 				Newtonsoft.Json.JsonConvert.SerializeObject(playerList.Select(x => x.Id).ToList())
@@ -250,8 +248,8 @@ namespace Innovation.Web.Innovation
 		}
         internal void PickPlayerResponse(string gameId, string playerId, string selectedPlayerId)
         {
-            Game game;
-            Player player;
+            Game.Game game;
+            Player.Player player;
             ValidateResponseParameters(gameId, playerId, out game, out player);
 
             player.Interaction.PickPlayerHandler.Response(_players.First(p => p.Key.Equals(selectedPlayerId)).Value);
@@ -263,8 +261,8 @@ namespace Innovation.Web.Innovation
 		}
         internal void PickColorResponse(string gameId, string playerId, string selectedColor)
         {
-            Game game;
-            Player player;
+            Game.Game game;
+            Player.Player player;
             ValidateResponseParameters(gameId, playerId, out game, out player);
 
             Color color;
@@ -276,10 +274,10 @@ namespace Innovation.Web.Innovation
 
 		public void RevealCard(string playerId, ICard card)
 		{
-			Game game = GetGameByPlayerId(playerId);
+			Game.Game game = GetGameByPlayerId(playerId);
 			Clients.Group(game.Name).revealCard(playerId, JsonConvert.SerializeObject(card));
             
-            Player player = GetPlayerById(playerId);
+            Player.Player player = GetPlayerById(playerId);
             player.Interaction.RevealCardHandler.Response(true);
 		}
 

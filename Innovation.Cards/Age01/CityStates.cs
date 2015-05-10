@@ -1,10 +1,10 @@
 ﻿using Innovation.Actions;
-using Innovation.Models;
-using Innovation.Models.Enums;
-using Innovation.Models.Interfaces;
-using Innovation.Players;
+
 using System.Collections.Generic;
 using System.Linq;
+using Innovation.Interfaces;
+
+using Innovation.Player;
 
 namespace Innovation.Cards
 {
@@ -27,9 +27,9 @@ namespace Innovation.Cards
                 };
             }
         }
-		void Action1(ICardActionParameters input)
+		void Action1(ICardActionParameters parameters)
 		{
-			var parameters = input as CardActionParameters;
+			
 
 			ValidateParameters(parameters);
 
@@ -49,7 +49,7 @@ namespace Innovation.Cards
 			if (!topCardsWithTowers.Any())
 				return;
 
-			var cardToMove = ((Player)parameters.TargetPlayer).Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = topCardsWithTowers, MinimumCardsToPick = 1, MaximumCardsToPick = 1 }).First();
+			var cardToMove = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = topCardsWithTowers, MinimumCardsToPick = 1, MaximumCardsToPick = 1 }).First();
 
 			// remove from TargetPlayer's board
 			parameters.TargetPlayer.Tableau.Stacks[cardToMove.Color].RemoveCard(cardToMove);

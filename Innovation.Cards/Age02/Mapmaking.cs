@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
-using Innovation.Models;
-using Innovation.Models.Enums;
+
 using Innovation.Actions;
-using Innovation.Models.Interfaces;
-using Innovation.Players;
+using Innovation.Game;
+using Innovation.Interfaces;
+
+using Innovation.Player;
+using Innovation.Storage;
 
 namespace Innovation.Cards
 {
@@ -29,9 +31,9 @@ namespace Innovation.Cards
                 };
             }
         }
-		void Action1(ICardActionParameters input)
+		void Action1(ICardActionParameters parameters)
 		{
-			var parameters = input as CardActionParameters;
+			
 
 			ValidateParameters(parameters);
 
@@ -40,21 +42,21 @@ namespace Innovation.Cards
 			if (ageOneCardsinScorePile.Count == 0)
 				return;
 
-			var selectedCard = ((Player)parameters.TargetPlayer).Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = ageOneCardsinScorePile, MinimumCardsToPick = 1, MaximumCardsToPick = 1 }).First();
+			var selectedCard = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = ageOneCardsinScorePile, MinimumCardsToPick = 1, MaximumCardsToPick = 1 }).First();
 
 			parameters.TargetPlayer.Tableau.ScorePile.Remove(selectedCard);
 			parameters.ActivePlayer.Tableau.ScorePile.Add(selectedCard);
 
-			parameters.AddToStorage(ContextStorage.MapMakingCardTransferedKey, true);
+            parameters.AddToStorage("MapMakingCardTransferedKey", true);
 		}
 
-		void Action2(ICardActionParameters input)
+		void Action2(ICardActionParameters parameters)
 		{
-			var parameters = input as CardActionParameters;
+			
 
 			ValidateParameters(parameters);
 
-			var cardTransfered = parameters.GetFromStorage(ContextStorage.MapMakingCardTransferedKey);
+            var cardTransfered = parameters.GetFromStorage("MapMakingCardTransferedKey");
 			if (cardTransfered != null && !(bool)cardTransfered)
 				return;
 			

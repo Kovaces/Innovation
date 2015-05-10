@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using Innovation.Actions;
-using Innovation.Models;
-using Innovation.Models.Enums;
-using Innovation.Models.Interfaces;
+using Innovation.Game;
+using Innovation.Interfaces;
+
 using Innovation.Models.Other;
+using Innovation.Storage;
+
 
 namespace Innovation.Cards
 {
@@ -29,9 +31,9 @@ namespace Innovation.Cards
 			}
 		}
 
-		void Action1(ICardActionParameters input)
+		void Action1(ICardActionParameters parameters)
 		{
-			var parameters = input as CardActionParameters;
+			
 
 			ValidateParameters(parameters);
 
@@ -40,9 +42,9 @@ namespace Innovation.Cards
 			PlayerActed(parameters);
 		}
 
-		void Action2(ICardActionParameters input)
+		void Action2(ICardActionParameters parameters)
 		{
-			var parameters = input as CardActionParameters;
+			
 
 			ValidateParameters(parameters);
 
@@ -50,7 +52,7 @@ namespace Innovation.Cards
 
 			if (topCards.Exists(c => c.Name.Equals("Robotics")) && topCards.Exists(c => c.Name.Equals("Software")))
 			{
-				parameters.AddToStorage(ContextStorage.WinnerKey, parameters.Players.OrderBy(p => p.Tableau.GetScore()).ToList().First());
+                parameters.AddToStorage("WinnerKey", parameters.Players.OrderBy(p => p.Tableau.GetScore()).ToList().First());
 				throw new EndOfGameException();
 			}
 		}

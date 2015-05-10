@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Innovation.Models;
-using Innovation.Models.Enums;
-using Innovation.Models.Interfaces;
+using Innovation.Interfaces;
+
+
 
 namespace Innovation.Cards
 {
@@ -26,8 +26,8 @@ namespace Innovation.Cards
                 };
             }
         }
-        void Action1(ICardActionParameters input) { throw new NotImplementedException(); }
-        void Action2(ICardActionParameters input) { throw new NotImplementedException(); }
-        void Action3(ICardActionParameters input) { throw new NotImplementedException(); }
+        void Action1(ICardActionParameters parameters) { throw new NotImplementedException(); }
+        void Action2(ICardActionParameters parameters) { throw new NotImplementedException(); }
+        void Action3(ICardActionParameters parameters) { throw new NotImplementedException(); }
     }
 }

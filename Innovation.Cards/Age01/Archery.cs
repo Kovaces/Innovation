@@ -1,10 +1,10 @@
 ﻿using Innovation.Actions;
-using Innovation.Models.Enums;
-using Innovation.Models.Interfaces;
-using Innovation.Players;
 using System.Collections.Generic;
 using System.Linq;
-using Innovation.Models;
+using Innovation.Interfaces;
+
+
+using Innovation.Player;
 
 namespace Innovation.Cards
 {
@@ -27,9 +27,9 @@ namespace Innovation.Cards
                 };
 			}
 		}
-		void Action1(ICardActionParameters input)
+		void Action1(ICardActionParameters parameters)
 		{
-			var parameters = input as CardActionParameters;
+			
 
 			ValidateParameters(parameters);
 
@@ -38,7 +38,7 @@ namespace Innovation.Cards
 			var highestAgeInHand = parameters.TargetPlayer.Hand.Max(c => c.Age);
 			var highestCards = parameters.TargetPlayer.Hand.Where(c => c.Age.Equals(highestAgeInHand)).ToList();
 
-			var selectedCard = ((Player)parameters.TargetPlayer).Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = highestCards, MinimumCardsToPick = 1, MaximumCardsToPick = 1 }).First();
+			var selectedCard = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = highestCards, MinimumCardsToPick = 1, MaximumCardsToPick = 1 }).First();
 
 			parameters.TargetPlayer.RemoveCardFromHand(selectedCard);
 			parameters.ActivePlayer.AddCardToHand(selectedCard);	

@@ -2,10 +2,9 @@
 using System.Linq;
 using System.Collections.Generic;
 using Innovation.Actions;
-using Innovation.Models;
-using Innovation.Models.Enums;
-using Innovation.Models.Interfaces;
-using Innovation.Players;
+using Innovation.Interfaces;
+
+
 
 namespace Innovation.Cards
 {
@@ -28,16 +27,16 @@ namespace Innovation.Cards
                 };
 			}
 		}
-		void Action1(ICardActionParameters input)
+		void Action1(ICardActionParameters parameters)
 		{
-			var parameters = input as CardActionParameters;
+			
 
 			ValidateParameters(parameters);
 
 			if (!parameters.TargetPlayer.Hand.Any() && !parameters.TargetPlayer.Tableau.ScorePile.Any())
 				return;
 
-			var answer = ((Player)parameters.TargetPlayer).Interaction.AskQuestion(parameters.TargetPlayer.Id, "You may exchange all the highest cards in your hand with all the highest cards in your score pile.");
+			var answer = parameters.TargetPlayer.Interaction.AskQuestion(parameters.TargetPlayer.Id, "You may exchange all the highest cards in your hand with all the highest cards in your score pile.");
 			if (!answer.HasValue || !answer.Value)
 				return;
 

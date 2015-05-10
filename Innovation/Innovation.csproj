@@ -39,27 +39,40 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Game.cs" />
-    <Compile Include="GameManager.cs" />
+    <Compile Include="Actions\Achieve.cs" />
+    <Compile Include="Enums.cs" />
+    <Compile Include="Exceptions\CardDrawException.cs" />
+    <Compile Include="Actions\Dogma.cs" />
+    <Compile Include="Actions\Draw.cs" />
+    <Compile Include="Actions\Meld.cs" />
+    <Compile Include="Actions\Return.cs" />
+    <Compile Include="Actions\Score.cs" />
+    <Compile Include="Actions\Tuck.cs" />
+    <Compile Include="Cards\CardAction.cs" />
+    <Compile Include="Cards\CardActionParameters.cs" />
+    <Compile Include="Extensions\ShuffleExtensions.cs" />
+    <Compile Include="GameObjects\Deck.cs" />
+    <Compile Include="GameObjects\Stack.cs" />
+    <Compile Include="GameObjects\Tableau.cs" />
+    <Compile Include="Game\Game.cs" />
+    <Compile Include="Interfaces\ICard.cs" />
+    <Compile Include="Interfaces\ICardAction.cs" />
+    <Compile Include="Interfaces\ICardActionParameters.cs" />
+    <Compile Include="Interfaces\IPlayerInteraction.cs" />
+    <Compile Include="Interfaces\ITableau.cs" />
+    <Compile Include="Interfaces\IPlayer.cs" />
+    <Compile Include="Storage\ContextStorage.cs" />
+    <Compile Include="Exceptions\EndOfGameException.cs" />
+    <Compile Include="Player\AskQuestion.cs" />
+    <Compile Include="Player\PickCardParameters.cs" />
+    <Compile Include="Player\PickCards.cs" />
+    <Compile Include="Player\PickColor.cs" />
+    <Compile Include="Player\PickPlayer.cs" />
+    <Compile Include="Player\Player.cs" />
+    <Compile Include="Player\PlayerAction.cs" />
+    <Compile Include="Player\PlayerInteraction.cs" />
+    <Compile Include="Player\RevealCard.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Innovation.Actions\Innovation.Actions.csproj">
-      <Project>{155b79cc-0637-4735-ad8e-392c62e31f9a}</Project>
-      <Name>Innovation.Actions</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Innovation.Cards\Innovation.Cards.csproj">
-      <Project>{596dc48f-02c4-4fbe-8ac0-7113edf99c9d}</Project>
-      <Name>Innovation.Cards</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Innovation.Models\Innovation.Models.csproj">
-      <Project>{36480362-a948-4c1c-aaa8-3d21eaa25d9b}</Project>
-      <Name>Innovation.Models</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PlayerInteraction\Innovation.Players.csproj">
-      <Project>{063b4f4d-9814-402d-83de-ce3333d40036}</Project>
-      <Name>Innovation.Players</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

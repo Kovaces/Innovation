@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
-using Innovation.Models;
-using Innovation.Models.Enums;
+
 using Innovation.Actions;
-using Innovation.Models.Interfaces;
-using Innovation.Players;
+using Innovation.Interfaces;
+
+using Innovation.Player;
 
 namespace Innovation.Cards
 {
@@ -28,9 +28,9 @@ namespace Innovation.Cards
                 };
             }
         }
-        void Action1(ICardActionParameters input)
+        void Action1(ICardActionParameters parameters)
 		{
-			var parameters = input as CardActionParameters;
+			
 
 			ValidateParameters(parameters);
 
@@ -40,7 +40,7 @@ namespace Innovation.Cards
 			if (possibleTransferCards.Count == 0)
 				return;
 
-			var cardToTransfer = ((Player)parameters.TargetPlayer).Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = possibleTransferCards, MinimumCardsToPick = 1, MaximumCardsToPick = 1 }).First();
+			var cardToTransfer = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = possibleTransferCards, MinimumCardsToPick = 1, MaximumCardsToPick = 1 }).First();
 
 			parameters.TargetPlayer.Tableau.Stacks[cardToTransfer.Color].RemoveCard(cardToTransfer);
 			parameters.ActivePlayer.Tableau.ScorePile.Add(cardToTransfer);
@@ -48,9 +48,9 @@ namespace Innovation.Cards
 			Tuck.Action(Draw.Action(1, parameters.AgeDecks), parameters.TargetPlayer);
 		}
 
-		void Action2(ICardActionParameters input) 
+		void Action2(ICardActionParameters parameters) 
 		{
-			var parameters = input as CardActionParameters;
+			
 
 			ValidateParameters(parameters);
 

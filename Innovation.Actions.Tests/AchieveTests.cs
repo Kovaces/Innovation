@@ -1,8 +1,9 @@
-﻿using Innovation.Models;
-using Innovation.Models.Enums;
+﻿
 using Innovation.Tests.Helpers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
+using Innovation.Interfaces;
+
 
 namespace Innovation.Actions.Tests
 {
@@ -10,14 +11,14 @@ namespace Innovation.Actions.Tests
 	public class AchieveTests
 	{
 		private Deck testAgeAchievementDeck;
-		private Player testPlayer;
+		private Player.Player testPlayer;
 
 		[TestInitialize]
 		public void Setup()
 		{
 			testAgeAchievementDeck = new Deck();
 
-			testPlayer = new Player
+			testPlayer = new Player.Player
 			{
 				Tableau = new Tableau
 				{

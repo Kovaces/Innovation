@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using Innovation.Actions;
-using Innovation.Models.Interfaces;
-using Innovation.Models;
-using Innovation.Models.Enums;
-using Innovation.Players;
+using Innovation.Interfaces;
+
+
+using Innovation.Player;
 
 namespace Innovation.Cards
 {
@@ -28,9 +28,9 @@ namespace Innovation.Cards
 			}
 		}
 
-		void Action1(ICardActionParameters input)
+		void Action1(ICardActionParameters parameters)
 		{
-			var parameters = input as CardActionParameters;
+			
 
 			ValidateParameters(parameters);
 
@@ -38,7 +38,7 @@ namespace Innovation.Cards
 				return;
 
 			var numberOfCardsToReturn = (int) Math.Ceiling(parameters.TargetPlayer.Tableau.ScorePile.Count/2.0d);
-			var selectedCards = ((Player)parameters.TargetPlayer).Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = parameters.TargetPlayer.Tableau.ScorePile, MinimumCardsToPick = numberOfCardsToReturn, MaximumCardsToPick = numberOfCardsToReturn }).ToList();
+			var selectedCards = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = parameters.TargetPlayer.Tableau.ScorePile, MinimumCardsToPick = numberOfCardsToReturn, MaximumCardsToPick = numberOfCardsToReturn }).ToList();
 
 			selectedCards.ForEach(c => parameters.TargetPlayer.RemoveCardFromScorePile(c));
 			selectedCards.ForEach(c => Return.Action(c, parameters.AgeDecks));

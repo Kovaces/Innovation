@@ -4,8 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Innovation.Models;
-using Innovation.Models.Enums;
+using Innovation.Interfaces;
+
+
 
 namespace Innovation.Tests.Helpers
 {

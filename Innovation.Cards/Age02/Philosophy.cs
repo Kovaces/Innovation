@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
-using Innovation.Models;
-using Innovation.Models.Enums;
+
 using Innovation.Actions;
-using Innovation.Models.Interfaces;
-using Innovation.Players;
+using Innovation.Interfaces;
+
+using Innovation.Player;
 
 namespace Innovation.Cards
 {
@@ -29,9 +29,9 @@ namespace Innovation.Cards
                 };
             }
         }
-		void Action1(ICardActionParameters input) 
+		void Action1(ICardActionParameters parameters) 
 		{
-			var parameters = input as CardActionParameters;
+			
 
 			ValidateParameters(parameters);
 
@@ -39,29 +39,29 @@ namespace Innovation.Cards
 			if (!colorsToSelectFrom.Any())
 				return;
 
-			var answer = ((Player)parameters.TargetPlayer).Interaction.AskQuestion(parameters.TargetPlayer.Id, "You may splay left any one color of your cards.");
+			var answer = parameters.TargetPlayer.Interaction.AskQuestion(parameters.TargetPlayer.Id, "You may splay left any one color of your cards.");
 			if (!answer.HasValue || !answer.Value)
 				return;
 
-			parameters.TargetPlayer.Tableau.Stacks[((Player)parameters.TargetPlayer).Interaction.PickColor(parameters.TargetPlayer.Id, colorsToSelectFrom)].Splay(SplayDirection.Left);
+			parameters.TargetPlayer.Tableau.Stacks[parameters.TargetPlayer.Interaction.PickColor(parameters.TargetPlayer.Id, colorsToSelectFrom)].Splay(SplayDirection.Left);
 			
 			PlayerActed(parameters);
 		}
 
-		void Action2(ICardActionParameters input)
+		void Action2(ICardActionParameters parameters)
 		{
-			var parameters = input as CardActionParameters;
+			
 
 			ValidateParameters(parameters);
 
 			if (!parameters.TargetPlayer.Hand.Any())
 				return;
 
-			var answer = ((Player)parameters.TargetPlayer).Interaction.AskQuestion(parameters.TargetPlayer.Id, "You may score a card from your hand.");
+			var answer = parameters.TargetPlayer.Interaction.AskQuestion(parameters.TargetPlayer.Id, "You may score a card from your hand.");
 			if (!answer.HasValue || !answer.Value)
 				return;
 
-			var card = ((Player)parameters.TargetPlayer).Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = parameters.TargetPlayer.Hand, MinimumCardsToPick = 1, MaximumCardsToPick = 1 }).First();
+			var card = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = parameters.TargetPlayer.Hand, MinimumCardsToPick = 1, MaximumCardsToPick = 1 }).First();
 			
 			parameters.TargetPlayer.RemoveCardFromHand(card);
 			Score.Action(card, parameters.TargetPlayer);

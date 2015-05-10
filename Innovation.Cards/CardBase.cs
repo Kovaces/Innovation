@@ -1,11 +1,12 @@
 ﻿using Innovation.Actions;
-using Innovation.Models;
-using Innovation.Models.Enums;
-using Innovation.Models.Interfaces;
+
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using Innovation.Players;
+using Innovation.Game;
+using Innovation.Interfaces;
+using Innovation.Storage;
+
 
 namespace Innovation.Cards
 {
@@ -29,7 +30,7 @@ namespace Innovation.Cards
 		}
 
 		//Protected Properties and Methods
-		protected void ValidateParameters(CardActionParameters parameters)
+		protected void ValidateParameters(ICardActionParameters parameters)
 		{
 			if (parameters == null)
 				throw new ArgumentNullException("parameters");
@@ -44,19 +45,19 @@ namespace Innovation.Cards
 				throw new ArgumentOutOfRangeException("parameters", "Age Decks cannot be null");
 		}
 
-		protected ICard DrawAndReveal(CardActionParameters parameters, int age)
+        protected ICard DrawAndReveal(ICardActionParameters parameters, int age)
 		{
 			var drawnCard = Draw.Action(age, parameters.AgeDecks);
 
-			((Player)parameters.TargetPlayer).Interaction.RevealCard(parameters.TargetPlayer.Id, drawnCard);
+			parameters.TargetPlayer.Interaction.RevealCard(parameters.TargetPlayer.Id, drawnCard);
 
 			return drawnCard;
 		}
 
-		protected void PlayerActed(CardActionParameters parameters)
+        protected void PlayerActed(ICardActionParameters parameters)
 		{
 			if (parameters.TargetPlayer != parameters.ActivePlayer)
-				parameters.AddToStorage(ContextStorage.AnotherPlayerTookDogmaActionKey, true);
+                parameters.AddToStorage("AnotherPlayerTookDogmaActionKey", true);
 		}
 	}
 }

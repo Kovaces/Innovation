@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using Innovation.Actions;
-using Innovation.Models.Interfaces;
-using Innovation.Models;
-using Innovation.Models.Enums;
-using Innovation.Players;
+using Innovation.Interfaces;
+
+
+using Innovation.Player;
 
 namespace Innovation.Cards
 {
@@ -28,20 +28,20 @@ namespace Innovation.Cards
                 };
             }
         }
-        void Action1(ICardActionParameters input) 
+        void Action1(ICardActionParameters parameters) 
 		{
-			var parameters = input as CardActionParameters;
+			
 
 			ValidateParameters(parameters);
 
 			if (parameters.TargetPlayer.Hand.Any())
 				return;
 
-			var answer = ((Player)parameters.TargetPlayer).Interaction.AskQuestion(parameters.TargetPlayer.Id, "You may return a card from your hand. If you do, draw and meld a card of value one higher than the card you returned.");
+			var answer = parameters.TargetPlayer.Interaction.AskQuestion(parameters.TargetPlayer.Id, "You may return a card from your hand. If you do, draw and meld a card of value one higher than the card you returned.");
 			if (!answer.HasValue || !answer.Value)
 				return;
 
-			var cardToReturn = ((Player)parameters.TargetPlayer).Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = parameters.TargetPlayer.Hand, MinimumCardsToPick = 1, MaximumCardsToPick = 1 }).First();
+			var cardToReturn = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = parameters.TargetPlayer.Hand, MinimumCardsToPick = 1, MaximumCardsToPick = 1 }).First();
 
 			parameters.TargetPlayer.RemoveCardFromHand(cardToReturn);
 

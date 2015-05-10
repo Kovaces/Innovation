@@ -1,10 +1,12 @@
 ﻿using Innovation.Actions;
-using Innovation.Models;
-using Innovation.Models.Enums;
-using Innovation.Models.Interfaces;
-using Innovation.Players;
+
 using System.Collections.Generic;
 using System.Linq;
+using Innovation.Game;
+using Innovation.Interfaces;
+
+using Innovation.Player;
+using Innovation.Storage;
 
 namespace Innovation.Cards
 {
@@ -29,9 +31,9 @@ namespace Innovation.Cards
             }
         }
         
-		void Action1(ICardActionParameters input)
+		void Action1(ICardActionParameters parameters)
 		{
-			var parameters = input as CardActionParameters;
+			
 
 			ValidateParameters(parameters);
 
@@ -40,24 +42,24 @@ namespace Innovation.Cards
             if (cardsWithCrowns.Count == 0)
 				return;
 
-			var selectedCard = ((Player)parameters.TargetPlayer).Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = cardsWithCrowns, MinimumCardsToPick = 1, MaximumCardsToPick = 1 }).First();
+			var selectedCard = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = cardsWithCrowns, MinimumCardsToPick = 1, MaximumCardsToPick = 1 }).First();
 
 			parameters.TargetPlayer.RemoveCardFromHand(selectedCard);
 			Score.Action(selectedCard, parameters.ActivePlayer);
 
 			parameters.TargetPlayer.AddCardToHand(Draw.Action(1, parameters.AgeDecks));
 
-			parameters.AddToStorage(ContextStorage.OarsCardTransferedKey, true);
+            parameters.AddToStorage("OarsCardTransferedKey", true);
 		}
 
 
-		void Action2(ICardActionParameters input)
+		void Action2(ICardActionParameters parameters)
 		{
-			var parameters = input as CardActionParameters;
+			
 
 			ValidateParameters(parameters);
 
-			var oarsCardTransfered = parameters.GetFromStorage(ContextStorage.OarsCardTransferedKey);
+            var oarsCardTransfered = parameters.GetFromStorage("OarsCardTransferedKey");
 			if (oarsCardTransfered != null && (bool)oarsCardTransfered)
 				return;
 

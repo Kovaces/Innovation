@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
-using Innovation.Models;
-using Innovation.Models.Enums;
+
 using Innovation.Actions;
-using Innovation.Models.Interfaces;
-using Innovation.Players;
+using Innovation.Interfaces;
+
+using Innovation.Player;
 
 namespace Innovation.Cards
 {
@@ -29,9 +29,9 @@ namespace Innovation.Cards
             }
         }
 
-        void Action1(ICardActionParameters input)
+        void Action1(ICardActionParameters parameters)
         {
-            var parameters = input as CardActionParameters;
+            
 
             ValidateParameters(parameters);
 
@@ -41,19 +41,19 @@ namespace Innovation.Cards
             if (!cardsMatchingBoardColor.Any())
                 return;
 
-            var answer = ((Player)parameters.TargetPlayer).Interaction.AskQuestion(parameters.TargetPlayer.Id, "You may tuck a card from your hand of the same color as any card on your board. If you do, you may splay that color of your cards left.");
+            var answer = parameters.TargetPlayer.Interaction.AskQuestion(parameters.TargetPlayer.Id, "You may tuck a card from your hand of the same color as any card on your board. If you do, you may splay that color of your cards left.");
 
 			if (!answer.HasValue || !answer.Value)
 				return;
 
-            var selectedCard = ((Player)parameters.TargetPlayer).Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = cardsMatchingBoardColor, MinimumCardsToPick = 1, MaximumCardsToPick = 1 }).First();
+            var selectedCard = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = cardsMatchingBoardColor, MinimumCardsToPick = 1, MaximumCardsToPick = 1 }).First();
 			
 			parameters.TargetPlayer.RemoveCardFromHand(selectedCard);
 			Tuck.Action(selectedCard, parameters.TargetPlayer);
 
             PlayerActed(parameters);
 
-            answer = ((Player)parameters.TargetPlayer).Interaction.AskQuestion(parameters.TargetPlayer.Id, "you may splay that color of your cards left.");
+            answer = parameters.TargetPlayer.Interaction.AskQuestion(parameters.TargetPlayer.Id, "you may splay that color of your cards left.");
 
 			if (!answer.HasValue || !answer.Value)
 				return;

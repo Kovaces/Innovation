@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using Innovation.Actions;
-using Innovation.Models.Interfaces;
-using Innovation.Models;
-using Innovation.Models.Enums;
-using Innovation.Players;
+using Innovation.Interfaces;
+
+
+using Innovation.Player;
 
 namespace Innovation.Cards
 {
@@ -30,9 +30,9 @@ namespace Innovation.Cards
 			}
 		}
 
-		void Action1(ICardActionParameters input)
+		void Action1(ICardActionParameters parameters)
 		{
-			var parameters = input as CardActionParameters;
+			
 
 			ValidateParameters(parameters);
 
@@ -60,16 +60,16 @@ namespace Innovation.Cards
 			}
 		}
 
-		void Action2(ICardActionParameters input)
+		void Action2(ICardActionParameters parameters)
 		{
-			var parameters = input as CardActionParameters;
+			
 
 			ValidateParameters(parameters);
 
 			if (!parameters.TargetPlayer.Hand.Any())
 				return;
 
-			var cardChosen = ((Player)parameters.TargetPlayer).Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = parameters.TargetPlayer.Hand, MinimumCardsToPick = 1, MaximumCardsToPick = 1 }).First();
+			var cardChosen = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = parameters.TargetPlayer.Hand, MinimumCardsToPick = 1, MaximumCardsToPick = 1 }).First();
 			
 			Meld.Action(cardChosen, parameters.TargetPlayer);
 			parameters.TargetPlayer.RemoveCardFromHand(cardChosen);
@@ -79,7 +79,7 @@ namespace Innovation.Cards
 			if (!parameters.TargetPlayer.Hand.Any())
 				return;
 
-			cardChosen = ((Player)parameters.TargetPlayer).Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = parameters.TargetPlayer.Hand, MinimumCardsToPick = 1, MaximumCardsToPick = 1 }).First();
+			cardChosen = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = parameters.TargetPlayer.Hand, MinimumCardsToPick = 1, MaximumCardsToPick = 1 }).First();
 
 			Score.Action(cardChosen, parameters.TargetPlayer);
 			parameters.TargetPlayer.RemoveCardFromHand(cardChosen);

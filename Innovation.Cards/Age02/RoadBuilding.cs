@@ -2,10 +2,10 @@
 using System.Linq;
 using System.Collections.Generic;
 using Innovation.Actions;
-using Innovation.Models;
-using Innovation.Models.Enums;
-using Innovation.Models.Interfaces;
-using Innovation.Players;
+using Innovation.Interfaces;
+
+
+using Innovation.Player;
 
 namespace Innovation.Cards
 {
@@ -28,16 +28,16 @@ namespace Innovation.Cards
                 };
 			}
 		}
-		void Action1(ICardActionParameters input)
+		void Action1(ICardActionParameters parameters)
 		{
-			var parameters = input as CardActionParameters;
+			
 
 			ValidateParameters(parameters);
 
 			if (!parameters.TargetPlayer.Hand.Any())
 				return;
 
-			var cardsToMeld = ((Player)parameters.TargetPlayer).Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = parameters.TargetPlayer.Hand, MinimumCardsToPick = 1, MaximumCardsToPick = 2 }).ToList();
+			var cardsToMeld = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = parameters.TargetPlayer.Hand, MinimumCardsToPick = 1, MaximumCardsToPick = 2 }).ToList();
 			
 			foreach (var card in cardsToMeld)
 			{
@@ -55,11 +55,11 @@ namespace Innovation.Cards
 			if (topRedCard == null)
 				return;
 
-			var answer = ((Player)parameters.TargetPlayer).Interaction.AskQuestion(parameters.TargetPlayer.Id, "You may transfer your top red card to another player's board. If you do, transfer that player's top green card to your board.");
+			var answer = parameters.TargetPlayer.Interaction.AskQuestion(parameters.TargetPlayer.Id, "You may transfer your top red card to another player's board. If you do, transfer that player's top green card to your board.");
 			if (!answer.HasValue || !answer.Value)
 				return;
 
-			var selectedPlayer = ((Player)parameters.TargetPlayer).Interaction.PickPlayer(parameters.TargetPlayer.Id, (IEnumerable<Player>)parameters.Players);
+			var selectedPlayer = parameters.TargetPlayer.Interaction.PickPlayer(parameters.TargetPlayer.Id, (IEnumerable<Player.Player>)parameters.Players);
 			
 			parameters.TargetPlayer.Tableau.Stacks[Color.Red].Cards.Remove(topRedCard);
 			selectedPlayer.Tableau.Stacks[Color.Red].AddCardToTop(topRedCard);
