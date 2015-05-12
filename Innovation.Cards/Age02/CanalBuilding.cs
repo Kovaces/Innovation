@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
-using Innovation.Models;
-using Innovation.Models.Enums;
-using Innovation.Actions.Handlers;
+using Innovation.Actions;
+using Innovation.Interfaces;
+
+
+
 namespace Innovation.Cards
 {
 	public class CanalBuilding : CardBase
@@ -15,7 +17,7 @@ namespace Innovation.Cards
 		public override Symbol Left { get { return Symbol.Crown; } }
 		public override Symbol Center { get { return Symbol.Leaf; } }
 		public override Symbol Right { get { return Symbol.Crown; } }
-		public override IEnumerable<CardAction> Actions
+		public override IEnumerable<ICardAction> Actions
 		{
 			get
 			{
@@ -25,18 +27,24 @@ namespace Innovation.Cards
                 };
 			}
 		}
-		CardActionResults Action1(CardActionParameters parameters)
+		void Action1(ICardActionParameters parameters)
 		{
+			
+
 			ValidateParameters(parameters);
+
+			if (!parameters.TargetPlayer.Hand.Any() && !parameters.TargetPlayer.Tableau.ScorePile.Any())
+				return;
+
+			var answer = parameters.TargetPlayer.Interaction.AskQuestion(parameters.TargetPlayer.Id, "You may exchange all the highest cards in your hand with all the highest cards in your score pile.");
+			if (!answer.HasValue || !answer.Value)
+				return;
 
 			int maxAgeInHand = parameters.TargetPlayer.Hand.Any() ? parameters.TargetPlayer.Hand.Max(x => x.Age) : 0;
 			var cardsInHandToTransfer = parameters.TargetPlayer.Hand.Where(x => x.Age == maxAgeInHand).ToList();
 
 			int maxAgeInPile = parameters.TargetPlayer.Tableau.ScorePile.Any() ? parameters.TargetPlayer.Tableau.ScorePile.Max(x => x.Age) : 0;
 			var cardsInPileToTransfer = parameters.TargetPlayer.Tableau.ScorePile.Where(x => x.Age == maxAgeInPile).ToList();
-
-			if (!cardsInHandToTransfer.Any() && !cardsInPileToTransfer.Any())
-				return new CardActionResults(false, false);
 
 			foreach (ICard card in cardsInHandToTransfer)
 			{
@@ -50,7 +58,7 @@ namespace Innovation.Cards
 				parameters.TargetPlayer.AddCardToHand(card);
 			}
 
-			return new CardActionResults(true, false);
+			PlayerActed(parameters);
 		}
 	}
 }

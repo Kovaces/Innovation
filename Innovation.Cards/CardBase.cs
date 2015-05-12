@@ -1,12 +1,12 @@
-﻿using System;
+﻿using Innovation.Actions;
+
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using Innovation.Models;
-using Innovation.Models.Enums;
-using Innovation.Models.Interfaces;
+using Innovation.Game;
+using Innovation.Interfaces;
+using Innovation.Storage;
+
 
 namespace Innovation.Cards
 {
@@ -22,7 +22,7 @@ namespace Innovation.Cards
 		public abstract string Name { get; }
 		public abstract int Age { get; }
 		public abstract Color Color { get; }
-		public abstract IEnumerable<CardAction> Actions { get; }
+		public abstract IEnumerable<ICardAction> Actions { get; }
 
 		public bool HasSymbol(Symbol symbol)
 		{
@@ -30,19 +30,34 @@ namespace Innovation.Cards
 		}
 
 		//Protected Properties and Methods
-		protected void ValidateParameters(CardActionParameters parameters)
+		protected void ValidateParameters(ICardActionParameters parameters)
 		{
+			if (parameters == null)
+				throw new ArgumentNullException("parameters");
+
 			if (parameters.TargetPlayer == null)
 				throw new ArgumentOutOfRangeException("parameters", "Target player cannot be null");
 			
-			if (parameters.Game == null)
-				throw new ArgumentOutOfRangeException("parameters", "Game cannot be null");
-
 			if (parameters.ActivePlayer == null)
 				throw new ArgumentOutOfRangeException("parameters", "Active player cannot be null");
-			
-			if (parameters.PlayerSymbolCounts == null)
-				throw new ArgumentOutOfRangeException("parameters", "Player Symbol Counts cannot be null");
+
+			if (parameters.AgeDecks == null)
+				throw new ArgumentOutOfRangeException("parameters", "Age Decks cannot be null");
+		}
+
+        protected ICard DrawAndReveal(ICardActionParameters parameters, int age)
+		{
+			var drawnCard = Draw.Action(age, parameters.AgeDecks);
+
+			parameters.TargetPlayer.Interaction.RevealCard(parameters.TargetPlayer.Id, drawnCard);
+
+			return drawnCard;
+		}
+
+        protected void PlayerActed(ICardActionParameters parameters)
+		{
+			if (parameters.TargetPlayer != parameters.ActivePlayer)
+                parameters.AddToStorage("AnotherPlayerTookDogmaActionKey", true);
 		}
 	}
 }

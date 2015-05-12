@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using Innovation.Actions;
-using Innovation.Actions.Handlers;
-using Innovation.Models;
-using Innovation.Models.Enums;
+using Innovation.Interfaces;
+
+
+using Innovation.Player;
 
 namespace Innovation.Cards
 {
@@ -18,7 +19,7 @@ namespace Innovation.Cards
 		public override Symbol Left { get { return Symbol.Leaf; } }
 		public override Symbol Center { get { return Symbol.Tower; } }
 		public override Symbol Right { get { return Symbol.Tower; } }
-		public override IEnumerable<CardAction> Actions
+		public override IEnumerable<ICardAction> Actions
 		{
 			get
 			{
@@ -29,8 +30,10 @@ namespace Innovation.Cards
 			}
 		}
 
-		CardActionResults Action1(CardActionParameters parameters)
+		void Action1(ICardActionParameters parameters)
 		{
+			
+
 			ValidateParameters(parameters);
 
 			//Draw and reveal a [4] for every three [TOWER] on your board.
@@ -38,12 +41,13 @@ namespace Innovation.Cards
 			var numberOfCardsToDraw = parameters.TargetPlayer.Tableau.GetSymbolCount(Symbol.Tower) / 3;
 
 			if (numberOfCardsToDraw == 0)
-				return new CardActionResults(false, false);
+				return;
 
-			for (int i = 0; i < numberOfCardsToDraw; i++)
+			PlayerActed(parameters);
+
+			for (var i = 0; i < numberOfCardsToDraw; i++)
 			{
-				ICard card = Draw.Action(4, parameters.Game);
-				parameters.TargetPlayer.RevealCard(card);
+				var card = DrawAndReveal(parameters, 4);
 				parameters.TargetPlayer.AddCardToHand(card);
 				cardsDrawn.Add(card);
 			}
@@ -51,67 +55,34 @@ namespace Innovation.Cards
 			//If any of the drawn cards are red, return the cards drawn and return all cards in your hand. Otherwise, keep them.
 			if (cardsDrawn.Any(c => c.Color == Color.Red))
 			{
-				parameters.TargetPlayer.Hand.ForEach(c => Return.Action(c, parameters.Game));
+				parameters.TargetPlayer.Hand.ForEach(c => Return.Action(c, parameters.AgeDecks));
 				parameters.TargetPlayer.Hand.ForEach(c => parameters.TargetPlayer.RemoveCardFromHand(c));
 			}
-
-			return new CardActionResults(true, false);
 		}
 
-		CardActionResults Action2(CardActionParameters parameters)
+		void Action2(ICardActionParameters parameters)
 		{
+			
+
 			ValidateParameters(parameters);
 
 			if (!parameters.TargetPlayer.Hand.Any())
-				return new CardActionResults(false, false);
+				return;
 
-			RequestQueueManager.PickCards(
-				parameters.Game,
-				parameters.ActivePlayer,
-				parameters.TargetPlayer,
-				parameters.TargetPlayer.Hand,
-				1, 1,
-				parameters.PlayerSymbolCounts,
-				Action1_Step2
-			);
-
-			return new CardActionResults(false, true);
-		}
-
-		CardActionResults Action1_Step2(CardActionParameters parameters)
-		{
-			var cardChosen = parameters.Answer.SingleCard;
-			if (cardChosen == null)
-				throw new ArgumentNullException("Must choose a card.");
-
+			var cardChosen = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = parameters.TargetPlayer.Hand, MinimumCardsToPick = 1, MaximumCardsToPick = 1 }).First();
+			
 			Meld.Action(cardChosen, parameters.TargetPlayer);
 			parameters.TargetPlayer.RemoveCardFromHand(cardChosen);
 
+			PlayerActed(parameters);
+
 			if (!parameters.TargetPlayer.Hand.Any())
-				return new CardActionResults(true, false);
+				return;
 
-			RequestQueueManager.PickCards(
-				parameters.Game,
-				parameters.ActivePlayer,
-				parameters.TargetPlayer,
-				parameters.TargetPlayer.Hand,
-				1, 1,
-				parameters.PlayerSymbolCounts,
-				Action1_Step3
-			);
-
-			return new CardActionResults(true, true);
-		}
-		CardActionResults Action1_Step3(CardActionParameters parameters)
-		{
-			var cardChosen = parameters.Answer.SingleCard;
-			if (cardChosen == null)
-				throw new ArgumentNullException("Must choose a card.");
+			cardChosen = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = parameters.TargetPlayer.Hand, MinimumCardsToPick = 1, MaximumCardsToPick = 1 }).First();
 
 			Score.Action(cardChosen, parameters.TargetPlayer);
 			parameters.TargetPlayer.RemoveCardFromHand(cardChosen);
-
-			return new CardActionResults(true, false);
 		}
 	}
 }

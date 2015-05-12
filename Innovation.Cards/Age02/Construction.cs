@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using Innovation.Actions;
-using Innovation.Actions.Handlers;
-using Innovation.Models;
-using Innovation.Models.Enums;
-using Innovation.Models.Interfaces;
+using Innovation.Interfaces;
+
+
+using Innovation.Player;
 
 namespace Innovation.Cards
 {
@@ -18,7 +18,7 @@ namespace Innovation.Cards
         public override Symbol Left { get { return Symbol.Blank; } }
         public override Symbol Center { get { return Symbol.Tower; } }
         public override Symbol Right { get { return Symbol.Tower; } }
-        public override IEnumerable<CardAction> Actions
+        public override IEnumerable<ICardAction> Actions
         {
             get
             {
@@ -29,64 +29,42 @@ namespace Innovation.Cards
                 };
             }
         }
-		CardActionResults Action1(CardActionParameters parameters)
+		void Action1(ICardActionParameters parameters)
 		{
+			
+
 			ValidateParameters(parameters);
 
-			int numberOfCardsToTransfer = Math.Min(parameters.TargetPlayer.Hand.Count, 2);
-			if (numberOfCardsToTransfer == 0)
-				return new CardActionResults(false, false);
-
-			RequestQueueManager.PickCards(
-				parameters.Game,
-				parameters.ActivePlayer,
-				parameters.TargetPlayer,
-				parameters.TargetPlayer.Hand,
-				numberOfCardsToTransfer, numberOfCardsToTransfer,
-				parameters.PlayerSymbolCounts,
-				Action1_Step2
-			);
-
-			return new CardActionResults(false, true);
-		}
-		CardActionResults Action1_Step2(CardActionParameters parameters)
-		{
-			List<ICard> cardsToTransfer = parameters.Answer.MultipleCards;
-			if (cardsToTransfer.Count == 0)
-				throw new ArgumentNullException("Must choose a card.");
-
-			foreach (ICard card in cardsToTransfer)
+			if (parameters.TargetPlayer.Hand.Any())
 			{
-				parameters.TargetPlayer.RemoveCardFromHand(card);
-				parameters.ActivePlayer.AddCardToHand(card);
+				var selectedCards = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = parameters.TargetPlayer.Hand, MinimumCardsToPick = Math.Min(parameters.TargetPlayer.Hand.Count, 2), MaximumCardsToPick = 2 });
+				foreach (var card in selectedCards)
+				{
+					parameters.TargetPlayer.RemoveCardFromHand(card);
+					parameters.ActivePlayer.AddCardToHand(card);
+				}
+
+				parameters.TargetPlayer.AddCardToHand(Draw.Action(2, parameters.AgeDecks));
 			}
-
-			parameters.TargetPlayer.AddCardToHand(Draw.Action(2, parameters.Game));
-
-			return new CardActionResults(true, false);
 		}
+		
 
-
-        CardActionResults Action2(CardActionParameters parameters) 
+        void Action2(ICardActionParameters parameters) 
 		{
+			
+
 			ValidateParameters(parameters);
 
-			int numberTopCardsActivePlayer = 0;
-			int maxNumberTopCardsOtherPlayers = 0;
-			foreach (var player in parameters.Game.Players)
-			{
-				if (player == parameters.TargetPlayer)
-					numberTopCardsActivePlayer = parameters.TargetPlayer.Tableau.GetStackColors().Count;
-				else
-					maxNumberTopCardsOtherPlayers = Math.Max(maxNumberTopCardsOtherPlayers, parameters.TargetPlayer.Tableau.GetStackColors().Count);
-			}
+			var playersWithFiveTopCards = parameters.Players.Where(p => p.Tableau.GetStackColors().Count == 5).ToList();
+			
+			if (playersWithFiveTopCards.Count != 1)
+				return;
 
-			if (numberTopCardsActivePlayer == 5 && maxNumberTopCardsOtherPlayers < 5)
-			{
-				throw new NotImplementedException("Empire Achievement"); // TODO::achieve Empire.  Special achievements need a larger framework and some discussion
-			}
-
-			return new CardActionResults(true, false);
+	        if (playersWithFiveTopCards.First() != parameters.TargetPlayer)
+		        return;
+			
+			throw new NotImplementedException("Empire Achievement"); // TODO::achieve Empire.  Special achievements need a larger framework and some discussion
+			PlayerActed(parameters);
 		}
     }
 }

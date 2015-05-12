@@ -75,11 +75,11 @@ namespace Innovation.Web.Innovation
 			}
 		}
 
-		public void PickPlayerResponse(string gameId, string[] selectedPlayers)
+		public void PickPlayerResponse(string gameId, string selectedPlayerId)
 		{
 			try
 			{
-				_innovation.PickPlayersResponse(gameId, Context.ConnectionId, selectedPlayers);
+                _innovation.PickPlayerResponse(gameId, Context.ConnectionId, selectedPlayerId);
 			}
 			catch (Exception ex)
 			{

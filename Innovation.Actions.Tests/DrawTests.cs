@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Innovation.Models;
+using Innovation.Interfaces;
+
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Innovation.Tests.Helpers;
 
@@ -12,12 +13,12 @@ namespace Innovation.Actions.Tests
 	[TestClass]
 	public class DrawTests
 	{
-		private Game testGame;
+		private Game.Game testGame;
 		
 		[TestInitialize]
 		public void Setup()
 		{
-			testGame = new Game
+			testGame = new Game.Game
 			{
 				AgeDecks = new List<Deck>
 				{

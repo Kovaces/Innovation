@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
-using Innovation.Models;
+
 using Innovation.Models.Enums;
 using Innovation.Tests.Helpers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;

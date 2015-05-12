@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
-using Innovation.Models;
-using Innovation.Models.Enums;
+
 using Innovation.Actions;
-using Innovation.Actions.Handlers;
+using Innovation.Game;
+using Innovation.Interfaces;
+
+using Innovation.Player;
+using Innovation.Storage;
+
 namespace Innovation.Cards
 {
     public class Mapmaking : CardBase
@@ -16,7 +20,7 @@ namespace Innovation.Cards
         public override Symbol Left { get { return Symbol.Crown; } }
         public override Symbol Center { get { return Symbol.Crown; } }
         public override Symbol Right { get { return Symbol.Tower; } }
-        public override IEnumerable<CardAction> Actions
+        public override IEnumerable<ICardAction> Actions
         {
             get
             {
@@ -27,52 +31,38 @@ namespace Innovation.Cards
                 };
             }
         }
-		CardActionResults Action1(CardActionParameters parameters)
+		void Action1(ICardActionParameters parameters)
 		{
+			
+
 			ValidateParameters(parameters);
 
-			List<ICard> cardsToTransfer = parameters.TargetPlayer.Tableau.ScorePile.Where(x => x.Age == 1).ToList();
+			List<ICard> ageOneCardsinScorePile = parameters.TargetPlayer.Tableau.ScorePile.Where(x => x.Age == 1).ToList();
 			
-			if (cardsToTransfer.Count == 0)
-				return new CardActionResults(false, false);
+			if (ageOneCardsinScorePile.Count == 0)
+				return;
 
-			RequestQueueManager.PickCards(
-				parameters.Game,
-				parameters.ActivePlayer,
-				parameters.TargetPlayer,
-				cardsToTransfer,
-				1, 1,
-				parameters.PlayerSymbolCounts,
-				Action1_Step2
-			);
+			var selectedCard = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = ageOneCardsinScorePile, MinimumCardsToPick = 1, MaximumCardsToPick = 1 }).First();
 
-			return new CardActionResults(false, true);
-		}
-		CardActionResults Action1_Step2(CardActionParameters parameters)
-		{
-			ICard card = parameters.Answer.SingleCard;
-			if (card == null)
-				throw new ArgumentNullException("Must choose a card.");
+			parameters.TargetPlayer.Tableau.ScorePile.Remove(selectedCard);
+			parameters.ActivePlayer.Tableau.ScorePile.Add(selectedCard);
 
-			parameters.TargetPlayer.Tableau.ScorePile.Remove(card);
-			parameters.ActivePlayer.Tableau.ScorePile.Add(card);
-
-			parameters.Game.StashPropertyBagValue("MapmakingAction1Taken", true);
-
-			return new CardActionResults(true, false);
+            parameters.AddToStorage("MapMakingCardTransferedKey", true);
 		}
 
-
-		CardActionResults Action2(CardActionParameters parameters)
+		void Action2(ICardActionParameters parameters)
 		{
+			
+
 			ValidateParameters(parameters);
 
-			if (!(bool)parameters.Game.GetPropertyBagValue("MapmakingAction1Taken"))
-				return new CardActionResults(false, false);
+            var cardTransfered = parameters.GetFromStorage("MapMakingCardTransferedKey");
+			if (cardTransfered != null && !(bool)cardTransfered)
+				return;
 			
-			Score.Action(Draw.Action(1, parameters.Game), parameters.TargetPlayer);
+			Score.Action(Draw.Action(1, parameters.AgeDecks), parameters.TargetPlayer);
 
-			return new CardActionResults(true, false);
+			PlayerActed(parameters);
 		}
     }
 }

@@ -1,18 +1,18 @@
-﻿using Innovation.Models;
-using Innovation.Models.Enums;
-using Innovation.Models.Interfaces;
+﻿
 using Rhino.Mocks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Innovation.Interfaces;
+
 
 namespace Innovation.Tests.Helpers
 {
     public class Mocks
     {
-		public static void ConvertPlayersToMock(Game game)
+		public static void ConvertPlayersToMock(Game.Game game)
 		{
 			for (int i = 0; i < game.Players.Count; i++)
 			{

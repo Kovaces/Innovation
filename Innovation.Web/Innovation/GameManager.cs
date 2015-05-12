@@ -1,41 +1,25 @@
-﻿using Innovation.Actions;
-using Innovation.Actions.Handlers;
-using Innovation.Cards;
-using Innovation.Models;
-using Innovation.Models.Enums;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Innovation.Actions;
+using Innovation.Cards;
+using Innovation.GameObjects;
+using Innovation.Interfaces;
+using Innovation.Player;
 
 namespace Innovation.Web.Innovation
 {
 	public class GameManager
 	{
-		public static void StartGame(Game game)
+        public static void StartGame(Game.Game game)
 		{
 			game = InitializeGame(game);
 
-			RequestQueueManager.StartTurn(game, game.Players.ElementAt(0));
-
-			while (!game.GameEnded)
-			{
-				WaitForResponses(game);
-
-				if (!game.ActionQueue.IsEmpty)
-				{
-					game.ActionQueue.PopAction();
-				}
-
-				if (game.ActivePlayer.ActionsTaken == 2)
-					RequestQueueManager.StartTurn(game, game.GetNextPlayer());
-
-				if (!game.RequestQueue.HasPendingRequests() && game.ActionQueue.IsEmpty)
-					Thread.Sleep(1000);
-			}
+			game.BeginTurn(game.Players.ElementAt(0).Id);
 		}
 
-		private static Game InitializeGame(Game game)
+        private static Game.Game InitializeGame(Game.Game game)
 		{
 			game.AgeDecks = CreateAgeDecks();
 			game.AgeDecks.ForEach(d => d.Shuffle());
@@ -52,39 +36,29 @@ namespace Innovation.Web.Innovation
 			DealStartingCards(game);
 
 			//FirstMeld
-			game.Players.ForEach(player =>
-				game.ActionQueue.AddAction(new QueuedAction()
-				{
-					Game = game,
-					ActivePlayer = player,
-					TargetPlayer = player,
-					Type = QueuedActionType.PickCard,
-					Parameters = new ActionParameters()
-					{
-						Cards = player.Hand.ToList(),
-						MinSelections = 1,
-						MaxSelections = 1,
-						ResponseHandler = RequestQueueManager.MeldResponse
-					}
-				}));
-
-			game.Players.ForEach(player => ActionQueueManager.PopNextAction(game));
-
-			WaitForResponses(game);
+		    Parallel.ForEach(game.Players, player =>
+		    {
+                var card = player.Interaction.PickCards(player.Id, new PickCardParameters { CardsToPickFrom = player.Hand.ToList(), MinimumCardsToPick = 1, MaximumCardsToPick = 1 }).First();
+		        Meld.Action(card, player);
+		        player.Hand.Remove(card);
+		    });
+			
+			WaitForFirstMeld(game);
 			
 			//the player order is determined by alphabetical order of the first meld
 			game.Players = game.Players.OrderBy(p => p.Tableau.GetTopCards().ElementAt(0).Name).ToList();
 
-			game.ClearPropertyBag();
-
 			return game;
 		}
 
-		private static async void WaitForResponses(Game game)
+        private static void WaitForFirstMeld(Game.Game game)
 		{
-			await Task.Factory.StartNew(() => { while (game.RequestQueue.HasPendingRequests()) { Thread.Sleep(1000); } });
+		    while (!game.Players.TrueForAll(p => p.Tableau.GetTopCards().Count == 1))
+		    {
+		        Thread.Sleep(1000); 
+		    } 
 		}
-
+		
 		private static List<Deck> CreateAgeDecks()
 		{
 			var ageDecks = new List<Deck>();
@@ -99,22 +73,22 @@ namespace Innovation.Web.Innovation
 			return ageDecks;
 		}
 
-		private static Deck CreateAgeAchievementDeck(Game game)
+        private static Deck CreateAgeAchievementDeck(Game.Game game)
 		{
 			var cards = new List<ICard>();
 
 			for (var i = 1; i < 10; i++)
 			{
-				cards.Add(Draw.Action(i, game));
+				cards.Add(Draw.Action(i, game.AgeDecks));
 			}
 
 			return new Deck(cards, -1);
 		}
 
-		private static void DealStartingCards(Game game)
+        private static void DealStartingCards(Game.Game game)
 		{
-			game.Players.ForEach(p => p.AddCardToHand(Draw.Action(1, game)));
-			game.Players.ForEach(p => p.AddCardToHand(Draw.Action(1, game)));
+			game.Players.ForEach(p => p.AddCardToHand(Draw.Action(1, game.AgeDecks)));
+			game.Players.ForEach(p => p.AddCardToHand(Draw.Action(1, game.AgeDecks)));
 		}
 	}
 }

@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
-using Innovation.Models;
-using Innovation.Models.Enums;
+
 using Innovation.Actions;
-using Innovation.Actions.Handlers;
+using Innovation.Interfaces;
+
+using Innovation.Player;
+
 namespace Innovation.Cards
 {
     public class CodeOfLaws : CardBase
@@ -16,66 +18,47 @@ namespace Innovation.Cards
         public override Symbol Left { get { return Symbol.Crown; } }
         public override Symbol Center { get { return Symbol.Crown; } }
         public override Symbol Right { get { return Symbol.Leaf; } }
-        public override IEnumerable<CardAction> Actions
+
+        public override IEnumerable<ICardAction> Actions
         {
             get
             {
-                return new List<CardAction>()
-				{
-                    new CardAction(ActionType.Optional, Symbol.Crown, "You may tuck a card from your hand of the same color as any card on your board. If you do, you may splay that color of your cards left.", Action1)
+                return new List<CardAction>(){
+                    new CardAction(ActionType.Optional,Symbol.Crown,"You may tuck a card from your hand of the same color as any card on your board. If you do, you may splay that color of your cards left.", Action1)
                 };
             }
         }
-		CardActionResults Action1(CardActionParameters parameters)
-		{
-			ValidateParameters(parameters);
 
-			List<Color> topCardColors = parameters.TargetPlayer.Tableau.GetStackColors();
-			List<ICard> cardsMatchingBoardColor = parameters.TargetPlayer.Hand.Where(x => topCardColors.Contains(x.Color)).ToList();
+        void Action1(ICardActionParameters parameters)
+        {
+            
 
-			if (cardsMatchingBoardColor.Count == 0)
-				return new CardActionResults(false, false);
+            ValidateParameters(parameters);
 
-			RequestQueueManager.PickCards(
-				parameters.Game,
-				parameters.ActivePlayer,
-				parameters.TargetPlayer,
-				cardsMatchingBoardColor,
-				1, 1,
-				parameters.PlayerSymbolCounts,
-				Action1_Step2
-			);
+            List<Color> topCardColors = parameters.TargetPlayer.Tableau.GetStackColors();
+            List<ICard> cardsMatchingBoardColor = parameters.TargetPlayer.Hand.Where(x => topCardColors.Contains(x.Color)).ToList();
 
-			return new CardActionResults(false, true);
-		}
+            if (!cardsMatchingBoardColor.Any())
+                return;
 
-		CardActionResults Action1_Step2(CardActionParameters parameters)
-		{
-			ICard cardToTuck = parameters.Answer.SingleCard;
-			if (cardToTuck == null)
-				return new CardActionResults(false, false);
+            var answer = parameters.TargetPlayer.Interaction.AskQuestion(parameters.TargetPlayer.Id, "You may tuck a card from your hand of the same color as any card on your board. If you do, you may splay that color of your cards left.");
+
+			if (!answer.HasValue || !answer.Value)
+				return;
+
+            var selectedCard = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = cardsMatchingBoardColor, MinimumCardsToPick = 1, MaximumCardsToPick = 1 }).First();
+			
+			parameters.TargetPlayer.RemoveCardFromHand(selectedCard);
+			Tuck.Action(selectedCard, parameters.TargetPlayer);
+
+            PlayerActed(parameters);
+
+            answer = parameters.TargetPlayer.Interaction.AskQuestion(parameters.TargetPlayer.Id, "you may splay that color of your cards left.");
+
+			if (!answer.HasValue || !answer.Value)
+				return;
 				
-			parameters.TargetPlayer.RemoveCardFromHand(cardToTuck);
-			Tuck.Action(cardToTuck, parameters.TargetPlayer);
-
-			RequestQueueManager.AskToSplay(
-				parameters.Game,
-				parameters.ActivePlayer,
-				parameters.TargetPlayer,
-				new List<Color>() { cardToTuck.Color },
-				SplayDirection.Left,
-				parameters.PlayerSymbolCounts,
-				Action1_Step3
-			);
-
-			return new CardActionResults(true, true);
-		}
-
-		CardActionResults Action1_Step3(CardActionParameters parameters)
-		{
-			parameters.TargetPlayer.Tableau.Stacks[parameters.Answer.Color].SplayedDirection = SplayDirection.Left;
-
-			return new CardActionResults(true, false);
+            parameters.TargetPlayer.SplayStack(selectedCard.Color, SplayDirection.Left);
 		}
     }
 }

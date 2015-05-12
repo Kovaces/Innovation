@@ -1,10 +1,13 @@
-﻿using System;
-using System.Linq;
+﻿using Innovation.Actions;
+
 using System.Collections.Generic;
-using Innovation.Models;
-using Innovation.Models.Enums;
-using Innovation.Actions;
-using Innovation.Actions.Handlers;
+using System.Linq;
+using Innovation.Game;
+using Innovation.Interfaces;
+
+using Innovation.Player;
+using Innovation.Storage;
+
 namespace Innovation.Cards
 {
     public class Oars : CardBase
@@ -16,7 +19,7 @@ namespace Innovation.Cards
         public override Symbol Left { get { return Symbol.Crown; } }
         public override Symbol Center { get { return Symbol.Blank; } }
         public override Symbol Right { get { return Symbol.Tower; } }
-        public override IEnumerable<CardAction> Actions
+        public override IEnumerable<ICardAction> Actions
         {
             get
             {
@@ -28,61 +31,41 @@ namespace Innovation.Cards
             }
         }
         
-		CardActionResults Action1(CardActionParameters parameters)
+		void Action1(ICardActionParameters parameters)
 		{
+			
+
 			ValidateParameters(parameters);
 
-			List<ICard> cardsWithCrowns = parameters.TargetPlayer.Hand.Where(x => x.HasSymbol(Symbol.Crown)).ToList();
+			var cardsWithCrowns = parameters.TargetPlayer.Hand.Where(x => x.HasSymbol(Symbol.Crown)).ToList();
 
             if (cardsWithCrowns.Count == 0)
-				return new CardActionResults(false, false);
+				return;
 
-			RequestQueueManager.PickCards(
-				parameters.Game,
-				parameters.ActivePlayer,
-				parameters.TargetPlayer,
-				cardsWithCrowns,
-				1, 1,
-				parameters.PlayerSymbolCounts,
-				Action1_Step2
-			);
+			var selectedCard = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = cardsWithCrowns, MinimumCardsToPick = 1, MaximumCardsToPick = 1 }).First();
 
-			return new CardActionResults(false, true);
-		}
-		CardActionResults Action1_Step2(CardActionParameters parameters)
-		{
-			ICard card = parameters.Answer.SingleCard;
-			if (card == null)
-				throw new ArgumentNullException("Must choose card.");
+			parameters.TargetPlayer.RemoveCardFromHand(selectedCard);
+			Score.Action(selectedCard, parameters.ActivePlayer);
 
-			parameters.TargetPlayer.RemoveCardFromHand(card);
-			Score.Action(card, parameters.ActivePlayer);
+			parameters.TargetPlayer.AddCardToHand(Draw.Action(1, parameters.AgeDecks));
 
-			var drawnCard = Draw.Action(1, parameters.Game);
-			if (drawnCard == null)
-				return new CardActionResults(true, false);
-
-			parameters.TargetPlayer.AddCardToHand(drawnCard);
-
-            parameters.Game.StashPropertyBagValue("OarsAction1Taken", true);
-
-			return new CardActionResults(true, false);
+            parameters.AddToStorage("OarsCardTransferedKey", true);
 		}
 
-		CardActionResults Action2(CardActionParameters parameters)
+
+		void Action2(ICardActionParameters parameters)
 		{
+			
+
 			ValidateParameters(parameters);
 
-			if ((bool)parameters.Game.GetPropertyBagValue("OarsAction1Taken"))
-				return new CardActionResults(false, false);
+            var oarsCardTransfered = parameters.GetFromStorage("OarsCardTransferedKey");
+			if (oarsCardTransfered != null && (bool)oarsCardTransfered)
+				return;
 
-			var drawnCard = Draw.Action(1, parameters.Game);
-			if (drawnCard == null)
-				return new CardActionResults(true, false);
+			parameters.TargetPlayer.AddCardToHand(Draw.Action(1, parameters.AgeDecks));
 
-			parameters.TargetPlayer.AddCardToHand(drawnCard);
-
-			return new CardActionResults(true, false);
+			PlayerActed(parameters);
 		}
     }
 }

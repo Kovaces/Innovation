@@ -1,10 +1,11 @@
-﻿using System;
+﻿using Innovation.Actions;
 using System.Collections.Generic;
 using System.Linq;
-using Innovation.Actions;
-using Innovation.Actions.Handlers;
-using Innovation.Models;
-using Innovation.Models.Enums;
+using Innovation.Interfaces;
+
+
+using Innovation.Player;
+
 namespace Innovation.Cards
 {
 	public class Pottery : CardBase
@@ -16,7 +17,7 @@ namespace Innovation.Cards
 		public override Symbol Left { get { return Symbol.Leaf; } }
 		public override Symbol Center { get { return Symbol.Leaf; } }
 		public override Symbol Right { get { return Symbol.Leaf; } }
-		public override IEnumerable<CardAction> Actions
+		public override IEnumerable<ICardAction> Actions
 		{
 			get
 			{
@@ -28,60 +29,43 @@ namespace Innovation.Cards
 			}
 		}
 
-		CardActionResults Action1(CardActionParameters parameters)
+		void Action1(ICardActionParameters parameters)
 		{
+			
+
 			ValidateParameters(parameters);
 
 			if (parameters.TargetPlayer.Hand.Count == 0)
-				return new CardActionResults(false, false);
+				return;
 
-			RequestQueueManager.PickCards(
-				parameters.Game,
-				parameters.ActivePlayer,
-				parameters.TargetPlayer,
-				parameters.TargetPlayer.Hand,
-				0, parameters.TargetPlayer.Hand.Count,
-				parameters.PlayerSymbolCounts,
-				Action1_Step2
-			);
+			var answer = parameters.TargetPlayer.Interaction.AskQuestion(parameters.TargetPlayer.Id, "You may return up to three cards from your hand. If you returned any cards, draw and score a card of value equal to the number of cards you returned.");
 
-			return new CardActionResults(false, true);
-		}
-		CardActionResults Action1_Step2(CardActionParameters parameters)
-		{
-			var selectedCards = parameters.Answer.MultipleCards;
+			if (!answer.HasValue || !answer.Value)
+				return;
 
-			if (selectedCards.Count == 0)
-				return new CardActionResults(false, false);
-			if (selectedCards.Count != 3)
-				throw new ArgumentNullException("Must choose three cards.");
+			var selectedCards = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = parameters.TargetPlayer.Hand, MinimumCardsToPick = 1, MaximumCardsToPick = 3 }).ToList();
 
-			foreach (ICard card in selectedCards)
+			foreach (var card in selectedCards)
 			{
 				parameters.TargetPlayer.RemoveCardFromHand(card);
-				Return.Action(card, parameters.Game);
+				Return.Action(card, parameters.AgeDecks);
 			}
 
-			var drawnCard = Draw.Action(selectedCards.Count, parameters.Game);
-			if (drawnCard == null)
-				return new CardActionResults(true, false);
-
-			Score.Action(drawnCard, parameters.TargetPlayer);
-
-			return new CardActionResults(true, false);
+			Score.Action(Draw.Action(selectedCards.Count, parameters.AgeDecks), parameters.TargetPlayer);
+			
+			PlayerActed(parameters);
 		}
 
-		CardActionResults Action2(CardActionParameters parameters)
+
+		void Action2(ICardActionParameters parameters)
 		{
+			
+
 			ValidateParameters(parameters);
 
-			var drawnCard = Draw.Action(1, parameters.Game);
-			if (drawnCard == null)
-				return new CardActionResults(true, false);
+			parameters.TargetPlayer.AddCardToHand(Draw.Action(1, parameters.AgeDecks));
 
-			parameters.TargetPlayer.AddCardToHand(drawnCard);
-
-			return new CardActionResults(true, false);
+			PlayerActed(parameters);
 		}
 	}
 }

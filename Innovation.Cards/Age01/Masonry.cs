@@ -1,10 +1,12 @@
-﻿using System;
+﻿using Innovation.Actions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Innovation.Actions;
-using Innovation.Actions.Handlers;
-using Innovation.Models;
-using Innovation.Models.Enums;
+using Innovation.Interfaces;
+
+
+using Innovation.Player;
+
 namespace Innovation.Cards
 {
     public class Masonry : CardBase
@@ -16,7 +18,7 @@ namespace Innovation.Cards
 		public override Symbol Left { get { return Symbol.Blank; } }
 		public override Symbol Center { get { return Symbol.Tower; } }
 		public override Symbol Right { get { return Symbol.Tower; } }
-		public override IEnumerable<CardAction> Actions
+		public override IEnumerable<ICardAction> Actions
         {
             get
             {
@@ -27,30 +29,24 @@ namespace Innovation.Cards
             }
         }
 
-        CardActionResults Action1(CardActionParameters parameters) 
+        void Action1(ICardActionParameters parameters) 
 		{
+			
+
 			ValidateParameters(parameters);
 
 	        var cardsWithTowers = parameters.TargetPlayer.Hand.Where(c => c.HasSymbol(Symbol.Tower)).ToList();
+
+	        if (cardsWithTowers.Count == 0)
+		        return;
+
+			var answer = parameters.TargetPlayer.Interaction.AskQuestion(parameters.TargetPlayer.Id, "You may meld any number of cards from your hand, each with a [TOWER]. If you melded four or more cards in this way, claim the Monument achievement.");
 			
-			if (cardsWithTowers.Count == 0)
-				return new CardActionResults(false, false);
+			if (!answer.HasValue || !answer.Value)
+				return;
 
-			RequestQueueManager.PickCards(
-				parameters.Game,
-				parameters.ActivePlayer,
-				parameters.TargetPlayer,
-				cardsWithTowers,
-				0, cardsWithTowers.Count,
-				parameters.PlayerSymbolCounts,
-				Action1_Step2
-			);
+			var selectedCards = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = cardsWithTowers, MinimumCardsToPick = 1, MaximumCardsToPick = cardsWithTowers.Count }).ToList();
 
-			return new CardActionResults(false, true);
-		}
-		CardActionResults Action1_Step2(CardActionParameters parameters)
-		{
-			var selectedCards = parameters.Answer.MultipleCards;
 			foreach (var card in selectedCards)
 			{
 				parameters.TargetPlayer.RemoveCardFromHand(card);
@@ -60,7 +56,8 @@ namespace Innovation.Cards
 			if (selectedCards.Count > 4)
 				throw new NotImplementedException("Monument Achievement"); // TODO::achieve Monument.  Special achievements need a larger framework and some discussion
 
-			return new CardActionResults((selectedCards.Count > 0), false);
+			PlayerActed(parameters);
 		}
+
     }
 }

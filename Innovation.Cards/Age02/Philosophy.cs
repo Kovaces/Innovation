@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
-using Innovation.Models;
-using Innovation.Models.Enums;
+
 using Innovation.Actions;
-using Innovation.Actions.Handlers;
+using Innovation.Interfaces;
+
+using Innovation.Player;
+
 namespace Innovation.Cards
 {
     public class Philosophy : CardBase
@@ -16,7 +18,7 @@ namespace Innovation.Cards
         public override Symbol Left { get { return Symbol.Lightbulb; } }
         public override Symbol Center { get { return Symbol.Lightbulb; } }
         public override Symbol Right { get { return Symbol.Lightbulb; } }
-        public override IEnumerable<CardAction> Actions
+        public override IEnumerable<ICardAction> Actions
         {
             get
             {
@@ -27,69 +29,44 @@ namespace Innovation.Cards
                 };
             }
         }
-		CardActionResults Action1(CardActionParameters parameters) 
+		void Action1(ICardActionParameters parameters) 
 		{
-			ValidateParameters(parameters);
-
-			// pick color vs pick card?
-			List<Color> colorsToSelectFrom = parameters.TargetPlayer.Tableau.GetTopCards().Select(x => x.Color).ToList();
-			if (colorsToSelectFrom.Count == 0)
-				return new CardActionResults(false, false);
 			
-			RequestQueueManager.AskToSplay(
-				parameters.Game,
-				parameters.ActivePlayer,
-				parameters.TargetPlayer,
-				colorsToSelectFrom,
-				SplayDirection.Left,
-				parameters.PlayerSymbolCounts,
-				Action1_Step2
-			);
 
-			return new CardActionResults(false, true);
-		}
-		CardActionResults Action1_Step2(CardActionParameters parameters)
-		{
-			Color chosenColor = parameters.Answer.Color;
-			if (chosenColor == Color.None)
-				return new CardActionResults(false, false);
-
-			parameters.TargetPlayer.Tableau.Stacks[chosenColor].Splay(SplayDirection.Left);
-
-			return new CardActionResults(true, false);
-		}
-
-
-		CardActionResults Action2(CardActionParameters parameters)
-		{
 			ValidateParameters(parameters);
 
-			if (parameters.TargetPlayer.Hand.Count == 0)
-				return new CardActionResults(false, false);
+			var colorsToSelectFrom = parameters.TargetPlayer.Tableau.GetTopCards().Select(x => x.Color).ToList();
+			if (!colorsToSelectFrom.Any())
+				return;
 
-			RequestQueueManager.PickCards(
-				parameters.Game,
-				parameters.ActivePlayer,
-				parameters.TargetPlayer,
-				parameters.TargetPlayer.Hand,
-				1,
-				1,
-				parameters.PlayerSymbolCounts,
-				Action2_Step2
-			);
+			var answer = parameters.TargetPlayer.Interaction.AskQuestion(parameters.TargetPlayer.Id, "You may splay left any one color of your cards.");
+			if (!answer.HasValue || !answer.Value)
+				return;
 
-			return new CardActionResults(false, true);
+			parameters.TargetPlayer.Tableau.Stacks[parameters.TargetPlayer.Interaction.PickColor(parameters.TargetPlayer.Id, colorsToSelectFrom)].Splay(SplayDirection.Left);
+			
+			PlayerActed(parameters);
 		}
-		CardActionResults Action2_Step2(CardActionParameters parameters)
-		{
-			ICard card = parameters.Answer.SingleCard;
-			if (card == null)
-				return new CardActionResults(false, false);
 
+		void Action2(ICardActionParameters parameters)
+		{
+			
+
+			ValidateParameters(parameters);
+
+			if (!parameters.TargetPlayer.Hand.Any())
+				return;
+
+			var answer = parameters.TargetPlayer.Interaction.AskQuestion(parameters.TargetPlayer.Id, "You may score a card from your hand.");
+			if (!answer.HasValue || !answer.Value)
+				return;
+
+			var card = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = parameters.TargetPlayer.Hand, MinimumCardsToPick = 1, MaximumCardsToPick = 1 }).First();
+			
 			parameters.TargetPlayer.RemoveCardFromHand(card);
 			Score.Action(card, parameters.TargetPlayer);
 
-			return new CardActionResults(true, false);
+			PlayerActed(parameters);
 		}
     }
 }
