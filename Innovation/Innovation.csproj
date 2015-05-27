@@ -61,6 +61,7 @@
     <Compile Include="Interfaces\IPlayerInteraction.cs" />
     <Compile Include="Interfaces\ITableau.cs" />
     <Compile Include="Interfaces\IPlayer.cs" />
+    <Compile Include="Player\OrderCards.cs" />
     <Compile Include="Storage\ContextStorage.cs" />
     <Compile Include="Exceptions\EndOfGameException.cs" />
     <Compile Include="Player\AskQuestion.cs" />
