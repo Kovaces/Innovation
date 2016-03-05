@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using Innovation.Models;
+using Innovation.Interfaces;
+
 
 namespace Innovation.Cards
 {
@@ -20,7 +18,6 @@ namespace Innovation.Cards
 				var instance = (ICard) assembly.CreateInstance(cardType.FullName);
 				retVal.Add(instance);
 			}
-			//cardTypes.ForEach(t => retVal.Add((ICard)assembly.CreateInstance(t.Name)));
 
 			return retVal;
 		}

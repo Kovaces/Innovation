@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using Innovation.Models;
-using Innovation.Models.Enums;
+using Innovation.Interfaces;
+
+
+
 namespace Innovation.Cards
 {
     public class Coal : CardBase
@@ -13,7 +15,7 @@ namespace Innovation.Cards
         public override Symbol Left { get { return Symbol.Factory; } }
         public override Symbol Center { get { return Symbol.Factory; } }
         public override Symbol Right { get { return Symbol.Blank; } }
-        public override IEnumerable<CardAction> Actions
+        public override IEnumerable<ICardAction> Actions
         {
             get
             {
@@ -24,8 +26,8 @@ namespace Innovation.Cards
                 };
             }
         }
-        bool Action1(CardActionParameters parameters) { throw new NotImplementedException(); }
-        bool Action2(CardActionParameters parameters) { throw new NotImplementedException(); }
-        bool Action3(CardActionParameters parameters) { throw new NotImplementedException(); }
+        void Action1(ICardActionParameters parameters) { throw new NotImplementedException(); }
+        void Action2(ICardActionParameters parameters) { throw new NotImplementedException(); }
+        void Action3(ICardActionParameters parameters) { throw new NotImplementedException(); }
     }
 }

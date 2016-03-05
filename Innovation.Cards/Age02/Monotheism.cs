@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
-using Innovation.Models;
-using Innovation.Models.Enums;
+
 using Innovation.Actions;
+using Innovation.Interfaces;
+
+using Innovation.Player;
+
 namespace Innovation.Cards
 {
     public class Monotheism : CardBase
@@ -15,7 +18,7 @@ namespace Innovation.Cards
         public override Symbol Left { get { return Symbol.Tower; } }
         public override Symbol Center { get { return Symbol.Tower; } }
         public override Symbol Right { get { return Symbol.Tower; } }
-        public override IEnumerable<CardAction> Actions
+        public override IEnumerable<ICardAction> Actions
         {
             get
             {
@@ -25,31 +28,35 @@ namespace Innovation.Cards
                 };
             }
         }
-        bool Action1(CardActionParameters parameters)
+        void Action1(ICardActionParameters parameters)
 		{
+			
+
 			ValidateParameters(parameters);
 
-			List<Color> activePlayerTopColors = parameters.ActivePlayer.Tableau.GetStackColors();
-			List<ICard> possibleTransferCards = parameters.TargetPlayer.Tableau.GetTopCards().Where(x => !activePlayerTopColors.Contains(x.Color)).ToList();
+			var activePlayerTopColors = parameters.ActivePlayer.Tableau.GetStackColors();
+			var possibleTransferCards = parameters.TargetPlayer.Tableau.GetTopCards().Where(x => !activePlayerTopColors.Contains(x.Color)).ToList();
 
 			if (possibleTransferCards.Count == 0)
-				return false;
-			
-			ICard cardToTransfer = parameters.TargetPlayer.PickCard(possibleTransferCards);
+				return;
+
+			var cardToTransfer = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = possibleTransferCards, MinimumCardsToPick = 1, MaximumCardsToPick = 1 }).First();
+
 			parameters.TargetPlayer.Tableau.Stacks[cardToTransfer.Color].RemoveCard(cardToTransfer);
 			parameters.ActivePlayer.Tableau.ScorePile.Add(cardToTransfer);
 
-			Tuck.Action(Draw.Action(1, parameters.Game), parameters.TargetPlayer);
-
-			return true;
+			Tuck.Action(Draw.Action(1, parameters.AgeDecks), parameters.TargetPlayer);
 		}
-        bool Action2(CardActionParameters parameters) 
+
+		void Action2(ICardActionParameters parameters) 
 		{
+			
+
 			ValidateParameters(parameters);
 
-			Tuck.Action(Draw.Action(1, parameters.Game), parameters.TargetPlayer);
+			Tuck.Action(Draw.Action(1, parameters.AgeDecks), parameters.TargetPlayer);
 
-			return true;
+			PlayerActed(parameters);
 		}
     }
 }

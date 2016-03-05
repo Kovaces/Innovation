@@ -1,9 +1,8 @@
-﻿using System;
+﻿using Innovation.Actions;
 using System.Collections.Generic;
-using System.Linq;
-using Innovation.Actions;
-using Innovation.Models;
-using Innovation.Models.Enums;
+using Innovation.Interfaces;
+
+
 namespace Innovation.Cards
 {
 	public class Mysticism : CardBase
@@ -15,7 +14,7 @@ namespace Innovation.Cards
 		public override Symbol Left { get { return Symbol.Tower; } }
 		public override Symbol Center { get { return Symbol.Tower; } }
 		public override Symbol Right { get { return Symbol.Tower; } }
-		public override IEnumerable<CardAction> Actions
+		public override IEnumerable<ICardAction> Actions
 		{
 			get
 			{
@@ -24,23 +23,24 @@ namespace Innovation.Cards
                 };
 			}
 		}
-		bool Action1(CardActionParameters parameters)
+		void Action1(ICardActionParameters parameters)
 		{
+			
+
 			ValidateParameters(parameters);
 
-			ICard card = Draw.Action(1, parameters.Game);
-
-			parameters.TargetPlayer.RevealCard(card);
+			var card = DrawAndReveal(parameters, 1);
 
 			if (parameters.TargetPlayer.Tableau.GetStackColors().Contains(card.Color))
 			{
 				Meld.Action(card, parameters.TargetPlayer);
-				parameters.TargetPlayer.Hand.Add(Draw.Action(1, parameters.Game));
+				
+				parameters.TargetPlayer.AddCardToHand(Draw.Action(1, parameters.AgeDecks));
 			}
 			else
-				parameters.TargetPlayer.Hand.Add(card);
+				parameters.TargetPlayer.AddCardToHand(card);
 
-			return true;
+			PlayerActed(parameters);
 		}
 	}
 }

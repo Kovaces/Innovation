@@ -1,130 +1,359 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web.Configuration;
-using Innovation.Cards;
-using Innovation.Models;
-using Innovation.Models.Interfaces;
-using Innovation.Web;
+﻿using Innovation.Cards;
 using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Threading.Tasks;
+using Innovation.Game;
+using Innovation.Interfaces;
+using Innovation.Player;
+using Newtonsoft.Json;
 
-namespace Innovation
+namespace Innovation.Web.Innovation
 {
 	public class Innovation
 	{
 		private readonly static Lazy<Innovation> _instance = new Lazy<Innovation>(() => new Innovation(GlobalHost.ConnectionManager.GetHubContext<InnovationHub>().Clients));
 
-		private readonly ConcurrentDictionary<string, Game> _games = new ConcurrentDictionary<string, Game>();
-		private readonly ConcurrentDictionary<string, IPlayer> _players = new ConcurrentDictionary<string, IPlayer>();
-		private readonly ConcurrentDictionary<Guid, string> _responsesPending = new ConcurrentDictionary<Guid, string>();
-		
+		private readonly ConcurrentDictionary<string, Game.Game> _games = new ConcurrentDictionary<string, Game.Game>();
+		private readonly ConcurrentDictionary<string, Player.Player> _players = new ConcurrentDictionary<string, Player.Player>();
+
 		private IHubConnectionContext<dynamic> Clients { get; set; }
 
 		private Innovation(IHubConnectionContext<dynamic> clients)
-        {
-            Clients = clients;
+		{
+			Clients = clients;
 
 			_games.Clear();
-        }
+			_players.Clear();
+		}
 
 		public static Innovation Instance
 		{
 			get { return _instance.Value; }
 		}
 
-		public void AddUser(string userId)
+		private Player.Player GetPlayerById(string id)
 		{
-			var player = new Player { Id = userId, PickCardHandler = PickCard, PickMultipleCardsHandler = PickMultipleCards, AskQuestionHandler = AskQuestion, PickPlayerHandler = PickPlayer };
-			_players.TryAdd(player.Id, player);
+			Player.Player tempPlayer = null;
+
+			_players.TryGetValue(id, out tempPlayer);
+
+			if (tempPlayer == null)
+				throw new ArgumentNullException("Invalid Player.  [" + id + "]");
+
+			return tempPlayer;
+		}
+		private Game.Game GetGameById(string id)
+		{
+			Game.Game tempGame = null;
+
+			_games.TryGetValue(id, out tempGame);
+
+			if (tempGame == null)
+				throw new ArgumentNullException("Invalid Game.  [" + id + "]");
+
+			return tempGame;
+		}
+		private Game.Game GetGameByPlayerId(string playerId)
+		{
+			Player.Player player;
+			player = GetPlayerById(playerId);
+
+			var game = _games.Values.FirstOrDefault(g => g.Players.Contains(player));
+
+			if (game == null)
+				throw new InvalidOperationException("Player : [" + player.Name + "] not part of any games.");
+
+			return game;
 		}
 
+		private void ValidateResponseParameters(string gameId, string playerId, out Game.Game game, out Player.Player player)
+		{
+			game = GetGameById(gameId);
+			player = GetPlayerById(playerId);
+			if (!game.Players.Contains(player))
+				throw new ArgumentNullException("Player [" + playerId + "] not in game [" + gameId + "]");
+		}
+
+		//User
+		public void AddUser(string userId)
+		{
+			var interaction = new PlayerInteraction
+			{
+				AskQuestionHandler = new AskQuestion { Handler = AskQuestion },
+				PickCardsHandler = new PickCards { Handler = PickCards },
+				PickColorHandler = new PickColor { Handler = PickColor },
+				PickPlayerHandler = new PickPlayer { Handler = PickPlayer },
+				RevealCardHandler = new RevealCard { Handler = RevealCard }
+			};
+
+			var player = new Player.Player
+			{
+				Id = userId,
+				UpdateClientHandler = UpdateClient,
+				Interaction = interaction,
+			};
+
+			_players.TryAdd(player.Id, player);
+		}
 		public void RemoveUser(string userId)
 		{
-			IPlayer player;
+			Player.Player player;
 			_players.TryRemove(userId, out player);
 		}
 
+		//Game
 		public void CreateGame(string gameName, string[] playerIds)
 		{
-			/*
-		 * Create game
-		 *		Create Age Decks
-		 *		Create Special Achievement Decks
-		 *		Create Age Achievement Deck
-		 *		Determine # of players
-		 *		Deal starting Age 1 cards
-		 *		First Meld
-		 */
-
-			var game = new Game();
-			var cardList = CardList.GetCardList().ToList();
-
-			var age1 = new Deck(cardList.Where(c => c.Age == 1), 1);
-			var age2 = new Deck(cardList.Where(c => c.Age == 2), 2);
-			var age3 = new Deck(cardList.Where(c => c.Age == 3), 3);
-			var age4 = new Deck(cardList.Where(c => c.Age == 4), 4);
-			var age5 = new Deck(cardList.Where(c => c.Age == 5), 5);
-			var age6 = new Deck(cardList.Where(c => c.Age == 6), 6);
-			var age7 = new Deck(cardList.Where(c => c.Age == 7), 7);
-			var age8 = new Deck(cardList.Where(c => c.Age == 8), 8);
-			var age9 = new Deck(cardList.Where(c => c.Age == 9), 9);
-			var age10 = new Deck(cardList.Where(c => c.Age == 10), 10);
-
-			game.AgeDecks = new List<Deck> { age1, age2, age3, age4, age5, age6, age7, age8, age9, age10 };
-			game.AgeDecks.ForEach(d => d.Shuffle());
 			
-			var achievementDeck = new List<ICard>();
-			game.AgeDecks.ForEach(d => achievementDeck.Add(d.Cards[0]));
-			game.AgeDecks.ForEach(d => d.Cards.RemoveAt(0));
-			game.AgeAchievementDeck = new Deck(achievementDeck, -1);
+			
+			var game = new Game.Game()
+			{
+				Name = gameName,
+				Id = Guid.NewGuid().ToString(),
+				Players = playerIds.Select(id => GetPlayerById(id)).ToList(),
+				SynchGameState = SyncGameState,
+				StartTurn = PlayerStartTurn,
+				EndTurn = PlayerEndTurn
+			};
 
+			_games.TryAdd(game.Id, game);
 
-			throw new NotImplementedException();
+			Clients.Group(game.Name).setGameId(game.Id);
+
+			Task.Factory.StartNew(() => GameManager.StartGame(game)).Wait();
+
+			SyncGameState(game);
+
+			foreach (var p in game.Players)
+				p.UpdateClientHandler = UpdateClient;
+		}
+		public void GameOver(string gameName, string winner)
+		{
+			Clients.Group(gameName).gameOverNotification(GetPlayerById(winner).Name);
+
+			Game.Game game;
+			_games.TryRemove(gameName, out game);
 		}
 
-		public void PickCard(string playerId, IEnumerable<ICard> cardsToSelectFrom)
+		public void SyncGameState(string gameId)
 		{
-			var transactionId = Guid.NewGuid();
-			var cardIds = cardsToSelectFrom.Select(c => c.Name);
-
-			_responsesPending.TryAdd(transactionId, playerId);
-
-			Clients.User(playerId).pickCard(transactionId, Newtonsoft.Json.JsonConvert.SerializeObject(cardIds));
+			var game = GetGameById(gameId);
+			SyncGameState(game);
 		}
-		internal void PickCardResponse(Guid transactionId, Guid gameId, string cardName)
+		public void SyncGameState(Game.Game game)
 		{
-			throw new NotImplementedException();
+			var thing = new
+			{
+				ActivePlayer = (game.ActivePlayer == null ? null : game.ActivePlayer.Id),
+				AgeAchievementDeck = (game.AgeAchievementDeck == null ? null : new
+				{
+					Age = game.AgeAchievementDeck.Age,
+					Cards = game.AgeAchievementDeck.Cards.Select(x => x.Id)
+				}),
+				Id = game.Id,
+				Name = game.Name,
+				AgeDecks = (game.AgeDecks == null ? null : game.AgeDecks.Select(x=> new {
+					Age = x.Age,
+					CardCount = x.Cards.Count
+				})),
+				Players = game.Players.Select(x => new
+				{
+					ActionsTaken = x.ActionsTaken,
+					Id = x.Id,
+					Name = x.Name,
+					Hand = (x.Hand == null ? null : x.Hand.Select(h => h.Id)),
+					Tableau = new
+					{
+						NumberOfAchievements = x.Tableau.NumberOfAchievements,
+						ScorePile = x.Tableau.ScorePile.Select(p => p.Id),
+						Stacks = x.Tableau.Stacks.Keys.Select(s => new
+						{
+							Color = s,
+							SplayedDirection = x.Tableau.Stacks[s].SplayedDirection,
+							Cards = x.Tableau.Stacks[s].Cards.Select(c => c.Id),
+						}),
+					}
+				})
+			};
+
+			Clients.Group(game.Name).syncGameState(JsonConvert.SerializeObject(thing));
 		}
 
-		public void PickMultipleCards(string playerId, IEnumerable<ICard> cardsToSelectFrom, int minimumNumberToSelect, int maximumNumberToSelect)
+		//Player
+		public void PlayerStartTurn(string playerId)
 		{
-			throw new NotImplementedException();
+			Clients.User(playerId).startTurn();
 		}
-		internal void PickMultipleCardsResponse(Guid transactionId, Guid gameId, string[] cardNames)
+		public void PlayerEndTurn(string playerId)
 		{
-			throw new NotImplementedException();
+			Clients.User(playerId).startTurn();
+		}
+
+		internal void PlayerPickAction(string gameId, string playerId, string selectedAction)
+		{
+			Game.Game game;
+			Player.Player player;
+			ValidateResponseParameters(gameId, playerId, out game, out player);
+
+			ActionEnum action;
+			if (!Enum.TryParse(selectedAction, true, out action))
+				throw new InvalidEnumArgumentException();
+
+			game.TakeAction(action);
+		}
+
+		public void PickCards(string playerId, PickCardParameters pickCardParameters)
+		{
+			Clients.Client(playerId).broadcastMessage("pickr", "pick a card!");
+			Clients.Client(playerId).pickCard(
+				JsonConvert.SerializeObject(pickCardParameters.CardsToPickFrom.Select(x => x.Id).ToList())
+				, pickCardParameters.MinimumCardsToPick
+				, pickCardParameters.MaximumCardsToPick
+			);
+		}
+		internal void PickCardsResponse(string gameId, string playerId, string[] cardIds)
+		{
+			Game.Game game;
+			Player.Player player;
+			ValidateResponseParameters(gameId, playerId, out game, out player);
+
+			player.Interaction.PickCardsHandler.Response(CardList.GetCardList().Where(c => cardIds.ToList().Contains(c.Id)));
 		}
 
 		public void AskQuestion(string playerId, string question)
 		{
-			throw new NotImplementedException();
+			Clients.User(playerId).askQuestion(question);
 		}
-		internal void AskQuestionResponse(Guid transactionId, Guid gameId, bool response)
+		internal void AskQuestionResponse(string gameId, string playerId, bool response)
 		{
-			throw new NotImplementedException();
+			Game.Game game;
+			Player.Player player;
+			ValidateResponseParameters(gameId, playerId, out game, out player);
+
+			player.Interaction.AskQuestionHandler.Response(response);
 		}
 
-		public void PickPlayer(string playerId, List<IPlayer> playerList)
+		public void PickPlayer(string playerId, IEnumerable<IPlayer> playerList)
 		{
-			throw new NotImplementedException();
+			Clients.User(playerId).pickPlayers(
+				Newtonsoft.Json.JsonConvert.SerializeObject(playerList.Select(x => x.Id).ToList())
+				, 1
+				, 1
+			);
 		}
-		internal void PickPlayerResponse(Guid transactionId, Guid gameId, string selectedPlayer)
+		internal void PickPlayerResponse(string gameId, string playerId, string selectedPlayerId)
 		{
-			throw new NotImplementedException();
+			Game.Game game;
+			Player.Player player;
+			ValidateResponseParameters(gameId, playerId, out game, out player);
+
+			player.Interaction.PickPlayerHandler.Response(_players.First(p => p.Key.Equals(selectedPlayerId)).Value);
+		}
+		
+		public void PickColor(string playerId, IEnumerable<Color> colors)
+		{
+			;
+		}
+		internal void PickColorResponse(string gameId, string playerId, string selectedColor)
+		{
+			Game.Game game;
+			Player.Player player;
+			ValidateResponseParameters(gameId, playerId, out game, out player);
+
+			Color color;
+			if (!Enum.TryParse(selectedColor, true, out color))
+				throw new InvalidEnumArgumentException();
+
+			player.Interaction.PickColorHandler.Response(color);
+		}
+
+		public void RevealCard(string playerId, ICard card)
+		{
+			Game.Game game = GetGameByPlayerId(playerId);
+			Clients.Group(game.Name).revealCard(playerId, JsonConvert.SerializeObject(card));
+			
+			Player.Player player = GetPlayerById(playerId);
+			player.Interaction.RevealCardHandler.Response(true);
+		}
+
+		public void UpdateClient(string playerId)
+		{
+			var game = GetGameByPlayerId(playerId);
+			SyncGameState(game);
+		}
+
+		//data
+		internal object GetCardList()
+		{
+			return CardList.GetCardList()
+							.Select(c => new
+							{
+								Id = c.Id,
+								Name = c.Name,
+								Color = c.Color,
+								Age = c.Age,
+								Top = c.Top,
+								Left = c.Left,
+								Center = c.Center,
+								Right = c.Right,
+								Actions = c.Actions.Select(a => new
+								{
+									Symbol = a.Symbol,
+									ActionType = a.ActionType,
+									ActionText = a.ActionText
+								}),
+								Image = string.Empty
+							}).ToList();
+		}
+		internal object GetPlayerList()
+		{
+			return _players.Values
+							.Select(c => new
+							{
+								Id = c.Id,
+								Name = c.Name
+							}).ToList();
+		}
+		internal void SetNameToClient(string clientId, string name)
+		{
+			_players[clientId].Name = name;
 		}
 	}
 }
+
+//public void PickPlayers(string playerId, IEnumerable<Player> playerList, int minimumNumberToSelect, int maximumNumberToSelect)
+//{
+//    Clients.User(playerId).pickPlayers(
+//        Newtonsoft.Json.JsonConvert.SerializeObject(playerList.Select(x => x.Id).ToList())
+//        , minimumNumberToSelect
+//        , maximumNumberToSelect
+//    );
+//}
+//internal void PickPlayersResponse(string gameId, string playerId, string[] selectedPlayers)
+//{
+//    Game game;
+//    Player player;
+//    ValidateResponseParameters(gameId, playerId, out game, out player);
+
+//    player.Interaction.PickPlayerHandler.Response(_players.First(p => selectedPlayers.First().Equals(p.Key)).Value);
+//}
+//public void AskToSplay(string playerId, IEnumerable<Color> colors, SplayDirection splayDirection)
+//{
+//    Clients.User(playerId).askToSplay(
+//        Newtonsoft.Json.JsonConvert.SerializeObject(colors.ToList()),
+//        Newtonsoft.Json.JsonConvert.SerializeObject(splayDirection)
+//    );
+//}
+//internal void PickSplayResponse(string gameId, string playerId, string selectedColor)
+//{
+//    Game game;
+//    Player player;
+//    ValidateResponseParameters(gameId, playerId, out game, out player);
+
+//    RequestQueueManager.ReceiveSplayResponse(game, player, selectedColor);
+//}

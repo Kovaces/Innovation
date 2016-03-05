@@ -1,9 +1,14 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
-using Innovation.Models;
-using Innovation.Models.Enums;
+
 using Innovation.Actions;
+using Innovation.Game;
+using Innovation.Interfaces;
+
+using Innovation.Player;
+using Innovation.Storage;
+
 namespace Innovation.Cards
 {
     public class Mapmaking : CardBase
@@ -15,7 +20,7 @@ namespace Innovation.Cards
         public override Symbol Left { get { return Symbol.Crown; } }
         public override Symbol Center { get { return Symbol.Crown; } }
         public override Symbol Right { get { return Symbol.Tower; } }
-        public override IEnumerable<CardAction> Actions
+        public override IEnumerable<ICardAction> Actions
         {
             get
             {
@@ -26,33 +31,38 @@ namespace Innovation.Cards
                 };
             }
         }
-		bool Action1(CardActionParameters parameters)
+		void Action1(ICardActionParameters parameters)
 		{
+			
+
 			ValidateParameters(parameters);
 
-			List<ICard> cardsToTransfer = parameters.TargetPlayer.Tableau.ScorePile.Where(x => x.Age == 1).ToList();
+			List<ICard> ageOneCardsinScorePile = parameters.TargetPlayer.Tableau.ScorePile.Where(x => x.Age == 1).ToList();
 			
-			if (cardsToTransfer.Count == 0)
-				return false;
-			
-			ICard card = parameters.TargetPlayer.PickCard(cardsToTransfer);
-			parameters.TargetPlayer.Tableau.ScorePile.Remove(card);
-			parameters.ActivePlayer.Tableau.ScorePile.Add(card);
+			if (ageOneCardsinScorePile.Count == 0)
+				return;
 
-			parameters.Game.StashPropertyBagValue("MapmakingAction1Taken", true);
-			
-			return false;
+			var selectedCard = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = ageOneCardsinScorePile, MinimumCardsToPick = 1, MaximumCardsToPick = 1 }).First();
+
+			parameters.TargetPlayer.Tableau.ScorePile.Remove(selectedCard);
+			parameters.ActivePlayer.Tableau.ScorePile.Add(selectedCard);
+
+            parameters.AddToStorage("MapMakingCardTransferedKey", true);
 		}
-		bool Action2(CardActionParameters parameters)
+
+		void Action2(ICardActionParameters parameters)
 		{
+			
+
 			ValidateParameters(parameters);
 
-			if (!(bool)parameters.Game.GetPropertyBagValue("MapmakingAction1Taken"))
-				return false;
+            var cardTransfered = parameters.GetFromStorage("MapMakingCardTransferedKey");
+			if (cardTransfered != null && !(bool)cardTransfered)
+				return;
 			
-			Score.Action(Draw.Action(1, parameters.Game), parameters.TargetPlayer);
-			
-			return true;
+			Score.Action(Draw.Action(1, parameters.AgeDecks), parameters.TargetPlayer);
+
+			PlayerActed(parameters);
 		}
     }
 }

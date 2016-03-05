@@ -2,8 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using Innovation.Actions;
-using Innovation.Models;
-using Innovation.Models.Enums;
+using Innovation.Game;
+using Innovation.Interfaces;
+
+using Innovation.Models.Other;
+
+using Innovation.Player;
+using Innovation.Storage;
+
 namespace Innovation.Cards
 {
     public class Globalization : CardBase
@@ -15,7 +21,7 @@ namespace Innovation.Cards
         public override Symbol Left { get { return Symbol.Factory; } }
         public override Symbol Center { get { return Symbol.Factory; } }
         public override Symbol Right { get { return Symbol.Factory; } }
-        public override IEnumerable<CardAction> Actions
+        public override IEnumerable<ICardAction> Actions
         {
             get
             {
@@ -26,26 +32,37 @@ namespace Innovation.Cards
             }
         }
 
-	    bool Action1(CardActionParameters parameters)
+	    void Action1(ICardActionParameters parameters)
 	    {
-		    ValidateParameters(parameters);
+			
 
-		    var selectedCard = parameters.TargetPlayer.PickCard(parameters.TargetPlayer.Tableau.GetTopCards().Where(c => c.HasSymbol(Symbol.Leaf)));
-			Return.Action(selectedCard, parameters.Game);
+			ValidateParameters(parameters);
 
-		    return false;
-	    }
+			var topCardsWithLeaves = parameters.TargetPlayer.Tableau.GetTopCards().Where(c => c.HasSymbol(Symbol.Leaf)).ToList();
+		    if (!topCardsWithLeaves.Any())
+			    return;
 
-	    bool Action2(CardActionParameters parameters)
+			var selectedCard = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = topCardsWithLeaves, MinimumCardsToPick = 1, MaximumCardsToPick = 1 }).First();
+			
+			parameters.TargetPlayer.RemoveCardFromStack(selectedCard);
+			Return.Action(selectedCard, parameters.AgeDecks);
+		}
+
+		void Action2(ICardActionParameters parameters)
 	    {
-		    ValidateParameters(parameters);
+			
 
-		    Score.Action(Draw.Action(6, parameters.Game), parameters.TargetPlayer);
+			ValidateParameters(parameters);
 
-			if (!parameters.Game.Players.Exists(p => p.Tableau.GetSymbolCount(Symbol.Leaf) > p.Tableau.GetSymbolCount(Symbol.Factory)))
-				parameters.Game.TriggerEndOfGame(parameters.Game.Players.OrderByDescending(p => p.Tableau.GetScore()).ToList().First());
+		    Score.Action(Draw.Action(6, parameters.AgeDecks), parameters.TargetPlayer);
 
-			return true;
-	    }
+			PlayerActed(parameters);
+
+			if (!parameters.Players.ToList().Exists(p => p.Tableau.GetSymbolCount(Symbol.Leaf) > p.Tableau.GetSymbolCount(Symbol.Factory)))
+			{
+                parameters.AddToStorage("WinnerKey", parameters.Players.OrderByDescending(p => p.Tableau.GetScore()).ToList().First());
+				throw new EndOfGameException();
+			}
+		}
     }
 }

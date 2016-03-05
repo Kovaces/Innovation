@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Innovation.Actions;
-using Innovation.Models;
-using Innovation.Models.Enums;
+using Innovation.Interfaces;
+
+
+using Innovation.Player;
+
 namespace Innovation.Cards
 {
     public class Mathematics : CardBase
@@ -14,7 +18,7 @@ namespace Innovation.Cards
         public override Symbol Left { get { return Symbol.Lightbulb; } }
         public override Symbol Center { get { return Symbol.Crown; } }
         public override Symbol Right { get { return Symbol.Lightbulb; } }
-        public override IEnumerable<CardAction> Actions
+        public override IEnumerable<ICardAction> Actions
         {
             get
             {
@@ -24,22 +28,28 @@ namespace Innovation.Cards
                 };
             }
         }
-        bool Action1(CardActionParameters parameters) 
+        void Action1(ICardActionParameters parameters) 
 		{
+			
+
 			ValidateParameters(parameters);
 
-			ICard card = parameters.TargetPlayer.PickCardFromHand();
-	        
-			if (card == null)
-		        return false;
+			if (parameters.TargetPlayer.Hand.Any())
+				return;
 
-			parameters.TargetPlayer.Hand.Remove(card);
-			
-			Return.Action(card, parameters.Game);
-			
-			Meld.Action(Draw.Action(card.Age + 1, parameters.Game), parameters.TargetPlayer);
-			
-			return true;
+			var answer = parameters.TargetPlayer.Interaction.AskQuestion(parameters.TargetPlayer.Id, "You may return a card from your hand. If you do, draw and meld a card of value one higher than the card you returned.");
+			if (!answer.HasValue || !answer.Value)
+				return;
+
+			var cardToReturn = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = parameters.TargetPlayer.Hand, MinimumCardsToPick = 1, MaximumCardsToPick = 1 }).First();
+
+			parameters.TargetPlayer.RemoveCardFromHand(cardToReturn);
+
+			Return.Action(cardToReturn, parameters.AgeDecks);
+
+			Meld.Action(Draw.Action(cardToReturn.Age + 1, parameters.AgeDecks), parameters.TargetPlayer);
+
+			PlayerActed(parameters);
 		}
     }
 }

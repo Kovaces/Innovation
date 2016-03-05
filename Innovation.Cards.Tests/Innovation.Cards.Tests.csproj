@@ -58,12 +58,12 @@
     <Compile Include="Age01\CityStatesTest.cs" />
     <Compile Include="Age01\ClothingTest.cs" />
     <Compile Include="Age01\CodeOfLawsTest.cs" />
+    <Compile Include="Age01\MysticismTest.cs" />
     <Compile Include="Age01\ToolsTest.cs" />
     <Compile Include="Age01\TheWheelTest.cs" />
     <Compile Include="Age01\SailingTest.cs" />
     <Compile Include="Age01\PotteryTest.cs" />
     <Compile Include="Age01\OarsTest.cs" />
-    <Compile Include="Age01\Mysticism.cs" />
     <Compile Include="Age01\MetalworkingTest.cs" />
     <Compile Include="Age01\MasonryTest.cs" />
     <Compile Include="Age01\DomesticationTest.cs" />
@@ -81,18 +81,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Innovation.Actions\Innovation.Actions.csproj">
-      <Project>{155b79cc-0637-4735-ad8e-392c62e31f9a}</Project>
-      <Name>Innovation.Actions</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Innovation.Cards\Innovation.Cards.csproj">
-      <Project>{596dc48f-02c4-4fbe-8ac0-7113edf99c9d}</Project>
-      <Name>Innovation.Cards</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Innovation.Models\Innovation.Models.csproj">
-      <Project>{36480362-a948-4c1c-aaa8-3d21eaa25d9b}</Project>
-      <Name>Innovation.Models</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Innovation.Tests.Helpers\Innovation.Tests.Helpers.csproj">
       <Project>{a878e64f-8d34-46ce-adb2-6020cf3cea3c}</Project>
       <Name>Innovation.Tests.Helpers</Name>

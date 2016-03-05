@@ -1,9 +1,11 @@
-﻿using System;
+﻿using Innovation.Actions;
 using System.Collections.Generic;
 using System.Linq;
-using Innovation.Actions;
-using Innovation.Models;
-using Innovation.Models.Enums;
+using Innovation.Interfaces;
+
+
+using Innovation.Player;
+
 namespace Innovation.Cards
 {
 	public class Archery : CardBase
@@ -15,7 +17,7 @@ namespace Innovation.Cards
 		public override Symbol Left { get { return Symbol.Lightbulb; } }
 		public override Symbol Center { get { return Symbol.Blank; } }
 		public override Symbol Right { get { return Symbol.Tower; } }
-		public override IEnumerable<CardAction> Actions
+		public override IEnumerable<ICardAction> Actions
 		{
 			get
 			{
@@ -25,21 +27,21 @@ namespace Innovation.Cards
                 };
 			}
 		}
-		bool Action1(CardActionParameters parameters)
+		void Action1(ICardActionParameters parameters)
 		{
+			
+
 			ValidateParameters(parameters);
 
-			parameters.TargetPlayer.Hand.Add(Draw.Action(1, parameters.Game));
+			parameters.TargetPlayer.AddCardToHand(Draw.Action(1, parameters.AgeDecks));
 
 			var highestAgeInHand = parameters.TargetPlayer.Hand.Max(c => c.Age);
 			var highestCards = parameters.TargetPlayer.Hand.Where(c => c.Age.Equals(highestAgeInHand)).ToList();
 
-			ICard selectedCard = parameters.TargetPlayer.PickCard(highestCards);
+			var selectedCard = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = highestCards, MinimumCardsToPick = 1, MaximumCardsToPick = 1 }).First();
 
-			parameters.TargetPlayer.Hand.Remove(selectedCard);
-			parameters.ActivePlayer.Hand.Add(selectedCard);
-
-			return true;
+			parameters.TargetPlayer.RemoveCardFromHand(selectedCard);
+			parameters.ActivePlayer.AddCardToHand(selectedCard);	
 		}
 	}
 }

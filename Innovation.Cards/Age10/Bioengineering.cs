@@ -1,50 +1,66 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Innovation.Models;
-using Innovation.Models.Enums;
+using Innovation.Actions;
+using Innovation.Game;
+using Innovation.Interfaces;
+
+using Innovation.Models.Other;
+
+using Innovation.Player;
+using Innovation.Storage;
+
 namespace Innovation.Cards
 {
-    public class Bioengineering : CardBase
-    {
-        public override string Name { get { return "Bioengineering"; } }
-        public override int Age { get { return 10; } }
-        public override Color Color { get { return Color.Blue; } }
-        public override Symbol Top { get { return Symbol.Lightbulb; } }
-        public override Symbol Left { get { return Symbol.Clock; } }
-        public override Symbol Center { get { return Symbol.Clock; } }
-        public override Symbol Right { get { return Symbol.Blank; } }
-        public override IEnumerable<CardAction> Actions
-        {
-            get
-            {
-                return new List<CardAction>(){
+	public class Bioengineering : CardBase
+	{
+		public override string Name { get { return "Bioengineering"; } }
+		public override int Age { get { return 10; } }
+		public override Color Color { get { return Color.Blue; } }
+		public override Symbol Top { get { return Symbol.Lightbulb; } }
+		public override Symbol Left { get { return Symbol.Clock; } }
+		public override Symbol Center { get { return Symbol.Clock; } }
+		public override Symbol Right { get { return Symbol.Blank; } }
+		public override IEnumerable<ICardAction> Actions
+		{
+			get
+			{
+				return new List<CardAction>(){
                     new CardAction(ActionType.Required,Symbol.Clock,"Transfer a top card with a [LEAF] from any other player's board to your score pile.", Action1)
                     ,new CardAction(ActionType.Required,Symbol.Clock,"If any player has fewer than three [LEAF] on their board, the single player with the most [LEAF] on their board wins.", Action2)
                 };
-            }
-        }
+			}
+		}
 
-	    bool Action1(CardActionParameters parameters)
-	    {
-		    ValidateParameters(parameters);
+		void Action1(ICardActionParameters parameters)
+		{
+			
 
-		    var transferCards = parameters.Game.Players.SelectMany(p => p.Tableau.GetTopCards().Where(c => c.HasSymbol(Symbol.Leaf)));
-		    var selectedCard = parameters.TargetPlayer.PickCard(transferCards);
-			parameters.Game.Players.ForEach(p => p.Tableau.Stacks[selectedCard.Color].RemoveCard(selectedCard));
+			ValidateParameters(parameters);
+
+			var transferCards = parameters.Players.SelectMany(p => p.Tableau.GetTopCards().Where(c => c.HasSymbol(Symbol.Leaf))).ToList();
+			if (transferCards.Count == 0)
+				return;
+
+			var selectedCard = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = transferCards, MinimumCardsToPick = 1, MaximumCardsToPick = 1 }).First();
+
+			parameters.Players.First(p => p.Tableau.Stacks[selectedCard.Color].Cards.Contains(selectedCard)).Tableau.Stacks[selectedCard.Color].RemoveCard(selectedCard);
 			parameters.TargetPlayer.Tableau.Stacks[selectedCard.Color].AddCardToTop(selectedCard);
 
-			return true;
-	    }
+			PlayerActed(parameters);
+		}
 
-	    bool Action2(CardActionParameters parameters)
-	    {
-		    ValidateParameters(parameters);
+		void Action2(ICardActionParameters parameters)
+		{
+			
 
-		    if (parameters.Game.Players.Exists(p => p.Tableau.GetSymbolCount(Symbol.Leaf) < 3))
-				parameters.Game.TriggerEndOfGame(parameters.Game.Players.OrderByDescending(p => p.Tableau.GetSymbolCount(Symbol.Leaf)).ToList().First());
-		    
-			return false;
-	    }
-    }
+			ValidateParameters(parameters);
+
+			if (parameters.Players.ToList().Exists(p => p.Tableau.GetSymbolCount(Symbol.Leaf) < 3))
+			{
+                parameters.AddToStorage("WinnerKey", parameters.Players.OrderByDescending(p => p.Tableau.GetSymbolCount(Symbol.Leaf)).ToList().First());
+				throw new EndOfGameException();
+			}
+		}
+	}
 }

@@ -1,0 +1,335 @@
+﻿html { 
+    height:100%;
+}
+body { 
+    height:100%;
+    min-height:100%;
+}
+
+
+.chat-parent-pregame {
+    position:absolute;
+    top:60px;
+    bottom:25px;
+    left:15px;
+    right:15px;
+    border: solid black 1px;
+    border-radius:5px;
+    min-width: 1000px;
+}
+.chat-parent-ingame {
+    position:absolute;
+    top:calc(100% - 400px);
+    bottom:25px;
+    left:15px;
+    right:15px;
+    border: solid black 1px;
+    border-radius:5px;
+    min-width: 1000px;
+}
+
+.chat-row2 {
+    position: relative;
+    height: calc(100% - 60px);
+}
+
+.chat-player-list {
+    position:absolute;
+    top: 4px;
+    left: 20px;
+    background-color: blue;
+    border: solid black 1px;
+    border-radius:5px;
+    width: 200px;
+    height: 100%;
+}
+
+.player-item {
+    background-color: white;
+    color: black;
+    margin-top:4px;
+    border-radius: 3px;
+    list-style: none;
+    margin-left:-40px;
+    padding-left:10px;
+}
+
+.chat-item li {
+    background-color:green;
+    color: white;
+    border-radius:5px;
+    margin-top:3px;
+    padding-left:3px;
+    margin-left:-30px;
+    margin-right:10px;
+    list-style: none;
+}
+
+.chat-messages {
+    position: absolute;
+    top: 4px;
+    left: 225px;
+    bottom: 10px;
+    right: 115px;
+    background-color: gray;
+    overflow-y: auto;
+    width: calc(100% - 250px);
+    height: 100%;
+}
+
+.chat-input-group {
+    background-color:white;
+    position:absolute;
+    left:20px;
+    right:20px;
+    bottom:5px;
+    min-width: 1000px;
+}
+
+.chat-input {
+    border-radius: 3px;
+    background-color:lightgray;
+    position:relative;
+    float:left;
+    width:100%;
+}
+.chat-button {
+    position:relative;
+    float:right;
+    width:100%;
+}
+
+.send-button{
+    float:left;
+    width: initial;
+}
+
+.chat-item li {
+    background-color:green;
+    color: white;
+    border-radius:5px;
+    margin-top:3px;
+    padding-left:3px;
+    margin-left:-30px;
+    margin-right:10px;
+    list-style: none;
+}
+
+.transparent
+{
+    opacity: 0.6;
+    filter: alpha(opacity=60);
+}
+
+
+.createGame
+{
+    /*position: absolute;
+    left: calc(50% - 200px);
+    top: calc(50% - 150px);
+    background-color: lightblue;
+    min-width: 400px;
+    min-height: 300px;
+    border-radius: 5px;
+    border: 2px outset black;
+    display: none;*/
+}
+.createGame div
+{
+    margin:10px;
+}
+
+.unselected-player
+{
+    border: 1px orange solid;
+    background-color: white;
+    color: orange;
+    min-width: 100px;
+}
+
+.selected-player
+{
+    background-color: orange;
+    color: white;
+    min-width: 100px;
+}
+
+.bottom
+{
+    position:absolute;
+    bottom: 5px;
+}
+.right
+{
+    position:absolute;
+    right: 5px;
+}
+
+.mainGameWindow
+{
+    position: absolute;
+    top: 60px;
+    bottom: 404px;
+    left: 15px;
+    right: 15px;
+    border: solid black 1px;
+    border-radius: 5px;
+    min-width: 1000px;
+}
+
+.card-parent
+{
+    position:relative;
+    width: 283px;
+    height: 197px;
+    margin: 0px 5px 0px 44px;
+    
+    overflow:hidden;
+}
+.card-image
+{
+    margin-top: -8px;
+    margin-left: -23px;
+}
+.card-icon
+{
+    position:absolute;
+    width: 30px;
+    height: 30px;
+    border: 1px solid white;
+    border-radius: 2px;
+}
+.card-top-icon
+{
+    top: 3px;
+    left: 8px;
+}
+.card-left-icon
+{
+    bottom: 3px;
+    left: 8px;
+}
+.card-center-icon
+{
+    bottom: 3px;
+    left: calc(50% - 15px);
+}
+.card-right-icon
+{
+    bottom: 3px;
+    right: 8px;
+}
+.card-name
+{
+    position:absolute;
+    top: 3px;
+    left: 42px;
+    background-color:black;
+    color: white;
+    border: solid 1px white;
+    font-size: 14px;
+    min-width: 48%;
+    text-align: center;
+}
+.card-action-space
+{
+    position:absolute;
+    top: 30px;
+    left: 58px;
+    right: 8px;
+}
+.card-action-icon
+{
+    height: 14px;
+    width: 14px;
+
+    position: relative;
+    top:initial;
+    left:initial;
+    border: solid 1px white;
+    border-radius: 1px;
+}
+.card-action-left
+{
+    float: left;
+}
+.card-action-inline
+{
+
+    display: inline-block;
+}
+.card-action-text
+{
+    position: relative;
+    font-size: 12px;
+    margin-right: 10px;
+
+    position: relative;
+    top:initial;
+    left:initial;
+}
+.card-action-age
+{
+    background-color:black;
+    color: white;
+    font-size: 10px;
+    width: 16px;
+    text-align: center;
+    border: solid 1px white;
+    border-radius: 1px;
+    display: inline-block;
+}
+
+.card-age
+{
+    position: absolute;
+    top: 3px;
+    right: 8px;
+    background-color:black;
+    color: white;
+    border: solid 1px white;
+    font-size: 14px;
+    width: 22px;
+    text-align: center;
+}
+.card-color
+{
+    position: absolute;
+    top: 3px;
+    right: 58px;
+    color: white;
+    text-align: center;
+}
+
+.game-interaction
+{
+    position:absolute;
+    min-height:230px;
+    left: 2px;
+    bottom: 2px;
+    right: 2px;
+    background-color: teal;
+    border: 2px solid black;
+}
+.game-interaction-title
+{
+    padding-left: 10px;
+    font: bold 14px;
+    color: white;
+}
+.game-interaction-confirm
+{
+    position:absolute;
+    bottom: 2px;
+    right: 2px;
+    border: 1px solid black;
+}
+.card-unselected
+{
+    background-color: #000000;
+    opacity: 0.3;
+}
+.card-selected
+{
+}
+

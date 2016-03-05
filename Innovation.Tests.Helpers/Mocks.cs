@@ -1,18 +1,18 @@
-﻿using Innovation.Models;
-using Innovation.Models.Enums;
-using Innovation.Models.Interfaces;
+﻿
 using Rhino.Mocks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Innovation.Interfaces;
+
 
 namespace Innovation.Tests.Helpers
 {
     public class Mocks
     {
-		public static void ConvertPlayersToMock(Game game)
+		public static void ConvertPlayersToMock(Game.Game game)
 		{
 			for (int i = 0; i < game.Players.Count; i++)
 			{
@@ -22,15 +22,25 @@ namespace Innovation.Tests.Helpers
 				mockPlayer.Name = game.Players[i].Name;
 				mockPlayer.Team = game.Players[i].Team;
 
-				mockPlayer.Stub(p => p.AskToSplay(Arg<Color>.Is.Anything, Arg<SplayDirection>.Is.Anything)).Return(true);
+				mockPlayer.Stub(p => p.AskToSplay(Arg<List<Color>>.Is.Anything, Arg<SplayDirection>.Is.Anything))
+						.Return(Color.None)
+						.WhenCalled(p =>
+						{
+							List<Color> colors = (List<Color>)p.Arguments[0];
+							p.ReturnValue = colors.First();
+						}
+					);
+
 				mockPlayer.Stub(p => p.AskQuestion(Arg<string>.Is.Anything)).Return(true);
 				mockPlayer.Stub(p => p.PickCardFromHand()).Return(mockPlayer.Hand.First());
-				mockPlayer.Stub(p => p.PickPlayer(Arg<List<IPlayer>>.Is.Anything))
+				mockPlayer.Stub(p => p.PickPlayer(Arg<List<IPlayer>>.Is.Anything, Arg<int>.Is.Anything, Arg<int>.Is.Anything))
 						.Return(null)
 						.WhenCalled(p =>
 							{
 								List<IPlayer> players = (List<IPlayer>)p.Arguments[0];
-								p.ReturnValue = players.First();
+								int min = (int)p.Arguments[1];
+								int max = (int)p.Arguments[2];
+								p.ReturnValue = players.Take(Math.Max(1,min));
 							}
 					);
 				mockPlayer.Stub(p => p.PickCard(Arg<List<ICard>>.Is.Anything))

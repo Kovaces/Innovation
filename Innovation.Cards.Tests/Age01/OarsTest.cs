@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
-using Innovation.Models;
+
 using Innovation.Models.Enums;
 using Innovation.Tests.Helpers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -104,9 +104,9 @@ namespace Innovation.Cards.Tests
 
 			string cardName = testGame.Players[1].Hand.Where(x => x.HasSymbol(Symbol.Crown)).First().Name;
 
-			bool result = new Oars().Actions.ToList()[0].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[1], Game = testGame, ActivePlayer = testGame.Players[0], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
+			var result = new Oars().Actions.ToList()[0].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[1], Game = testGame, ActivePlayer = testGame.Players[0], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
 
-			Assert.AreEqual(true, result);
+			Assert.AreEqual(true, result.OtherPlayerActed);
 
 			Assert.AreEqual(1, testGame.Players[0].Tableau.ScorePile.Count);
 			Assert.AreEqual(1, testGame.Players[0].Tableau.GetScore());
@@ -128,11 +128,11 @@ namespace Innovation.Cards.Tests
 
 			//testGame.Players[1].SelectsCards = new List<int>() { 0 };
 
-			testGame.Players[1].Hand.Remove(testGame.Players[1].Hand.First());
+			testGame.Players[1].RemoveCardFromHand(testGame.Players[1].Hand.First());
 
-			bool result = new Oars().Actions.ToList()[0].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[1], Game = testGame, ActivePlayer = testGame.Players[0], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
+			var result = new Oars().Actions.ToList()[0].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[1], Game = testGame, ActivePlayer = testGame.Players[0], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
 
-			Assert.AreEqual(false, result);
+			Assert.AreEqual(false, result.OtherPlayerActed);
 
 			Assert.AreEqual(1, testGame.Players[1].Hand.Count);
 
@@ -160,9 +160,9 @@ namespace Innovation.Cards.Tests
 			string cardName = testGame.Players[1].Hand.Where(x => x.HasSymbol(Symbol.Crown)).First().Name;
 
 			new Oars().Actions.ToList()[0].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[1], Game = testGame, ActivePlayer = testGame.Players[0], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
-			bool result = new Oars().Actions.ToList()[1].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[1], Game = testGame, ActivePlayer = testGame.Players[1], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
+			var result = new Oars().Actions.ToList()[1].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[1], Game = testGame, ActivePlayer = testGame.Players[1], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
 
-			Assert.AreEqual(false, result);
+			Assert.AreEqual(false, result.OtherPlayerActed);
 
 			Assert.AreEqual(2, testGame.Players[1].Hand.Count);
 
@@ -185,12 +185,12 @@ namespace Innovation.Cards.Tests
 
 			//testGame.Players[1].SelectsCards = new List<int>() { 0 };
 
-			testGame.Players[1].Hand.Remove(testGame.Players[1].Hand.First());
+			testGame.Players[1].RemoveCardFromHand(testGame.Players[1].Hand.First());
 
 			new Oars().Actions.ToList()[0].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[1], Game = testGame, ActivePlayer = testGame.Players[0], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
-			bool result = new Oars().Actions.ToList()[1].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[1], Game = testGame, ActivePlayer = testGame.Players[1], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
+			var result = new Oars().Actions.ToList()[1].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[1], Game = testGame, ActivePlayer = testGame.Players[1], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
 
-			Assert.AreEqual(true, result);
+			Assert.AreEqual(true, result.OtherPlayerActed);
 
 			Assert.AreEqual(2, testGame.Players[1].Hand.Count);
 

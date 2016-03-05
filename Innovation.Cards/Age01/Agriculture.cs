@@ -1,9 +1,10 @@
-﻿using System;
+﻿using Innovation.Actions;
+
 using System.Collections.Generic;
 using System.Linq;
-using Innovation.Actions;
-using Innovation.Models;
-using Innovation.Models.Enums;
+using Innovation.Interfaces;
+
+using Innovation.Player;
 
 namespace Innovation.Cards
 {
@@ -16,34 +17,40 @@ namespace Innovation.Cards
 		public override Symbol Left { get { return Symbol.Leaf; } }
 		public override Symbol Center { get { return Symbol.Leaf; } }
 		public override Symbol Right { get { return Symbol.Leaf; } }
-		public override IEnumerable<CardAction> Actions
+		public override IEnumerable<ICardAction> Actions
 		{
 			get
 			{
 				return new List<CardAction>() 
 				{
-                    new CardAction(ActionType.Optional, Symbol.Leaf, "You may return a card from your hand. If you do, draw and score a card of value one higher than the card you returned.", Action1)
+                    new CardAction(ActionType.Optional, Symbol.Leaf, "You may return a card from your hand. If you do, draw and score a card of value one higher than the card you returned.", Action)
                 };
 			}
 		}
 
-		private bool Action1(CardActionParameters parameters)
+		private void Action(ICardActionParameters parameters)
 		{
+			
+
 			ValidateParameters(parameters);
 
-			ICard selectedCard = parameters.TargetPlayer.PickCardFromHand();
+			if (!parameters.TargetPlayer.Hand.Any())
+				return;
+
+            var answer = parameters.TargetPlayer.Interaction.AskQuestion(parameters.TargetPlayer.Id, "You may return a card from your hand. If you do, draw and score a card of value one higher than the card you returned.");
+
+			if (!answer.HasValue || !answer.Value)
+				return;
+
+            var selectedCard = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = parameters.TargetPlayer.Hand, MinimumCardsToPick = 1, MaximumCardsToPick = 1 }).First();
 			
-			if (selectedCard == null)
-				return false;
+			parameters.TargetPlayer.RemoveCardFromHand(selectedCard);
+			
+			Return.Action(selectedCard, parameters.AgeDecks);
 
-			parameters.TargetPlayer.Hand.Remove(selectedCard);
-			Return.Action(selectedCard, parameters.Game);
+			Score.Action(Draw.Action(selectedCard.Age + 1, parameters.AgeDecks), parameters.TargetPlayer);
 
-			int ageToDraw = selectedCard.Age + 1;
-			var cardToScore = Draw.Action(ageToDraw, parameters.Game);
-			Score.Action(cardToScore, parameters.TargetPlayer);
-
-			return true;
+			PlayerActed(parameters);
 		}
 	}
 }

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Innovation.Models;
-using Innovation.Models.Enums;
-using Innovation.Models.Interfaces;
+using Innovation.Interfaces;
+
+
 using Innovation.Tests.Helpers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Rhino.Mocks;
@@ -15,7 +15,7 @@ namespace Innovation.Actions.Tests
 	[TestClass]
 	public class DogmaTests
 	{
-		private Game testGame;
+		private Game.Game testGame;
 
 		private Dictionary<IPlayer, int> playerActionsTaken;
 		private Dictionary<IPlayer, int> playerActionsCalled;
@@ -25,7 +25,7 @@ namespace Innovation.Actions.Tests
 
 		private bool takeAction;
 	
-		private bool TestRequiredActionHandler(CardActionParameters parameters)
+		private CardActionResults TestRequiredActionHandler(CardActionParameters parameters)
 		{
 			targetedPlayer = parameters.TargetPlayer;
 			activePlayer = parameters.ActivePlayer;
@@ -33,10 +33,10 @@ namespace Innovation.Actions.Tests
 			playerActionsCalled[targetedPlayer]++;
 			playerActionsTaken[targetedPlayer]++;
 
-			return true;
+			return new CardActionResults(true, false);
 		}
 
-		private bool TestOptionalActionHandler(CardActionParameters parameters)
+		private CardActionResults TestOptionalActionHandler(CardActionParameters parameters)
 		{
 			targetedPlayer = parameters.TargetPlayer;
 			activePlayer = parameters.ActivePlayer;
@@ -46,7 +46,7 @@ namespace Innovation.Actions.Tests
 			if ((targetedPlayer == activePlayer) || takeAction)
 				playerActionsTaken[targetedPlayer]++;
 
-			return takeAction;
+			return new CardActionResults(true, false);
 		}
 
 		private IPlayer GeneratePlayer(int highestAge, Dictionary<Symbol, int> symbolCounts)
@@ -80,7 +80,7 @@ namespace Innovation.Actions.Tests
 			playerActionsTaken = new Dictionary<IPlayer, int> { { player1, 0 }, { player2, 0 }, { player3, 0 }, { player4, 0 }, };
 			playerActionsCalled = new Dictionary<IPlayer, int> { { player1, 0 }, { player2, 0 }, { player3, 0 }, { player4, 0 }, };
 
-			testGame = new Game { Players = new List<IPlayer> { player1,player2,player3,player4, }, AgeDecks = new List<Deck>{new Deck{Age = 1, Cards = new List<ICard>{new Card()}}}};
+			testGame = new Game.Game { Players = new List<IPlayer> { player1,player2,player3,player4, }, AgeDecks = new List<Deck>{new Deck{Age = 1, Cards = new List<ICard>{new Card()}}}};
 			
 			var testCard = MockRepository.GenerateStub<ICard>();
 			testCard.Stub(c => c.Actions).Return(new List<CardAction> { new CardAction(ActionType.Required, Symbol.Tower, "test", TestRequiredActionHandler) });
@@ -114,7 +114,7 @@ namespace Innovation.Actions.Tests
 			playerActionsTaken = new Dictionary<IPlayer, int> { { player1, 0 }, { player2, 0 }, { player3, 0 }, { player4, 0 }, };
 			playerActionsCalled = new Dictionary<IPlayer, int> { { player1, 0 }, { player2, 0 }, { player3, 0 }, { player4, 0 }, };
 
-			testGame = new Game { Players = new List<IPlayer> { player1, player2, player3, player4, }, AgeDecks = new List<Deck> { new Deck { Age = 1, Cards = new List<ICard> { new Card() } } } };
+			testGame = new Game.Game { Players = new List<IPlayer> { player1, player2, player3, player4, }, AgeDecks = new List<Deck> { new Deck { Age = 1, Cards = new List<ICard> { new Card() } } } };
 
 			var testCard = MockRepository.GenerateStub<ICard>();
 			testCard.Stub(c => c.Actions).Return(new List<CardAction> { new CardAction(ActionType.Required, Symbol.Tower, "test", TestRequiredActionHandler) });
@@ -147,7 +147,7 @@ namespace Innovation.Actions.Tests
 			playerActionsTaken = new Dictionary<IPlayer, int> { { player1, 0 }, { player2, 0 }, { player3, 0 }, { player4, 0 }, };
 			playerActionsCalled = new Dictionary<IPlayer, int> { { player1, 0 }, { player2, 0 }, { player3, 0 }, { player4, 0 }, };
 
-			testGame = new Game { Players = new List<IPlayer> { player1, player2, player3, player4, }, AgeDecks = new List<Deck> { new Deck { Age = 1, Cards = new List<ICard> { new Card() } } } };
+			testGame = new Game.Game { Players = new List<IPlayer> { player1, player2, player3, player4, }, AgeDecks = new List<Deck> { new Deck { Age = 1, Cards = new List<ICard> { new Card() } } } };
 
 			var testCard = MockRepository.GenerateStub<ICard>();
 			testCard.Stub(c => c.Actions).Return(new List<CardAction> { new CardAction(ActionType.Optional, Symbol.Tower, "test", TestOptionalActionHandler) });
@@ -182,7 +182,7 @@ namespace Innovation.Actions.Tests
 			playerActionsTaken = new Dictionary<IPlayer, int> { { player1, 0 }, { player2, 0 }, { player3, 0 }, { player4, 0 }, };
 			playerActionsCalled = new Dictionary<IPlayer, int> { { player1, 0 }, { player2, 0 }, { player3, 0 }, { player4, 0 }, };
 
-			testGame = new Game { Players = new List<IPlayer> { player1, player2, player3, player4, }, AgeDecks = new List<Deck> { new Deck { Age = 1, Cards = new List<ICard> { new Card() } } } };
+			testGame = new Game.Game { Players = new List<IPlayer> { player1, player2, player3, player4, }, AgeDecks = new List<Deck> { new Deck { Age = 1, Cards = new List<ICard> { new Card() } } } };
 
 			var testCard = MockRepository.GenerateStub<ICard>();
 			testCard.Stub(c => c.Actions).Return(new List<CardAction> { new CardAction(ActionType.Optional, Symbol.Tower, "test", TestOptionalActionHandler) });
@@ -217,7 +217,7 @@ namespace Innovation.Actions.Tests
 			playerActionsTaken = new Dictionary<IPlayer, int> { { player1, 0 }, { player2, 0 }, { player3, 0 }, { player4, 0 }, };
 			playerActionsCalled = new Dictionary<IPlayer, int> { { player1, 0 }, { player2, 0 }, { player3, 0 }, { player4, 0 }, };
 
-			testGame = new Game { Players = new List<IPlayer> { player1, player2, player3, player4, }, AgeDecks = new List<Deck> { new Deck { Age = 1, Cards = new List<ICard> { new Card() } } } };
+			testGame = new Game.Game { Players = new List<IPlayer> { player1, player2, player3, player4, }, AgeDecks = new List<Deck> { new Deck { Age = 1, Cards = new List<ICard> { new Card() } } } };
 
 			var testCard = MockRepository.GenerateStub<ICard>();
 			testCard.Stub(c => c.Actions).Return(new List<CardAction> { new CardAction(ActionType.Demand, Symbol.Tower, "test", TestRequiredActionHandler) });
@@ -250,7 +250,7 @@ namespace Innovation.Actions.Tests
 			playerActionsTaken = new Dictionary<IPlayer, int> { { player1, 0 }, { player2, 0 }, { player3, 0 }, { player4, 0 }, };
 			playerActionsCalled = new Dictionary<IPlayer, int> { { player1, 0 }, { player2, 0 }, { player3, 0 }, { player4, 0 }, };
 
-			testGame = new Game { Players = new List<IPlayer> { player1, player2, player3, player4, }, AgeDecks = new List<Deck> { new Deck { Age = 1, Cards = new List<ICard> { new Card() } } } };
+			testGame = new Game.Game { Players = new List<IPlayer> { player1, player2, player3, player4, }, AgeDecks = new List<Deck> { new Deck { Age = 1, Cards = new List<ICard> { new Card() } } } };
 
 			var testCard = MockRepository.GenerateStub<ICard>();
 			testCard.Stub(c => c.Actions).Return(new List<CardAction> { new CardAction(ActionType.Demand, Symbol.Tower, "test", TestRequiredActionHandler) });
@@ -283,7 +283,7 @@ namespace Innovation.Actions.Tests
 			playerActionsTaken = new Dictionary<IPlayer, int> { { player1, 0 }, { player2, 0 }, { player3, 0 }, { player4, 0 }, };
 			playerActionsCalled = new Dictionary<IPlayer, int> { { player1, 0 }, { player2, 0 }, { player3, 0 }, { player4, 0 }, };
 
-			testGame = new Game { Players = new List<IPlayer> { player1, player2, player3, player4, }, AgeDecks = new List<Deck> { new Deck { Age = 1, Cards = new List<ICard> { new Card() } } } };
+			testGame = new Game.Game { Players = new List<IPlayer> { player1, player2, player3, player4, }, AgeDecks = new List<Deck> { new Deck { Age = 1, Cards = new List<ICard> { new Card() } } } };
 
 			var testCard = MockRepository.GenerateStub<ICard>();
 			testCard.Stub(c => c.Actions).Return(new List<CardAction>

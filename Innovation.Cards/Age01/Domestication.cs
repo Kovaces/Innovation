@@ -1,49 +1,54 @@
-﻿using System;
+﻿using Innovation.Actions;
 using System.Collections.Generic;
 using System.Linq;
-using Innovation.Actions;
-using Innovation.Models;
-using Innovation.Models.Enums;
+using Innovation.Interfaces;
+
+
+using Innovation.Player;
 
 namespace Innovation.Cards
 {
-    public class Domestication : CardBase
-    {
-        public override string Name { get { return "Domestication"; } }
-        public override int Age { get { return 1; } }
-        public override Color Color { get { return Color.Yellow; } }
-        public override Symbol Top { get { return Symbol.Tower; } }
-        public override Symbol Left { get { return Symbol.Crown; } }
-        public override Symbol Center { get { return Symbol.Blank; } }
-        public override Symbol Right { get { return Symbol.Tower; } }
-        public override IEnumerable<CardAction> Actions
-        {
-            get
-            {
-                return new List<CardAction>()
+	public class Domestication : CardBase
+	{
+		public override string Name { get { return "Domestication"; } }
+		public override int Age { get { return 1; } }
+		public override Color Color { get { return Color.Yellow; } }
+		public override Symbol Top { get { return Symbol.Tower; } }
+		public override Symbol Left { get { return Symbol.Crown; } }
+		public override Symbol Center { get { return Symbol.Blank; } }
+		public override Symbol Right { get { return Symbol.Tower; } }
+		public override IEnumerable<ICardAction> Actions
+		{
+			get
+			{
+				return new List<CardAction>()
 				{
                     new CardAction(ActionType.Required, Symbol.Tower, "Meld the lowest card in your hand. Draw a [1].", Action1)
                 };
-            }
-        }
+			}
+		}
 
-	    bool Action1(CardActionParameters parameters)
-	    {
+		void Action1(ICardActionParameters parameters)
+		{
+			
+
 			ValidateParameters(parameters);
 
-			if (parameters.TargetPlayer.Hand.Any())
-			{
-				var lowestAgeInHand = parameters.TargetPlayer.Hand.Min(c => c.Age);
-				var lowestCards = parameters.TargetPlayer.Hand.Where(c => c.Age.Equals(lowestAgeInHand)).ToList();
+			if (!parameters.TargetPlayer.Hand.Any())
+				return;
 
-				ICard cardToMeld = parameters.TargetPlayer.PickCard(lowestCards);
-				parameters.TargetPlayer.Hand.Remove(cardToMeld);
-				Meld.Action(cardToMeld, parameters.TargetPlayer);
-			}
+			var lowestAgeInHand = parameters.TargetPlayer.Hand.Min(c => c.Age);
+			var lowestCards = parameters.TargetPlayer.Hand.Where(c => c.Age.Equals(lowestAgeInHand)).ToList();
 
-			parameters.TargetPlayer.Hand.Add(Draw.Action(1, parameters.Game));
+			var cardToMeld = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = lowestCards, MinimumCardsToPick = 1, MaximumCardsToPick = 1 }).First();
+			
+			parameters.TargetPlayer.RemoveCardFromHand(cardToMeld);
 
-			return true;
-	    }
-    }
+			Meld.Action(cardToMeld, parameters.TargetPlayer);
+
+			parameters.TargetPlayer.AddCardToHand(Draw.Action(1, parameters.AgeDecks));
+
+			PlayerActed(parameters);
+		}
+	}
 }

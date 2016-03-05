@@ -2,8 +2,11 @@
 using System.Linq;
 using System.Collections.Generic;
 using Innovation.Actions;
-using Innovation.Models;
-using Innovation.Models.Enums;
+using Innovation.Interfaces;
+
+
+using Innovation.Player;
+
 namespace Innovation.Cards
 {
     public class Currency : CardBase
@@ -15,7 +18,7 @@ namespace Innovation.Cards
         public override Symbol Left { get { return Symbol.Crown; } }
         public override Symbol Center { get { return Symbol.Blank; } }
         public override Symbol Right { get { return Symbol.Crown; } }
-        public override IEnumerable<CardAction> Actions
+        public override IEnumerable<ICardAction> Actions
 		{
 			get
 			{
@@ -25,27 +28,33 @@ namespace Innovation.Cards
                 };
 			}
 		}
-		bool Action1(CardActionParameters parameters)
+		void Action1(ICardActionParameters parameters)
 		{
+			
+
 			ValidateParameters(parameters);
 
-			List<ICard> cardsToReturn = parameters.TargetPlayer.PickMultipleCards(parameters.TargetPlayer.Hand, 0, parameters.TargetPlayer.Hand.Count).ToList();
-			if (cardsToReturn.Count == 0)
-				return false;
+			if (parameters.TargetPlayer.Hand.Any())
+				return;
 
-			
-			foreach (ICard card in cardsToReturn)
+			var answer = parameters.TargetPlayer.Interaction.AskQuestion(parameters.TargetPlayer.Id, "You may return any number of cards from your hand. If you do, draw and score a [2] for every different value card you returned.");
+			if (!answer.HasValue || !answer.Value)
+				return;
+
+			var cardsToReturn = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = parameters.TargetPlayer.Hand, MinimumCardsToPick = 1, MaximumCardsToPick = parameters.TargetPlayer.Hand.Count }).ToList();
+
+			foreach (var card in cardsToReturn)
 			{
-				parameters.TargetPlayer.Hand.Remove(card);
-				Return.Action(card, parameters.Game);
+				parameters.TargetPlayer.RemoveCardFromHand(card);
+				Return.Action(card, parameters.AgeDecks);
 			}
 
-			int differentAges = cardsToReturn.Select(x => x.Age).Distinct().Count();
-			
-			for (int i = 0; i < differentAges; i++)
-				Score.Action(Draw.Action(2, parameters.Game), parameters.TargetPlayer);
+			var differentAges = cardsToReturn.Select(x => x.Age).Distinct().Count();
 
-			return true;
+			for (var i = 0; i < differentAges; i++)
+				Score.Action(Draw.Action(2, parameters.AgeDecks), parameters.TargetPlayer);
+
+			PlayerActed(parameters);
 		}
 	}
 }

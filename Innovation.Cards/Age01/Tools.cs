@@ -1,9 +1,11 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Collections.Generic;
 using Innovation.Actions;
-using Innovation.Models;
-using Innovation.Models.Enums;
+using Innovation.Interfaces;
+
+
+using Innovation.Player;
+
 namespace Innovation.Cards
 {
     public class Tools : CardBase
@@ -15,7 +17,7 @@ namespace Innovation.Cards
         public override Symbol Left { get { return Symbol.Lightbulb; } }
         public override Symbol Center { get { return Symbol.Lightbulb; } }
         public override Symbol Right { get { return Symbol.Tower; } }
-        public override IEnumerable<CardAction> Actions
+        public override IEnumerable<ICardAction> Actions
         {
             get
             {
@@ -27,51 +29,60 @@ namespace Innovation.Cards
             }
         }
 
-        bool Action1(CardActionParameters parameters) 
+        void Action1(ICardActionParameters parameters) 
 		{
+			
+
 			ValidateParameters(parameters);
 
-			if (parameters.TargetPlayer.Hand.Count < 3)
-				return false;
+	        if (parameters.TargetPlayer.Hand.Count < 3)
+		        return;
 
-			List<ICard> cardsToReturn = parameters.TargetPlayer.PickMultipleCards(parameters.TargetPlayer.Hand, 3, 3).ToList();
-			
-			if (cardsToReturn.Count == 0)
-				return false;
+			var answer = parameters.TargetPlayer.Interaction.AskQuestion(parameters.TargetPlayer.Id, "You may return three cards from your hand. If you do, draw and meld a [3].");
 
-			foreach (ICard card in cardsToReturn)
+			if (!answer.HasValue || !answer.Value)
+				return;
+
+			var selectedCards = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = parameters.TargetPlayer.Hand, MinimumCardsToPick = 3, MaximumCardsToPick = 3 }).ToList();
+
+			foreach (var card in selectedCards)
 			{
-				parameters.TargetPlayer.Hand.Remove(card);
-				Return.Action(card, parameters.Game);
+				parameters.TargetPlayer.RemoveCardFromHand(card);
+				Return.Action(card, parameters.AgeDecks);
 			}
 
-			Meld.Action(Draw.Action(3, parameters.Game), parameters.TargetPlayer);
+			Meld.Action(Draw.Action(3, parameters.AgeDecks), parameters.TargetPlayer);
 
-			return true;
+			PlayerActed(parameters);
 		}
 
-        bool Action2(CardActionParameters parameters) 
+
+        void Action2(ICardActionParameters parameters) 
 		{
+			
+
 			ValidateParameters(parameters);
 
-			List<ICard> ageThreeCardsInHand = parameters.TargetPlayer.Hand.Where(x => x.Age == 3).ToList();
+			var ageThreeCardsInHand = parameters.TargetPlayer.Hand.Where(x => x.Age == 3).ToList();
 
 			if (ageThreeCardsInHand.Count == 0)
-				return false;
+				return;
 
-			ICard cardToReturn = parameters.TargetPlayer.PickCard(ageThreeCardsInHand);
+			var answer = parameters.TargetPlayer.Interaction.AskQuestion(parameters.TargetPlayer.Id, "You may return a [3] from your hand. If you do, draw three [1].");
 
-	        if (cardToReturn == null)
-		        return false;
+			if (!answer.HasValue || !answer.Value)
+				return;
 
-			parameters.TargetPlayer.Hand.Remove(cardToReturn);
-			Return.Action(cardToReturn, parameters.Game);
+			var cardToReturn = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = ageThreeCardsInHand, MinimumCardsToPick = 1, MaximumCardsToPick = 1 }).First();
 
-			parameters.TargetPlayer.Hand.Add(Draw.Action(1, parameters.Game));
-			parameters.TargetPlayer.Hand.Add(Draw.Action(1, parameters.Game));
-			parameters.TargetPlayer.Hand.Add(Draw.Action(1, parameters.Game));
+			parameters.TargetPlayer.RemoveCardFromHand(cardToReturn);
+			Return.Action(cardToReturn, parameters.AgeDecks);
 
-			return true;
+			parameters.TargetPlayer.AddCardToHand(Draw.Action(1, parameters.AgeDecks));
+			parameters.TargetPlayer.AddCardToHand(Draw.Action(1, parameters.AgeDecks));
+			parameters.TargetPlayer.AddCardToHand(Draw.Action(1, parameters.AgeDecks));
+
+			PlayerActed(parameters);
 		}
     }
 }

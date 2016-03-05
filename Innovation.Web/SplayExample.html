@@ -1,0 +1,60 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+</head>
+<body>
+<div style="position: relative; border: 1px black solid; width: 100%; height: 750px;">
+	<div id="card0" style="position: absolute; z-index: 0;"><img src="Images/Cards/01/Agriculture-300x214.jpg"/></div>
+	<div id="card1" style="position: absolute; z-index: -1;"><img src="Images/Cards/01/Archery-300x214.jpg"/></div>
+	<div id="card2" style="position: absolute; z-index: -2;"><img src="Images/Cards/01/CityStates-300x214.jpg"/></div>
+	<div id="card3" style="position: absolute; z-index: -3;"><img src="Images/Cards/01/Clothing-300x214.jpg"/></div>
+	<div id="card4" style="position: absolute; z-index: -4;"><img src="Images/Cards/01/CodeofLaws-300x214.jpg"/></div>
+	<div style="position: absolute; bottom: 0px; left: 0px;">
+		<input id="noSplay" type="button" value="No Splay" />
+		<input id="leftSplay" type="button" value="Left Splay" />
+		<input id="rightSplay" type="button" value="Right Splay" />
+		<input id="topSplay" type="button" value="Top Splay" />
+	</div>
+</div>
+
+
+
+<script src="Scripts/jquery-1.11.2.min.js"></script>
+	<script type="text/javascript">
+		$(function () {
+			$('#noSplay').click(function () {
+				CardLoopIncrementing('left', 0, 5);
+				CardLoopIncrementing('top', 0, 5);
+			});
+			$('#leftSplay').click(function () {
+				CardLoopIncrementing('left', 90, 5);
+				CardLoopIncrementing('top', 0, 5);
+			});
+			$('#rightSplay').click(function () {
+				CardLoopDecrementing('left', 90, 5);
+				CardLoopIncrementing('top', 0, 5);
+			});
+			$('#topSplay').click(function () {
+				CardLoopIncrementing('left', 0, 5);
+				CardLoopIncrementing('top', 90, 5);
+			});
+		});
+
+		function CardLoopIncrementing(style, distance, numberOfCards)
+		{
+			for (var i = 0; i < numberOfCards; i++) {
+				var cardId = '#card' + i;
+				$(cardId).css(style, distance * i);
+			}
+		}
+
+		function CardLoopDecrementing(style, distance, numberOfCards) {
+			for (var i = numberOfCards; i > 0; i--) {
+				var cardId = '#card' + (i - 1);
+				$(cardId).css(style, distance * (numberOfCards - i));
+			}
+		}
+	</script> 
+</body>
+</html>
