@@ -8,25 +8,21 @@ namespace Innovation.Cards
 {
     public class Mapmaking : CardBase
     {
-        public override string Name { get { return "Mapmaking"; } }
-        public override int Age { get { return 2; } }
-        public override Color Color { get { return Color.Green; } }
-        public override Symbol Top { get { return Symbol.Blank; } }
-        public override Symbol Left { get { return Symbol.Crown; } }
-        public override Symbol Center { get { return Symbol.Crown; } }
-        public override Symbol Right { get { return Symbol.Tower; } }
-        public override IEnumerable<CardAction> Actions
+        public override string Name => "Mapmaking";
+        public override int Age => 2;
+        public override Color Color => Color.Green;
+        public override Symbol Top => Symbol.Blank;
+        public override Symbol Left => Symbol.Crown;
+        public override Symbol Center => Symbol.Crown;
+        public override Symbol Right => Symbol.Tower;
+
+        public override IEnumerable<CardAction> Actions => new List<CardAction>()
         {
-            get
-            {
-                return new List<CardAction>()
-				{
-                    new CardAction(ActionType.Demand, Symbol.Crown, "I demand you transfer a [1] from your score pile, if it has any, to my score pile!", Action1)
-                    , new CardAction(ActionType.Required, Symbol.Crown, "If any card was transferred due to the demand, draw and score a [1].", Action2)
-                };
-            }
-        }
-		bool Action1(CardActionParameters parameters)
+            new CardAction(ActionType.Demand, Symbol.Crown, "I demand you transfer a [1] from your score pile, if it has any, to my score pile!", Action1)
+            , new CardAction(ActionType.Required, Symbol.Crown, "If any card was transferred due to the demand, draw and score a [1].", Action2)
+        };
+
+        bool Action1(CardActionParameters parameters)
 		{
 			ValidateParameters(parameters);
 

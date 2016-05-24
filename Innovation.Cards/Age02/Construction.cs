@@ -10,25 +10,21 @@ namespace Innovation.Cards
 {
     public class Construction : CardBase
     {
-        public override string Name { get { return "Construction"; } }
-        public override int Age { get { return 2; } }
-        public override Color Color { get { return Color.Red; } }
-        public override Symbol Top { get { return Symbol.Tower; } }
-        public override Symbol Left { get { return Symbol.Blank; } }
-        public override Symbol Center { get { return Symbol.Tower; } }
-        public override Symbol Right { get { return Symbol.Tower; } }
-        public override IEnumerable<CardAction> Actions
+        public override string Name => "Construction";
+        public override int Age => 2;
+        public override Color Color => Color.Red;
+        public override Symbol Top => Symbol.Tower;
+        public override Symbol Left => Symbol.Blank;
+        public override Symbol Center => Symbol.Tower;
+        public override Symbol Right => Symbol.Tower;
+
+        public override IEnumerable<CardAction> Actions => new List<CardAction>()
         {
-            get
-            {
-                return new List<CardAction>()
-				{
-                    new CardAction(ActionType.Demand, Symbol.Tower, "I demand you transfer two cards from your hand to my hand! Draw a [2]!", Action1)
-                    ,new CardAction(ActionType.Required, Symbol.Tower, "If you are the only player with five top cards, claim the Empire achievement.", Action2)
-                };
-            }
-        }
-		bool Action1(CardActionParameters parameters)
+            new CardAction(ActionType.Demand, Symbol.Tower, "I demand you transfer two cards from your hand to my hand! Draw a [2]!", Action1)
+            ,new CardAction(ActionType.Required, Symbol.Tower, "If you are the only player with five top cards, claim the Empire achievement.", Action2)
+        };
+
+        bool Action1(CardActionParameters parameters)
 		{
 			ValidateParameters(parameters);
 

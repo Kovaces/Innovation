@@ -6,23 +6,19 @@ namespace Innovation.Cards
 {
     public class Collaboration : CardBase
     {
-        public override string Name { get { return "Collaboration"; } }
-        public override int Age { get { return 9; } }
-        public override Color Color { get { return Color.Green; } }
-        public override Symbol Top { get { return Symbol.Blank; } }
-        public override Symbol Left { get { return Symbol.Crown; } }
-        public override Symbol Center { get { return Symbol.Clock; } }
-        public override Symbol Right { get { return Symbol.Crown; } }
-        public override IEnumerable<CardAction> Actions
-        {
-            get
-            {
-                return new List<CardAction>(){
-                    new CardAction(ActionType.Demand,Symbol.Crown,"I demand you draw two [9] and reveal them! Transfer the card of my choice to my board, and meld the other!", Action1)
-                    ,new CardAction(ActionType.Required,Symbol.Crown,"If you have ten or more green cards on your board, you win.", Action2)
-                };
-            }
-        }
+        public override string Name => "Collaboration";
+        public override int Age => 9;
+        public override Color Color => Color.Green;
+        public override Symbol Top => Symbol.Blank;
+        public override Symbol Left => Symbol.Crown;
+        public override Symbol Center => Symbol.Clock;
+        public override Symbol Right => Symbol.Crown;
+
+        public override IEnumerable<CardAction> Actions => new List<CardAction>(){
+            new CardAction(ActionType.Demand,Symbol.Crown,"I demand you draw two [9] and reveal them! Transfer the card of my choice to my board, and meld the other!", Action1)
+            ,new CardAction(ActionType.Required,Symbol.Crown,"If you have ten or more green cards on your board, you win.", Action2)
+        };
+
         bool Action1(CardActionParameters parameters) { throw new NotImplementedException(); }
         bool Action2(CardActionParameters parameters) { throw new NotImplementedException(); }
     }

@@ -31,12 +31,9 @@ namespace Innovation
 			_games.Clear();
         }
 
-		public static Innovation Instance
-		{
-			get { return _instance.Value; }
-		}
+		public static Innovation Instance => _instance.Value;
 
-		public void AddUser(string userId)
+	    public void AddUser(string userId)
 		{
 			var player = new Player { Id = userId, PickCardHandler = PickCard, PickMultipleCardsHandler = PickMultipleCards, AskQuestionHandler = AskQuestion, PickPlayerHandler = PickPlayer };
 			_players.TryAdd(player.Id, player);

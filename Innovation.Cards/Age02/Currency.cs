@@ -8,24 +8,20 @@ namespace Innovation.Cards
 {
     public class Currency : CardBase
 	{
-        public override string Name { get { return "Currency"; } }
-        public override int Age { get { return 2; } }
-        public override Color Color { get { return Color.Green; } }
-        public override Symbol Top { get { return Symbol.Leaf; } }
-        public override Symbol Left { get { return Symbol.Crown; } }
-        public override Symbol Center { get { return Symbol.Blank; } }
-        public override Symbol Right { get { return Symbol.Crown; } }
-        public override IEnumerable<CardAction> Actions
-		{
-			get
-			{
-				return new List<CardAction>()
-				{
-                    new CardAction(ActionType.Optional, Symbol.Crown, "You may return any number of cards from your hand. If you do, draw and score a [2] for every different value card you returned.", Action1)
-                };
-			}
-		}
-		bool Action1(CardActionParameters parameters)
+        public override string Name => "Currency";
+        public override int Age => 2;
+        public override Color Color => Color.Green;
+        public override Symbol Top => Symbol.Leaf;
+        public override Symbol Left => Symbol.Crown;
+        public override Symbol Center => Symbol.Blank;
+        public override Symbol Right => Symbol.Crown;
+
+        public override IEnumerable<CardAction> Actions => new List<CardAction>()
+        {
+            new CardAction(ActionType.Optional, Symbol.Crown, "You may return any number of cards from your hand. If you do, draw and score a [2] for every different value card you returned.", Action1)
+        };
+
+        bool Action1(CardActionParameters parameters)
 		{
 			ValidateParameters(parameters);
 

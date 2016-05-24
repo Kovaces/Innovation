@@ -10,23 +10,19 @@ namespace Innovation.Cards
 {
     public class RoadBuilding : CardBase
     {
-        public override string Name { get { return "Road Building"; } }
-        public override int Age { get { return 2; } }
-        public override Color Color { get { return Color.Red; } }
-        public override Symbol Top { get { return Symbol.Tower; } }
-        public override Symbol Left { get { return Symbol.Tower; } }
-        public override Symbol Center { get { return Symbol.Blank; } }
-        public override Symbol Right { get { return Symbol.Tower; } }
-        public override IEnumerable<CardAction> Actions
+        public override string Name => "Road Building";
+        public override int Age => 2;
+        public override Color Color => Color.Red;
+        public override Symbol Top => Symbol.Tower;
+        public override Symbol Left => Symbol.Tower;
+        public override Symbol Center => Symbol.Blank;
+        public override Symbol Right => Symbol.Tower;
+
+        public override IEnumerable<CardAction> Actions => new List<CardAction>()
         {
-            get
-            {
-                return new List<CardAction>()
-				{
-                    new CardAction(ActionType.Required, Symbol.Tower, "Meld one or two cards from your hand. If you melded two, you may transfer your top red card to another player's board. If you do, transfer that player's top green card to your board.", Action1)
-                };
-            }
-        }
+            new CardAction(ActionType.Required, Symbol.Tower, "Meld one or two cards from your hand. If you melded two, you may transfer your top red card to another player's board. If you do, transfer that player's top green card to your board.", Action1)
+        };
+
         bool Action1(CardActionParameters parameters) 
 		{
 			ValidateParameters(parameters);

@@ -6,31 +6,26 @@ using Innovation.Models;
 using Innovation.Models.Enums;
 namespace Innovation.Cards
 {
-    public class Masonry : CardBase
-    {
-        public override string Name { get { return "Masonry"; } }
-		public override int Age { get { return 1; } }
-		public override Color Color { get { return Color.Yellow; } }
-		public override Symbol Top { get { return Symbol.Tower; } }
-		public override Symbol Left { get { return Symbol.Blank; } }
-		public override Symbol Center { get { return Symbol.Tower; } }
-		public override Symbol Right { get { return Symbol.Tower; } }
-		public override IEnumerable<CardAction> Actions
-        {
-            get
-            {
-                return new List<CardAction>()
-				{
-                    new CardAction(ActionType.Optional, Symbol.Tower, "You may meld any number of cards from your hand, each with a [TOWER]. If you melded four or more cards in this way, claim the Monument achievement.", Action1)
-                };
-            }
-        }
+	public class Masonry : CardBase
+	{
+		public override string Name => "Masonry";
+		public override int Age => 1;
+		public override Color Color => Color.Yellow;
+		public override Symbol Top => Symbol.Tower;
+		public override Symbol Left => Symbol.Blank;
+		public override Symbol Center => Symbol.Tower;
+		public override Symbol Right => Symbol.Tower;
 
-        bool Action1(CardActionParameters parameters) 
+		public override IEnumerable<CardAction> Actions => new List<CardAction>()
+		{
+			new CardAction(ActionType.Optional, Symbol.Tower, "You may meld any number of cards from your hand, each with a [TOWER]. If you melded four or more cards in this way, claim the Monument achievement.", Action1)
+		};
+
+		private bool Action1(CardActionParameters parameters) 
 		{
 			ValidateParameters(parameters);
 
-	        var cardsWithTowers = parameters.TargetPlayer.Hand.Where(c => c.HasSymbol(Symbol.Tower)).ToList();
+			var cardsWithTowers = parameters.TargetPlayer.Hand.Where(c => c.HasSymbol(Symbol.Tower)).ToList();
 			
 			if (cardsWithTowers.Count == 0)
 				return false;
@@ -47,5 +42,5 @@ namespace Innovation.Cards
 
 			return (selectedCards.Count > 0);
 		}
-    }
+	}
 }

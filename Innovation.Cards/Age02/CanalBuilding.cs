@@ -7,24 +7,20 @@ namespace Innovation.Cards
 {
     public class CanalBuilding : CardBase
     {
-        public override string Name { get { return "Canal Building"; } }
-        public override int Age { get { return 2; } }
-        public override Color Color { get { return Color.Yellow; } }
-        public override Symbol Top { get { return Symbol.Blank; } }
-        public override Symbol Left { get { return Symbol.Crown; } }
-        public override Symbol Center { get { return Symbol.Leaf; } }
-        public override Symbol Right { get { return Symbol.Crown; } }
-        public override IEnumerable<CardAction> Actions
+        public override string Name => "Canal Building";
+        public override int Age => 2;
+        public override Color Color => Color.Yellow;
+        public override Symbol Top => Symbol.Blank;
+        public override Symbol Left => Symbol.Crown;
+        public override Symbol Center => Symbol.Leaf;
+        public override Symbol Right => Symbol.Crown;
+
+        public override IEnumerable<CardAction> Actions => new List<CardAction>()
         {
-            get
-            {
-                return new List<CardAction>()
-				{
-                    new CardAction(ActionType.Optional, Symbol.Crown, "You may exchange all the highest cards in your hand with all the highest cards in your score pile.", Action1)
-                };
-            }
-        }
-		bool Action1(CardActionParameters parameters)
+            new CardAction(ActionType.Optional, Symbol.Crown, "You may exchange all the highest cards in your hand with all the highest cards in your score pile.", Action1)
+        };
+
+        bool Action1(CardActionParameters parameters)
 		{
 			ValidateParameters(parameters);
 

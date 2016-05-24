@@ -8,24 +8,20 @@ namespace Innovation.Cards
 {
     public class Philosophy : CardBase
     {
-        public override string Name { get { return "Philosophy"; } }
-        public override int Age { get { return 2; } }
-        public override Color Color { get { return Color.Purple; } }
-        public override Symbol Top { get { return Symbol.Blank; } }
-        public override Symbol Left { get { return Symbol.Lightbulb; } }
-        public override Symbol Center { get { return Symbol.Lightbulb; } }
-        public override Symbol Right { get { return Symbol.Lightbulb; } }
-        public override IEnumerable<CardAction> Actions
+        public override string Name => "Philosophy";
+        public override int Age => 2;
+        public override Color Color => Color.Purple;
+        public override Symbol Top => Symbol.Blank;
+        public override Symbol Left => Symbol.Lightbulb;
+        public override Symbol Center => Symbol.Lightbulb;
+        public override Symbol Right => Symbol.Lightbulb;
+
+        public override IEnumerable<CardAction> Actions => new List<CardAction>()
         {
-            get
-            {
-                return new List<CardAction>()
-				{
-                    new CardAction(ActionType.Optional, Symbol.Lightbulb, "You may splay left any one color of your cards.", Action1)
-                    , new CardAction(ActionType.Optional, Symbol.Lightbulb, "You may score a card from your hand.", Action2)
-                };
-            }
-        }
+            new CardAction(ActionType.Optional, Symbol.Lightbulb, "You may splay left any one color of your cards.", Action1)
+            , new CardAction(ActionType.Optional, Symbol.Lightbulb, "You may score a card from your hand.", Action2)
+        };
+
         bool Action1(CardActionParameters parameters) 
 		{
 			ValidateParameters(parameters);
