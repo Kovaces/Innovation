@@ -8,8 +8,8 @@ namespace Innovation.Extensions
 	{
 		public static List<T> Shuffle<T>(this List<T> source, Random rng)
 		{
-			if (source == null) throw new ArgumentNullException("source");
-			if (rng == null) throw new ArgumentNullException("rng");
+			if (source == null) throw new ArgumentNullException(nameof(source));
+			if (rng == null) throw new ArgumentNullException(nameof(rng));
 
 			for (var i = 0; i < source.Count(); i++)
 			{

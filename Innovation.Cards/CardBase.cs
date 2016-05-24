@@ -33,16 +33,16 @@ namespace Innovation.Cards
 		protected void ValidateParameters(ICardActionParameters parameters)
 		{
 			if (parameters == null)
-				throw new ArgumentNullException("parameters");
+				throw new ArgumentNullException(nameof(parameters));
 
 			if (parameters.TargetPlayer == null)
-				throw new ArgumentOutOfRangeException("parameters", "Target player cannot be null");
+				throw new ArgumentOutOfRangeException(nameof(parameters), "Target player cannot be null");
 			
 			if (parameters.ActivePlayer == null)
-				throw new ArgumentOutOfRangeException("parameters", "Active player cannot be null");
+				throw new ArgumentOutOfRangeException(nameof(parameters), "Active player cannot be null");
 
 			if (parameters.AgeDecks == null)
-				throw new ArgumentOutOfRangeException("parameters", "Age Decks cannot be null");
+				throw new ArgumentOutOfRangeException(nameof(parameters), "Age Decks cannot be null");
 		}
 
         protected ICard DrawAndReveal(ICardActionParameters parameters, int age)

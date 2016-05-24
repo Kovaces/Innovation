@@ -31,50 +31,42 @@ namespace Innovation.Player
 		public void AddCardToHand(ICard card)
 		{
 			Hand.Add(card);
-			if (UpdateClientHandler != null)
-				UpdateClientHandler(Id);
+		    UpdateClientHandler?.Invoke(Id);
 		}
 		public void RemoveCardFromHand(ICard card)
 		{
 			Hand.Remove(card);
-			if (UpdateClientHandler != null)
-				UpdateClientHandler(Id);
+		    UpdateClientHandler?.Invoke(Id);
 		}
 		public void AddCardToStack(ICard card)
 		{
 			Tableau.Stacks[card.Color].AddCardToTop(card);
-			if (UpdateClientHandler != null)
-				UpdateClientHandler(Id);
+		    UpdateClientHandler?.Invoke(Id);
 		}
 		public void RemoveCardFromStack(ICard card)
 		{
 			Tableau.Stacks[card.Color].RemoveCard(card);
-			if (UpdateClientHandler != null)
-				UpdateClientHandler(Id);
+		    UpdateClientHandler?.Invoke(Id);
 		}
 		public void TuckCard(ICard card)
 		{
 			Tableau.Stacks[card.Color].AddCardToBottom(card);
-			if (UpdateClientHandler != null)
-				UpdateClientHandler(Id);
+		    UpdateClientHandler?.Invoke(Id);
 		}
 		public void SplayStack(Color stackColor, SplayDirection direction)
 		{
 			Tableau.Stacks[stackColor].Splay(direction);
-			if (UpdateClientHandler != null)
-				UpdateClientHandler(Id);
+		    UpdateClientHandler?.Invoke(Id);
 		}
 		public void AddCardToScorePile(ICard card)
 		{
 			Tableau.ScorePile.Add(card);
-			if (UpdateClientHandler != null)
-				UpdateClientHandler(Id);
+		    UpdateClientHandler?.Invoke(Id);
 		}
 		public void RemoveCardFromScorePile(ICard card)
 		{
 			Tableau.ScorePile.Remove(card);
-			if (UpdateClientHandler != null)
-				UpdateClientHandler(Id);
+		    UpdateClientHandler?.Invoke(Id);
 		}
 	}
 }
