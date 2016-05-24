@@ -23,21 +23,21 @@ namespace Innovation.Cards
         };
 
         void Action1(ICardActionParameters parameters)
-		{
-			
+        {
+            
 
-			ValidateParameters(parameters);
+            ValidateParameters(parameters);
 
-			int cardsInScorePile = parameters.TargetPlayer.Tableau.ScorePile.Count;
-			int cardsInHand = parameters.TargetPlayer.Hand.Count;
+            int cardsInScorePile = parameters.TargetPlayer.Tableau.ScorePile.Count;
+            int cardsInHand = parameters.TargetPlayer.Hand.Count;
 
-			if (cardsInScorePile <= cardsInHand)
-				return;
-			
-			parameters.TargetPlayer.AddCardToHand(Draw.Action(3, parameters.AgeDecks));
-			parameters.TargetPlayer.AddCardToHand(Draw.Action(3, parameters.AgeDecks));
+            if (cardsInScorePile <= cardsInHand)
+                return;
+            
+            parameters.TargetPlayer.AddCardToHand(Draw.Action(3, parameters.AgeDecks));
+            parameters.TargetPlayer.AddCardToHand(Draw.Action(3, parameters.AgeDecks));
 
-			PlayerActed(parameters);
-		}
+            PlayerActed(parameters);
+        }
     }
 }

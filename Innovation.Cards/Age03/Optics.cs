@@ -8,8 +8,8 @@ using Innovation.Player;
 
 namespace Innovation.Cards
 {
-	public class Optics : CardBase
-	{
+    public class Optics : CardBase
+    {
         public override string Name => "Optics";
         public override int Age => 3;
         public override Color Color => Color.Red;
@@ -23,38 +23,38 @@ namespace Innovation.Cards
         };
 
 
-		void Action1(ICardActionParameters parameters)
-		{
-			ValidateParameters(parameters);
+        void Action1(ICardActionParameters parameters)
+        {
+            ValidateParameters(parameters);
 
-			//Draw and meld a [3]
-			var drawnCard = Draw.Action(3, parameters.AgeDecks);
-			Meld.Action(drawnCard, parameters.TargetPlayer);
+            //Draw and meld a [3]
+            var drawnCard = Draw.Action(3, parameters.AgeDecks);
+            Meld.Action(drawnCard, parameters.TargetPlayer);
 
-			PlayerActed(parameters);
+            PlayerActed(parameters);
 
-			//If it has a [CROWN], draw and score a [4]
-			if (drawnCard.HasSymbol(Symbol.Crown))
-			{
-				Score.Action(Draw.Action(4, parameters.AgeDecks), parameters.TargetPlayer);
-				return;
-			}
+            //If it has a [CROWN], draw and score a [4]
+            if (drawnCard.HasSymbol(Symbol.Crown))
+            {
+                Score.Action(Draw.Action(4, parameters.AgeDecks), parameters.TargetPlayer);
+                return;
+            }
 
-			//Otherwise, transfer a card from your score pile to the score pile of an opponent with fewer points than you.
-			if (!parameters.TargetPlayer.Tableau.ScorePile.Any())
-				return;
+            //Otherwise, transfer a card from your score pile to the score pile of an opponent with fewer points than you.
+            if (!parameters.TargetPlayer.Tableau.ScorePile.Any())
+                return;
 
-			var playerScore = parameters.TargetPlayer.Tableau.GetScore();
-			var validOpponents = parameters.Players.Where(p => p.Tableau.GetScore() < playerScore).ToList();
+            var playerScore = parameters.TargetPlayer.Tableau.GetScore();
+            var validOpponents = parameters.Players.Where(p => p.Tableau.GetScore() < playerScore).ToList();
 
-			if (!validOpponents.Any())
-				return;
+            if (!validOpponents.Any())
+                return;
 
-			var selectedCard = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters {CardsToPickFrom = parameters.TargetPlayer.Tableau.ScorePile, MinimumCardsToPick = 1, MaximumCardsToPick = 1}).First();
-			var selectedOpponent = parameters.TargetPlayer.Interaction.PickPlayer(parameters.TargetPlayer.Id, validOpponents);
+            var selectedCard = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters {CardsToPickFrom = parameters.TargetPlayer.Tableau.ScorePile, MinimumCardsToPick = 1, MaximumCardsToPick = 1}).First();
+            var selectedOpponent = parameters.TargetPlayer.Interaction.PickPlayer(parameters.TargetPlayer.Id, validOpponents);
 
-			parameters.TargetPlayer.RemoveCardFromScorePile(selectedCard);
-			selectedOpponent.AddCardToScorePile(selectedCard);
-		}
-	}
+            parameters.TargetPlayer.RemoveCardFromScorePile(selectedCard);
+            selectedOpponent.AddCardToScorePile(selectedCard);
+        }
+    }
 }

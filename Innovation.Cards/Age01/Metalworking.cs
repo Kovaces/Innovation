@@ -22,23 +22,23 @@ namespace Innovation.Cards
         };
 
         void Action1(ICardActionParameters parameters)
-		{
-			
+        {
+            
 
-			ValidateParameters(parameters);
+            ValidateParameters(parameters);
 
-			var drawnCard = DrawAndReveal(parameters, 1);
-			
-			while (drawnCard.HasSymbol(Symbol.Tower))
-			{
-				Score.Action(drawnCard, parameters.TargetPlayer);
+            var drawnCard = DrawAndReveal(parameters, 1);
+            
+            while (drawnCard.HasSymbol(Symbol.Tower))
+            {
+                Score.Action(drawnCard, parameters.TargetPlayer);
 
-				drawnCard = DrawAndReveal(parameters, 1);
-			}
+                drawnCard = DrawAndReveal(parameters, 1);
+            }
 
-			parameters.TargetPlayer.AddCardToHand(drawnCard);
+            parameters.TargetPlayer.AddCardToHand(drawnCard);
 
-			PlayerActed(parameters);
-		}
+            PlayerActed(parameters);
+        }
     }
 }

@@ -25,34 +25,34 @@ namespace Innovation.Cards
         };
 
         void Action1(ICardActionParameters parameters) 
-		{
-			
+        {
+            
 
-			ValidateParameters(parameters);
+            ValidateParameters(parameters);
 
-	        var cardsWithTowers = parameters.TargetPlayer.Hand.Where(c => c.HasSymbol(Symbol.Tower)).ToList();
+            var cardsWithTowers = parameters.TargetPlayer.Hand.Where(c => c.HasSymbol(Symbol.Tower)).ToList();
 
-	        if (cardsWithTowers.Count == 0)
-		        return;
+            if (cardsWithTowers.Count == 0)
+                return;
 
-			var answer = parameters.TargetPlayer.Interaction.AskQuestion(parameters.TargetPlayer.Id, "You may meld any number of cards from your hand, each with a [TOWER]. If you melded four or more cards in this way, claim the Monument achievement.");
-			
-			if (!answer.HasValue || !answer.Value)
-				return;
+            var answer = parameters.TargetPlayer.Interaction.AskQuestion(parameters.TargetPlayer.Id, "You may meld any number of cards from your hand, each with a [TOWER]. If you melded four or more cards in this way, claim the Monument achievement.");
+            
+            if (!answer.HasValue || !answer.Value)
+                return;
 
-			var selectedCards = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = cardsWithTowers, MinimumCardsToPick = 1, MaximumCardsToPick = cardsWithTowers.Count }).ToList();
+            var selectedCards = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = cardsWithTowers, MinimumCardsToPick = 1, MaximumCardsToPick = cardsWithTowers.Count }).ToList();
 
-			foreach (var card in selectedCards)
-			{
-				parameters.TargetPlayer.RemoveCardFromHand(card);
-				Meld.Action(card, parameters.TargetPlayer);
-			}
+            foreach (var card in selectedCards)
+            {
+                parameters.TargetPlayer.RemoveCardFromHand(card);
+                Meld.Action(card, parameters.TargetPlayer);
+            }
 
-			if (selectedCards.Count > 4)
-				throw new NotImplementedException("Monument Achievement"); // TODO::achieve Monument.  Special achievements need a larger framework and some discussion
+            if (selectedCards.Count > 4)
+                throw new NotImplementedException("Monument Achievement"); // TODO::achieve Monument.  Special achievements need a larger framework and some discussion
 
-			PlayerActed(parameters);
-		}
+            PlayerActed(parameters);
+        }
 
     }
 }

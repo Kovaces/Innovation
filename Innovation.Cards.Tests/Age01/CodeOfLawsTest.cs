@@ -9,101 +9,101 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Innovation.Cards.Tests
 {
-	[TestClass]
-	public class CodeOfLawsTest
-	{
-		private Game testGame;
+    [TestClass]
+    public class CodeOfLawsTest
+    {
+        private Game testGame;
 
-		[TestInitialize]
-		public void Setup()
-		{
-			testGame = new Game
-			{
-				Players = new List<IPlayer>()
-				{
-					new Player
-					{
-						Name = "Test Player 1",
-						Tableau = new Tableau
-						{
-							NumberOfAchievements = 0,
-							ScorePile = new List<ICard>(),
-						},
-						Hand = new List<ICard>() 
-						{
-							 new Card { Name = "Test Red Card", Color = Color.Red, Age = 1, Top = Symbol.Blank, Left = Symbol.Crown, Center = Symbol.Tower, Right = Symbol.Tower },
-							 new Card { Name = "Test Green Card", Color = Color.Green, Age = 1, Top = Symbol.Blank, Left = Symbol.Tower, Center = Symbol.Tower, Right = Symbol.Tower },
-							 new Card { Name = "Test Blue Card", Color = Color.Blue, Age = 1, Top = Symbol.Blank, Left = Symbol.Tower, Center = Symbol.Tower, Right = Symbol.Tower }
-						}
-					},
-					new Player
-					{
-						Name = "Test Player 2",
-						Tableau = new Tableau
-						{
-							NumberOfAchievements = 0,
-							ScorePile = new List<ICard>(),
-						},
-						Hand = new List<ICard>() 
-						{
-							 new Card { Name = "Test Red Card", Color = Color.Red, Age = 1, Top = Symbol.Blank, Left = Symbol.Crown, Center = Symbol.Tower, Right = Symbol.Tower },
-						}
-					}
-				},
-				AgeDecks = new List<Deck>() 
-				{
-					new	Deck 
-					{
-						Age = 1,
-						Cards = new List<ICard>() 
-						{
-							new Card { Name = "Test Yellow Card", Color = Color.Yellow, Age = 1, Top = Symbol.Blank, Left = Symbol.Crown, Center = Symbol.Tower, Right = Symbol.Tower },
-							new Card { Name = "Test Yellow Card", Color = Color.Yellow, Age = 1, Top = Symbol.Blank, Left = Symbol.Crown, Center = Symbol.Tower, Right = Symbol.Tower },
-							new Card { Name = "Test Purple Card", Color = Color.Purple, Age = 1, Top = Symbol.Blank, Left = Symbol.Crown, Center = Symbol.Tower, Right = Symbol.Tower }
-						}
-					},
-					new	Deck 
-					{
-						Age = 2,
-						Cards = new List<ICard>() 
-						{
-							new Card { Name = "Test Yellow Card", Color = Color.Yellow, Age = 2, Top = Symbol.Blank, Left = Symbol.Crown, Center = Symbol.Tower, Right = Symbol.Tower },
-							new Card { Name = "Test Blue Card", Color = Color.Blue, Age = 2, Top = Symbol.Blank, Left = Symbol.Crown, Center = Symbol.Tower, Right = Symbol.Tower },
-							new Card { Name = "Test Green Card", Color = Color.Green, Age = 2, Top = Symbol.Blank, Left = Symbol.Crown, Center = Symbol.Tower, Right = Symbol.Tower }
-						}
-					}
-				}
-			};
+        [TestInitialize]
+        public void Setup()
+        {
+            testGame = new Game
+            {
+                Players = new List<IPlayer>()
+                {
+                    new Player
+                    {
+                        Name = "Test Player 1",
+                        Tableau = new Tableau
+                        {
+                            NumberOfAchievements = 0,
+                            ScorePile = new List<ICard>(),
+                        },
+                        Hand = new List<ICard>() 
+                        {
+                             new Card { Name = "Test Red Card", Color = Color.Red, Age = 1, Top = Symbol.Blank, Left = Symbol.Crown, Center = Symbol.Tower, Right = Symbol.Tower },
+                             new Card { Name = "Test Green Card", Color = Color.Green, Age = 1, Top = Symbol.Blank, Left = Symbol.Tower, Center = Symbol.Tower, Right = Symbol.Tower },
+                             new Card { Name = "Test Blue Card", Color = Color.Blue, Age = 1, Top = Symbol.Blank, Left = Symbol.Tower, Center = Symbol.Tower, Right = Symbol.Tower }
+                        }
+                    },
+                    new Player
+                    {
+                        Name = "Test Player 2",
+                        Tableau = new Tableau
+                        {
+                            NumberOfAchievements = 0,
+                            ScorePile = new List<ICard>(),
+                        },
+                        Hand = new List<ICard>() 
+                        {
+                             new Card { Name = "Test Red Card", Color = Color.Red, Age = 1, Top = Symbol.Blank, Left = Symbol.Crown, Center = Symbol.Tower, Right = Symbol.Tower },
+                        }
+                    }
+                },
+                AgeDecks = new List<Deck>() 
+                {
+                    new    Deck 
+                    {
+                        Age = 1,
+                        Cards = new List<ICard>() 
+                        {
+                            new Card { Name = "Test Yellow Card", Color = Color.Yellow, Age = 1, Top = Symbol.Blank, Left = Symbol.Crown, Center = Symbol.Tower, Right = Symbol.Tower },
+                            new Card { Name = "Test Yellow Card", Color = Color.Yellow, Age = 1, Top = Symbol.Blank, Left = Symbol.Crown, Center = Symbol.Tower, Right = Symbol.Tower },
+                            new Card { Name = "Test Purple Card", Color = Color.Purple, Age = 1, Top = Symbol.Blank, Left = Symbol.Crown, Center = Symbol.Tower, Right = Symbol.Tower }
+                        }
+                    },
+                    new    Deck 
+                    {
+                        Age = 2,
+                        Cards = new List<ICard>() 
+                        {
+                            new Card { Name = "Test Yellow Card", Color = Color.Yellow, Age = 2, Top = Symbol.Blank, Left = Symbol.Crown, Center = Symbol.Tower, Right = Symbol.Tower },
+                            new Card { Name = "Test Blue Card", Color = Color.Blue, Age = 2, Top = Symbol.Blank, Left = Symbol.Crown, Center = Symbol.Tower, Right = Symbol.Tower },
+                            new Card { Name = "Test Green Card", Color = Color.Green, Age = 2, Top = Symbol.Blank, Left = Symbol.Crown, Center = Symbol.Tower, Right = Symbol.Tower }
+                        }
+                    }
+                }
+            };
 
 
-			testGame.Players[0].Tableau.Stacks[Color.Blue].AddCardToTop(
-				new Card { Name = "Test Blue Card", Color = Color.Blue, Age = 1, Top = Symbol.Blank, Left = Symbol.Crown, Center = Symbol.Crown, Right = Symbol.Tower }
-			);
-			testGame.Players[0].Tableau.Stacks[Color.Red].AddCardToTop(
-				new Card { Name = "Test Red Card", Color = Color.Red, Age = 1, Top = Symbol.Blank, Left = Symbol.Crown, Center = Symbol.Crown, Right = Symbol.Leaf }
-			);
+            testGame.Players[0].Tableau.Stacks[Color.Blue].AddCardToTop(
+                new Card { Name = "Test Blue Card", Color = Color.Blue, Age = 1, Top = Symbol.Blank, Left = Symbol.Crown, Center = Symbol.Crown, Right = Symbol.Tower }
+            );
+            testGame.Players[0].Tableau.Stacks[Color.Red].AddCardToTop(
+                new Card { Name = "Test Red Card", Color = Color.Red, Age = 1, Top = Symbol.Blank, Left = Symbol.Crown, Center = Symbol.Crown, Right = Symbol.Leaf }
+            );
 
-			testGame.Players[1].Tableau.Stacks[Color.Red].AddCardToTop(
-				new Card { Name = "Test Red Card", Color = Color.Red, Age = 1, Top = Symbol.Blank, Left = Symbol.Crown, Center = Symbol.Crown, Right = Symbol.Leaf }
-			);
+            testGame.Players[1].Tableau.Stacks[Color.Red].AddCardToTop(
+                new Card { Name = "Test Red Card", Color = Color.Red, Age = 1, Top = Symbol.Blank, Left = Symbol.Crown, Center = Symbol.Crown, Right = Symbol.Leaf }
+            );
 
             Mocks.ConvertPlayersToMock(testGame);
         }
 
-		// ActionType.Optional, Symbol.Crown, "You may tuck a card from your hand of the same color as any card on your board. 
-		//									   If you do, you may splay that color of your cards left."
+        // ActionType.Optional, Symbol.Crown, "You may tuck a card from your hand of the same color as any card on your board. 
+        //                                       If you do, you may splay that color of your cards left."
 
-		[TestMethod]
-		public void Card_CodeOfLawsAction1()
-		{
-			//testGame.Players[0].AlwaysParticipates = true;
-			//testGame.Players[0].SelectsCards = new List<int>() { 0 };
+        [TestMethod]
+        public void Card_CodeOfLawsAction1()
+        {
+            //testGame.Players[0].AlwaysParticipates = true;
+            //testGame.Players[0].SelectsCards = new List<int>() { 0 };
 
-			var result = new CodeOfLaws().Actions.ToList()[0].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[0], Game = testGame, ActivePlayer = testGame.Players[0], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
+            var result = new CodeOfLaws().Actions.ToList()[0].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[0], Game = testGame, ActivePlayer = testGame.Players[0], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
 
-			Assert.AreEqual(true, result.OtherPlayerActed);
-			
-			Assert.AreEqual(SplayDirection.Left, testGame.Players[0].Tableau.Stacks[Color.Red].SplayedDirection);
+            Assert.AreEqual(true, result.OtherPlayerActed);
+            
+            Assert.AreEqual(SplayDirection.Left, testGame.Players[0].Tableau.Stacks[Color.Red].SplayedDirection);
 
             Assert.AreEqual(2, testGame.Players[0].Hand.Count);
             Assert.AreEqual(3, testGame.AgeDecks.Where(x => x.Age == 1).FirstOrDefault().Cards.Count);
@@ -118,32 +118,32 @@ namespace Innovation.Cards.Tests
             Assert.AreEqual(0, testGame.Players[0].Tableau.Stacks[Color.Purple].Cards.Count);
             Assert.AreEqual(0, testGame.Players[0].Tableau.Stacks[Color.Yellow].Cards.Count);
 
-		}
+        }
 
-		[TestMethod]
-		public void Card_CodeOfLawsAction1_NothingHappens()
-		{
-			// player2:  red stack;				yellow,blue, card;				nothing happens
+        [TestMethod]
+        public void Card_CodeOfLawsAction1_NothingHappens()
+        {
+            // player2:  red stack;                yellow,blue, card;                nothing happens
 
-			//testGame.Players[0].AlwaysParticipates = true;
-			//testGame.Players[0].SelectsCards = new List<int>() { 0 };
+            //testGame.Players[0].AlwaysParticipates = true;
+            //testGame.Players[0].SelectsCards = new List<int>() { 0 };
 
-			var result = new Clothing().Actions.ToList()[0].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[1], Game = testGame, ActivePlayer = testGame.Players[1], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
+            var result = new Clothing().Actions.ToList()[0].ActionHandler(new CardActionParameters { TargetPlayer = testGame.Players[1], Game = testGame, ActivePlayer = testGame.Players[1], PlayerSymbolCounts = new Dictionary<IPlayer, Dictionary<Symbol, int>>() });
 
-			Assert.AreEqual(false, result.OtherPlayerActed);
+            Assert.AreEqual(false, result.OtherPlayerActed);
 
-			Assert.AreEqual(1, testGame.Players[1].Tableau.Stacks[Color.Red].Cards.Count);
-			Assert.AreEqual(SplayDirection.None, testGame.Players[1].Tableau.Stacks[Color.Red].SplayedDirection);
-			Assert.AreEqual(1, testGame.Players[1].Hand.Count);
+            Assert.AreEqual(1, testGame.Players[1].Tableau.Stacks[Color.Red].Cards.Count);
+            Assert.AreEqual(SplayDirection.None, testGame.Players[1].Tableau.Stacks[Color.Red].SplayedDirection);
+            Assert.AreEqual(1, testGame.Players[1].Hand.Count);
 
-			Assert.AreEqual(0, testGame.Players[0].Tableau.ScorePile.Count);
-			Assert.AreEqual(0, testGame.Players[1].Tableau.ScorePile.Count);
+            Assert.AreEqual(0, testGame.Players[0].Tableau.ScorePile.Count);
+            Assert.AreEqual(0, testGame.Players[1].Tableau.ScorePile.Count);
 
-			Assert.AreEqual(1, testGame.Players[0].Tableau.Stacks[Color.Blue].Cards.Count);
-			Assert.AreEqual(0, testGame.Players[0].Tableau.Stacks[Color.Green].Cards.Count);
-			Assert.AreEqual(1, testGame.Players[0].Tableau.Stacks[Color.Red].Cards.Count);
-			Assert.AreEqual(0, testGame.Players[0].Tableau.Stacks[Color.Purple].Cards.Count);
-			Assert.AreEqual(0, testGame.Players[0].Tableau.Stacks[Color.Yellow].Cards.Count);
-		}
-	}
+            Assert.AreEqual(1, testGame.Players[0].Tableau.Stacks[Color.Blue].Cards.Count);
+            Assert.AreEqual(0, testGame.Players[0].Tableau.Stacks[Color.Green].Cards.Count);
+            Assert.AreEqual(1, testGame.Players[0].Tableau.Stacks[Color.Red].Cards.Count);
+            Assert.AreEqual(0, testGame.Players[0].Tableau.Stacks[Color.Purple].Cards.Count);
+            Assert.AreEqual(0, testGame.Players[0].Tableau.Stacks[Color.Yellow].Cards.Count);
+        }
+    }
 }

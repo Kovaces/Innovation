@@ -37,22 +37,22 @@ namespace Innovation.Cards
 
             var answer = parameters.TargetPlayer.Interaction.AskQuestion(parameters.TargetPlayer.Id, "You may tuck a card from your hand of the same color as any card on your board. If you do, you may splay that color of your cards left.");
 
-			if (!answer.HasValue || !answer.Value)
-				return;
+            if (!answer.HasValue || !answer.Value)
+                return;
 
             var selectedCard = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = cardsMatchingBoardColor, MinimumCardsToPick = 1, MaximumCardsToPick = 1 }).First();
-			
-			parameters.TargetPlayer.RemoveCardFromHand(selectedCard);
-			Tuck.Action(selectedCard, parameters.TargetPlayer);
+            
+            parameters.TargetPlayer.RemoveCardFromHand(selectedCard);
+            Tuck.Action(selectedCard, parameters.TargetPlayer);
 
             PlayerActed(parameters);
 
             answer = parameters.TargetPlayer.Interaction.AskQuestion(parameters.TargetPlayer.Id, "you may splay that color of your cards left.");
 
-			if (!answer.HasValue || !answer.Value)
-				return;
-				
+            if (!answer.HasValue || !answer.Value)
+                return;
+                
             parameters.TargetPlayer.SplayStack(selectedCard.Color, SplayDirection.Left);
-		}
+        }
     }
 }

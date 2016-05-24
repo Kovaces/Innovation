@@ -25,59 +25,59 @@ namespace Innovation.Cards
         };
 
         void Action1(ICardActionParameters parameters) 
-		{
-			
+        {
+            
 
-			ValidateParameters(parameters);
+            ValidateParameters(parameters);
 
-	        if (parameters.TargetPlayer.Hand.Count < 3)
-		        return;
+            if (parameters.TargetPlayer.Hand.Count < 3)
+                return;
 
-			var answer = parameters.TargetPlayer.Interaction.AskQuestion(parameters.TargetPlayer.Id, "You may return three cards from your hand. If you do, draw and meld a [3].");
+            var answer = parameters.TargetPlayer.Interaction.AskQuestion(parameters.TargetPlayer.Id, "You may return three cards from your hand. If you do, draw and meld a [3].");
 
-			if (!answer.HasValue || !answer.Value)
-				return;
+            if (!answer.HasValue || !answer.Value)
+                return;
 
-			var selectedCards = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = parameters.TargetPlayer.Hand, MinimumCardsToPick = 3, MaximumCardsToPick = 3 }).ToList();
+            var selectedCards = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = parameters.TargetPlayer.Hand, MinimumCardsToPick = 3, MaximumCardsToPick = 3 }).ToList();
 
-			foreach (var card in selectedCards)
-			{
-				parameters.TargetPlayer.RemoveCardFromHand(card);
-				Return.Action(card, parameters.AgeDecks);
-			}
+            foreach (var card in selectedCards)
+            {
+                parameters.TargetPlayer.RemoveCardFromHand(card);
+                Return.Action(card, parameters.AgeDecks);
+            }
 
-			Meld.Action(Draw.Action(3, parameters.AgeDecks), parameters.TargetPlayer);
+            Meld.Action(Draw.Action(3, parameters.AgeDecks), parameters.TargetPlayer);
 
-			PlayerActed(parameters);
-		}
+            PlayerActed(parameters);
+        }
 
 
         void Action2(ICardActionParameters parameters) 
-		{
-			
+        {
+            
 
-			ValidateParameters(parameters);
+            ValidateParameters(parameters);
 
-			var ageThreeCardsInHand = parameters.TargetPlayer.Hand.Where(x => x.Age == 3).ToList();
+            var ageThreeCardsInHand = parameters.TargetPlayer.Hand.Where(x => x.Age == 3).ToList();
 
-			if (ageThreeCardsInHand.Count == 0)
-				return;
+            if (ageThreeCardsInHand.Count == 0)
+                return;
 
-			var answer = parameters.TargetPlayer.Interaction.AskQuestion(parameters.TargetPlayer.Id, "You may return a [3] from your hand. If you do, draw three [1].");
+            var answer = parameters.TargetPlayer.Interaction.AskQuestion(parameters.TargetPlayer.Id, "You may return a [3] from your hand. If you do, draw three [1].");
 
-			if (!answer.HasValue || !answer.Value)
-				return;
+            if (!answer.HasValue || !answer.Value)
+                return;
 
-			var cardToReturn = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = ageThreeCardsInHand, MinimumCardsToPick = 1, MaximumCardsToPick = 1 }).First();
+            var cardToReturn = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = ageThreeCardsInHand, MinimumCardsToPick = 1, MaximumCardsToPick = 1 }).First();
 
-			parameters.TargetPlayer.RemoveCardFromHand(cardToReturn);
-			Return.Action(cardToReturn, parameters.AgeDecks);
+            parameters.TargetPlayer.RemoveCardFromHand(cardToReturn);
+            Return.Action(cardToReturn, parameters.AgeDecks);
 
-			parameters.TargetPlayer.AddCardToHand(Draw.Action(1, parameters.AgeDecks));
-			parameters.TargetPlayer.AddCardToHand(Draw.Action(1, parameters.AgeDecks));
-			parameters.TargetPlayer.AddCardToHand(Draw.Action(1, parameters.AgeDecks));
+            parameters.TargetPlayer.AddCardToHand(Draw.Action(1, parameters.AgeDecks));
+            parameters.TargetPlayer.AddCardToHand(Draw.Action(1, parameters.AgeDecks));
+            parameters.TargetPlayer.AddCardToHand(Draw.Action(1, parameters.AgeDecks));
 
-			PlayerActed(parameters);
-		}
+            PlayerActed(parameters);
+        }
     }
 }

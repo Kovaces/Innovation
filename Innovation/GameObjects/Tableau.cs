@@ -63,13 +63,13 @@ namespace Innovation.GameObjects
 
             foreach (var stack in Stacks)
             {
-                retVal[Symbol.Blank]	 += stack.Value.GetSymbolCount(Symbol.Blank);
-                retVal[Symbol.Clock]	 += stack.Value.GetSymbolCount(Symbol.Clock);
-                retVal[Symbol.Crown]	 += stack.Value.GetSymbolCount(Symbol.Crown);
-                retVal[Symbol.Factory]	 += stack.Value.GetSymbolCount(Symbol.Factory);
-                retVal[Symbol.Leaf]		 += stack.Value.GetSymbolCount(Symbol.Leaf);
+                retVal[Symbol.Blank]     += stack.Value.GetSymbolCount(Symbol.Blank);
+                retVal[Symbol.Clock]     += stack.Value.GetSymbolCount(Symbol.Clock);
+                retVal[Symbol.Crown]     += stack.Value.GetSymbolCount(Symbol.Crown);
+                retVal[Symbol.Factory]     += stack.Value.GetSymbolCount(Symbol.Factory);
+                retVal[Symbol.Leaf]         += stack.Value.GetSymbolCount(Symbol.Leaf);
                 retVal[Symbol.Lightbulb] += stack.Value.GetSymbolCount(Symbol.Lightbulb);
-                retVal[Symbol.Tower]	 += stack.Value.GetSymbolCount(Symbol.Tower);
+                retVal[Symbol.Tower]     += stack.Value.GetSymbolCount(Symbol.Tower);
             }
             
             return retVal;

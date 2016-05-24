@@ -23,18 +23,18 @@ namespace Innovation.Cards
         };
 
         void Action1(ICardActionParameters parameters)
-		{
-			
+        {
+            
 
-			ValidateParameters(parameters);
+            ValidateParameters(parameters);
 
-			int numberOfLeafs = parameters.TargetPlayer.Tableau.GetSymbolCount(Symbol.Leaf);
+            int numberOfLeafs = parameters.TargetPlayer.Tableau.GetSymbolCount(Symbol.Leaf);
 
-			for (int i = 0; i < (numberOfLeafs / 2); i++)
-				parameters.TargetPlayer.AddCardToHand(Draw.Action(2, parameters.AgeDecks));
+            for (int i = 0; i < (numberOfLeafs / 2); i++)
+                parameters.TargetPlayer.AddCardToHand(Draw.Action(2, parameters.AgeDecks));
 
-			if (numberOfLeafs >= 2)
-				PlayerActed(parameters);
-		}
+            if (numberOfLeafs >= 2)
+                PlayerActed(parameters);
+        }
     }
 }

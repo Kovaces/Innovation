@@ -25,27 +25,27 @@ namespace Innovation.Cards
         };
 
         void Action1(ICardActionParameters parameters) 
-		{
-			
+        {
+            
 
-			ValidateParameters(parameters);
+            ValidateParameters(parameters);
 
-			if (parameters.TargetPlayer.Hand.Any())
-				return;
+            if (parameters.TargetPlayer.Hand.Any())
+                return;
 
-			var answer = parameters.TargetPlayer.Interaction.AskQuestion(parameters.TargetPlayer.Id, "You may return a card from your hand. If you do, draw and meld a card of value one higher than the card you returned.");
-			if (!answer.HasValue || !answer.Value)
-				return;
+            var answer = parameters.TargetPlayer.Interaction.AskQuestion(parameters.TargetPlayer.Id, "You may return a card from your hand. If you do, draw and meld a card of value one higher than the card you returned.");
+            if (!answer.HasValue || !answer.Value)
+                return;
 
-			var cardToReturn = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = parameters.TargetPlayer.Hand, MinimumCardsToPick = 1, MaximumCardsToPick = 1 }).First();
+            var cardToReturn = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = parameters.TargetPlayer.Hand, MinimumCardsToPick = 1, MaximumCardsToPick = 1 }).First();
 
-			parameters.TargetPlayer.RemoveCardFromHand(cardToReturn);
+            parameters.TargetPlayer.RemoveCardFromHand(cardToReturn);
 
-			Return.Action(cardToReturn, parameters.AgeDecks);
+            Return.Action(cardToReturn, parameters.AgeDecks);
 
-			Meld.Action(Draw.Action(cardToReturn.Age + 1, parameters.AgeDecks), parameters.TargetPlayer);
+            Meld.Action(Draw.Action(cardToReturn.Age + 1, parameters.AgeDecks), parameters.TargetPlayer);
 
-			PlayerActed(parameters);
-		}
+            PlayerActed(parameters);
+        }
     }
 }

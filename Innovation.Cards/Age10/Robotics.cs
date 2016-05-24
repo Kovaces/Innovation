@@ -23,40 +23,40 @@ namespace Innovation.Cards
         };
 
         void Action1(ICardActionParameters parameters)
-	    {
-			
+        {
+            
 
-			ValidateParameters(parameters);
+            ValidateParameters(parameters);
 
-			//Score your top green card.
-		    var topGreenCard = parameters.TargetPlayer.Tableau.Stacks[Color.Green].GetTopCard();
-		    if (topGreenCard != null)
-		    {
-			    Score.Action(topGreenCard, parameters.TargetPlayer);
-				parameters.TargetPlayer.RemoveCardFromStack(topGreenCard);
-		    }
+            //Score your top green card.
+            var topGreenCard = parameters.TargetPlayer.Tableau.Stacks[Color.Green].GetTopCard();
+            if (topGreenCard != null)
+            {
+                Score.Action(topGreenCard, parameters.TargetPlayer);
+                parameters.TargetPlayer.RemoveCardFromStack(topGreenCard);
+            }
 
-			//Draw and meld a [10]
-		    var drawnCard = Draw.Action(10, parameters.AgeDecks);
-			Meld.Action(drawnCard, parameters.TargetPlayer);
+            //Draw and meld a [10]
+            var drawnCard = Draw.Action(10, parameters.AgeDecks);
+            Meld.Action(drawnCard, parameters.TargetPlayer);
 
-		    var newParameters = new CardActionParameters
-		    {
-			    ActivePlayer = parameters.TargetPlayer,
-			    TargetPlayer = parameters.TargetPlayer,
-			    AgeDecks = parameters.AgeDecks,
-			    AddToStorage = parameters.AddToStorage,
-			    GetFromStorage = parameters.GetFromStorage,
-			    Players = parameters.Players,
-		    };
+            var newParameters = new CardActionParameters
+            {
+                ActivePlayer = parameters.TargetPlayer,
+                TargetPlayer = parameters.TargetPlayer,
+                AgeDecks = parameters.AgeDecks,
+                AddToStorage = parameters.AddToStorage,
+                GetFromStorage = parameters.GetFromStorage,
+                Players = parameters.Players,
+            };
 
-		    foreach (var cardAction in drawnCard.Actions)
-		    {
-			    if (cardAction.ActionType != ActionType.Demand)
-					cardAction.ActionHandler(newParameters);
-		    }
+            foreach (var cardAction in drawnCard.Actions)
+            {
+                if (cardAction.ActionType != ActionType.Demand)
+                    cardAction.ActionHandler(newParameters);
+            }
 
-			PlayerActed(parameters);
-		}
+            PlayerActed(parameters);
+        }
     }
 }

@@ -7,8 +7,8 @@ using Innovation.Player;
 
 namespace Innovation.Cards
 {
-	public class Compass : CardBase
-	{
+    public class Compass : CardBase
+    {
         public override string Name => "Compass";
         public override int Age => 3;
         public override Color Color => Color.Green;
@@ -22,27 +22,27 @@ namespace Innovation.Cards
         };
 
 
-		private void Action1(ICardActionParameters parameters)
-		{
-			ValidateParameters(parameters);
+        private void Action1(ICardActionParameters parameters)
+        {
+            ValidateParameters(parameters);
 
-			var topCardsWithLeaf = parameters.TargetPlayer.Tableau.GetTopCards().Where(c => (c.Color != Color.Green) && c.HasSymbol(Symbol.Leaf)).ToList();
+            var topCardsWithLeaf = parameters.TargetPlayer.Tableau.GetTopCards().Where(c => (c.Color != Color.Green) && c.HasSymbol(Symbol.Leaf)).ToList();
 
-			if (topCardsWithLeaf.Any())
-			{
-				var selectedCard = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters {CardsToPickFrom = topCardsWithLeaf, MinimumCardsToPick = 1, MaximumCardsToPick = 1}).First();
-				parameters.TargetPlayer.RemoveCardFromStack(selectedCard);
-				parameters.ActivePlayer.AddCardToStack(selectedCard);
-			}
+            if (topCardsWithLeaf.Any())
+            {
+                var selectedCard = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters {CardsToPickFrom = topCardsWithLeaf, MinimumCardsToPick = 1, MaximumCardsToPick = 1}).First();
+                parameters.TargetPlayer.RemoveCardFromStack(selectedCard);
+                parameters.ActivePlayer.AddCardToStack(selectedCard);
+            }
 
-			var topCardsWithoutLeaf = parameters.ActivePlayer.Tableau.GetTopCards().Where(c => !c.HasSymbol(Symbol.Leaf)).ToList();
+            var topCardsWithoutLeaf = parameters.ActivePlayer.Tableau.GetTopCards().Where(c => !c.HasSymbol(Symbol.Leaf)).ToList();
 
-			if (topCardsWithoutLeaf.Any())
-			{
-				var selectedCard = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = topCardsWithoutLeaf, MinimumCardsToPick = 1, MaximumCardsToPick = 1 }).First();
-				parameters.ActivePlayer.RemoveCardFromStack(selectedCard);
-				parameters.TargetPlayer.AddCardToStack(selectedCard);
-			}
-		}
-	}
+            if (topCardsWithoutLeaf.Any())
+            {
+                var selectedCard = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = topCardsWithoutLeaf, MinimumCardsToPick = 1, MaximumCardsToPick = 1 }).First();
+                parameters.ActivePlayer.RemoveCardFromStack(selectedCard);
+                parameters.TargetPlayer.AddCardToStack(selectedCard);
+            }
+        }
+    }
 }

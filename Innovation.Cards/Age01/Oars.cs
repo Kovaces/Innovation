@@ -27,40 +27,40 @@ namespace Innovation.Cards
         };
 
         void Action1(ICardActionParameters parameters)
-		{
-			
+        {
+            
 
-			ValidateParameters(parameters);
+            ValidateParameters(parameters);
 
-			var cardsWithCrowns = parameters.TargetPlayer.Hand.Where(x => x.HasSymbol(Symbol.Crown)).ToList();
+            var cardsWithCrowns = parameters.TargetPlayer.Hand.Where(x => x.HasSymbol(Symbol.Crown)).ToList();
 
             if (cardsWithCrowns.Count == 0)
-				return;
+                return;
 
-			var selectedCard = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = cardsWithCrowns, MinimumCardsToPick = 1, MaximumCardsToPick = 1 }).First();
+            var selectedCard = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = cardsWithCrowns, MinimumCardsToPick = 1, MaximumCardsToPick = 1 }).First();
 
-			parameters.TargetPlayer.RemoveCardFromHand(selectedCard);
-			Score.Action(selectedCard, parameters.ActivePlayer);
+            parameters.TargetPlayer.RemoveCardFromHand(selectedCard);
+            Score.Action(selectedCard, parameters.ActivePlayer);
 
-			parameters.TargetPlayer.AddCardToHand(Draw.Action(1, parameters.AgeDecks));
+            parameters.TargetPlayer.AddCardToHand(Draw.Action(1, parameters.AgeDecks));
 
             parameters.AddToStorage("OarsCardTransferedKey", true);
-		}
+        }
 
 
-		void Action2(ICardActionParameters parameters)
-		{
-			
+        void Action2(ICardActionParameters parameters)
+        {
+            
 
-			ValidateParameters(parameters);
+            ValidateParameters(parameters);
 
             var oarsCardTransfered = parameters.GetFromStorage("OarsCardTransferedKey");
-			if (oarsCardTransfered != null && (bool)oarsCardTransfered)
-				return;
+            if (oarsCardTransfered != null && (bool)oarsCardTransfered)
+                return;
 
-			parameters.TargetPlayer.AddCardToHand(Draw.Action(1, parameters.AgeDecks));
+            parameters.TargetPlayer.AddCardToHand(Draw.Action(1, parameters.AgeDecks));
 
-			PlayerActed(parameters);
-		}
+            PlayerActed(parameters);
+        }
     }
 }

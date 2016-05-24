@@ -28,36 +28,36 @@ namespace Innovation.Cards
         };
 
         void Action1(ICardActionParameters parameters)
-	    {
-			
+        {
+            
 
-			ValidateParameters(parameters);
+            ValidateParameters(parameters);
 
-			var topCardsWithLeaves = parameters.TargetPlayer.Tableau.GetTopCards().Where(c => c.HasSymbol(Symbol.Leaf)).ToList();
-		    if (!topCardsWithLeaves.Any())
-			    return;
+            var topCardsWithLeaves = parameters.TargetPlayer.Tableau.GetTopCards().Where(c => c.HasSymbol(Symbol.Leaf)).ToList();
+            if (!topCardsWithLeaves.Any())
+                return;
 
-			var selectedCard = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = topCardsWithLeaves, MinimumCardsToPick = 1, MaximumCardsToPick = 1 }).First();
-			
-			parameters.TargetPlayer.RemoveCardFromStack(selectedCard);
-			Return.Action(selectedCard, parameters.AgeDecks);
-		}
+            var selectedCard = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = topCardsWithLeaves, MinimumCardsToPick = 1, MaximumCardsToPick = 1 }).First();
+            
+            parameters.TargetPlayer.RemoveCardFromStack(selectedCard);
+            Return.Action(selectedCard, parameters.AgeDecks);
+        }
 
-		void Action2(ICardActionParameters parameters)
-	    {
-			
+        void Action2(ICardActionParameters parameters)
+        {
+            
 
-			ValidateParameters(parameters);
+            ValidateParameters(parameters);
 
-		    Score.Action(Draw.Action(6, parameters.AgeDecks), parameters.TargetPlayer);
+            Score.Action(Draw.Action(6, parameters.AgeDecks), parameters.TargetPlayer);
 
-			PlayerActed(parameters);
+            PlayerActed(parameters);
 
-			if (!parameters.Players.ToList().Exists(p => p.Tableau.GetSymbolCount(Symbol.Leaf) > p.Tableau.GetSymbolCount(Symbol.Factory)))
-			{
+            if (!parameters.Players.ToList().Exists(p => p.Tableau.GetSymbolCount(Symbol.Leaf) > p.Tableau.GetSymbolCount(Symbol.Factory)))
+            {
                 parameters.AddToStorage("WinnerKey", parameters.Players.OrderByDescending(p => p.Tableau.GetScore()).ToList().First());
-				throw new EndOfGameException();
-			}
-		}
+                throw new EndOfGameException();
+            }
+        }
     }
 }

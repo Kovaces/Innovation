@@ -24,30 +24,30 @@ namespace Innovation.Cards
         };
 
         void Action1(ICardActionParameters parameters)
-	    {
-			
+        {
+            
 
-			ValidateParameters(parameters);
+            ValidateParameters(parameters);
 
-		    if (!parameters.TargetPlayer.Hand.Any())
-			    return;
+            if (!parameters.TargetPlayer.Hand.Any())
+                return;
 
-			var answer = parameters.TargetPlayer.Interaction.AskQuestion(parameters.TargetPlayer.Id, "You may return a card from your hand. If you returned a [10] draw a [10] for every different value card in your score pile.");
-			if (!answer.HasValue || !answer.Value)
-				return;
+            var answer = parameters.TargetPlayer.Interaction.AskQuestion(parameters.TargetPlayer.Id, "You may return a card from your hand. If you returned a [10] draw a [10] for every different value card in your score pile.");
+            if (!answer.HasValue || !answer.Value)
+                return;
 
-			var selectedCard = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = parameters.TargetPlayer.Hand, MinimumCardsToPick = 1, MaximumCardsToPick = 1 }).First();
-			
-			parameters.TargetPlayer.RemoveCardFromHand(selectedCard);
-			Return.Action(selectedCard, parameters.AgeDecks);
+            var selectedCard = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = parameters.TargetPlayer.Hand, MinimumCardsToPick = 1, MaximumCardsToPick = 1 }).First();
+            
+            parameters.TargetPlayer.RemoveCardFromHand(selectedCard);
+            Return.Action(selectedCard, parameters.AgeDecks);
 
-			if (!selectedCard.Age.Equals(10))
-				return;
+            if (!selectedCard.Age.Equals(10))
+                return;
 
-		    for (var i = 0; i < parameters.TargetPlayer.Tableau.ScorePile.Select(c => c.Age).Distinct().Count(); i++)
-			    parameters.TargetPlayer.AddCardToHand(Draw.Action(10, parameters.AgeDecks));
+            for (var i = 0; i < parameters.TargetPlayer.Tableau.ScorePile.Select(c => c.Age).Distinct().Count(); i++)
+                parameters.TargetPlayer.AddCardToHand(Draw.Action(10, parameters.AgeDecks));
 
-			PlayerActed(parameters);
-		}
+            PlayerActed(parameters);
+        }
     }
 }

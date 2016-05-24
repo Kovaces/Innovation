@@ -7,8 +7,8 @@ using Innovation.Player;
 
 namespace Innovation.Cards
 {
-	public class Feudalism : CardBase
-	{
+    public class Feudalism : CardBase
+    {
         public override string Name => "Feudalism";
         public override int Age => 3;
         public override Color Color => Color.Purple;
@@ -23,45 +23,45 @@ namespace Innovation.Cards
         };
 
 
-		void Action1(ICardActionParameters parameters)
-		{
-			ValidateParameters(parameters);
+        void Action1(ICardActionParameters parameters)
+        {
+            ValidateParameters(parameters);
 
-			var towerCards = parameters.TargetPlayer.Hand.Where(c => c.HasSymbol(Symbol.Tower)).ToList();
+            var towerCards = parameters.TargetPlayer.Hand.Where(c => c.HasSymbol(Symbol.Tower)).ToList();
 
-			if (!towerCards.Any())
-				return;
+            if (!towerCards.Any())
+                return;
 
-			var selectedCard = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters {CardsToPickFrom = towerCards, MinimumCardsToPick = 1, MaximumCardsToPick = 1}).First();
+            var selectedCard = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters {CardsToPickFrom = towerCards, MinimumCardsToPick = 1, MaximumCardsToPick = 1}).First();
 
-			parameters.TargetPlayer.RemoveCardFromHand(selectedCard);
-			parameters.ActivePlayer.AddCardToHand(selectedCard);
-		}
+            parameters.TargetPlayer.RemoveCardFromHand(selectedCard);
+            parameters.ActivePlayer.AddCardToHand(selectedCard);
+        }
 
-		void Action2(ICardActionParameters parameters)
-		{
-			ValidateParameters(parameters);
+        void Action2(ICardActionParameters parameters)
+        {
+            ValidateParameters(parameters);
 
-			var validColors = new List<Color>();
-			
-			if (parameters.TargetPlayer.Tableau.Stacks[Color.Purple].Cards.Count > 1)
-				validColors.Add(Color.Purple);
+            var validColors = new List<Color>();
+            
+            if (parameters.TargetPlayer.Tableau.Stacks[Color.Purple].Cards.Count > 1)
+                validColors.Add(Color.Purple);
 
-			if (parameters.TargetPlayer.Tableau.Stacks[Color.Purple].Cards.Count > 1)
-				validColors.Add(Color.Yellow);
+            if (parameters.TargetPlayer.Tableau.Stacks[Color.Purple].Cards.Count > 1)
+                validColors.Add(Color.Yellow);
 
-			if (!validColors.Any())
-				return;
+            if (!validColors.Any())
+                return;
 
-			var answer = parameters.TargetPlayer.Interaction.AskQuestion(parameters.TargetPlayer.Id, "You may splay your yellow or purple cards left.");
-			if (!answer.HasValue || !answer.Value)
-				return;
+            var answer = parameters.TargetPlayer.Interaction.AskQuestion(parameters.TargetPlayer.Id, "You may splay your yellow or purple cards left.");
+            if (!answer.HasValue || !answer.Value)
+                return;
 
-			var selectedColor = parameters.TargetPlayer.Interaction.PickColor(parameters.TargetPlayer.Id, validColors);
+            var selectedColor = parameters.TargetPlayer.Interaction.PickColor(parameters.TargetPlayer.Id, validColors);
 
-			parameters.TargetPlayer.SplayStack(selectedColor, SplayDirection.Left);
+            parameters.TargetPlayer.SplayStack(selectedColor, SplayDirection.Left);
 
-			PlayerActed(parameters);
-		}
-	}
+            PlayerActed(parameters);
+        }
+    }
 }

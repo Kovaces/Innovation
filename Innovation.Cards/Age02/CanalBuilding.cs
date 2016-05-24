@@ -8,53 +8,53 @@ using Innovation.Interfaces;
 
 namespace Innovation.Cards
 {
-	public class CanalBuilding : CardBase
-	{
-		public override string Name => "Canal Building";
-	    public override int Age => 2;
-	    public override Color Color => Color.Yellow;
-	    public override Symbol Top => Symbol.Blank;
-	    public override Symbol Left => Symbol.Crown;
-	    public override Symbol Center => Symbol.Leaf;
-	    public override Symbol Right => Symbol.Crown;
+    public class CanalBuilding : CardBase
+    {
+        public override string Name => "Canal Building";
+        public override int Age => 2;
+        public override Color Color => Color.Yellow;
+        public override Symbol Top => Symbol.Blank;
+        public override Symbol Left => Symbol.Crown;
+        public override Symbol Center => Symbol.Leaf;
+        public override Symbol Right => Symbol.Crown;
 
-	    public override IEnumerable<ICardAction> Actions => new List<CardAction>()
-	    {
-	        new CardAction(ActionType.Optional, Symbol.Crown, "You may exchange all the highest cards in your hand with all the highest cards in your score pile.", Action1)
-	    };
+        public override IEnumerable<ICardAction> Actions => new List<CardAction>()
+        {
+            new CardAction(ActionType.Optional, Symbol.Crown, "You may exchange all the highest cards in your hand with all the highest cards in your score pile.", Action1)
+        };
 
-	    void Action1(ICardActionParameters parameters)
-		{
-			
+        void Action1(ICardActionParameters parameters)
+        {
+            
 
-			ValidateParameters(parameters);
+            ValidateParameters(parameters);
 
-			if (!parameters.TargetPlayer.Hand.Any() && !parameters.TargetPlayer.Tableau.ScorePile.Any())
-				return;
+            if (!parameters.TargetPlayer.Hand.Any() && !parameters.TargetPlayer.Tableau.ScorePile.Any())
+                return;
 
-			var answer = parameters.TargetPlayer.Interaction.AskQuestion(parameters.TargetPlayer.Id, "You may exchange all the highest cards in your hand with all the highest cards in your score pile.");
-			if (!answer.HasValue || !answer.Value)
-				return;
+            var answer = parameters.TargetPlayer.Interaction.AskQuestion(parameters.TargetPlayer.Id, "You may exchange all the highest cards in your hand with all the highest cards in your score pile.");
+            if (!answer.HasValue || !answer.Value)
+                return;
 
-			int maxAgeInHand = parameters.TargetPlayer.Hand.Any() ? parameters.TargetPlayer.Hand.Max(x => x.Age) : 0;
-			var cardsInHandToTransfer = parameters.TargetPlayer.Hand.Where(x => x.Age == maxAgeInHand).ToList();
+            int maxAgeInHand = parameters.TargetPlayer.Hand.Any() ? parameters.TargetPlayer.Hand.Max(x => x.Age) : 0;
+            var cardsInHandToTransfer = parameters.TargetPlayer.Hand.Where(x => x.Age == maxAgeInHand).ToList();
 
-			int maxAgeInPile = parameters.TargetPlayer.Tableau.ScorePile.Any() ? parameters.TargetPlayer.Tableau.ScorePile.Max(x => x.Age) : 0;
-			var cardsInPileToTransfer = parameters.TargetPlayer.Tableau.ScorePile.Where(x => x.Age == maxAgeInPile).ToList();
+            int maxAgeInPile = parameters.TargetPlayer.Tableau.ScorePile.Any() ? parameters.TargetPlayer.Tableau.ScorePile.Max(x => x.Age) : 0;
+            var cardsInPileToTransfer = parameters.TargetPlayer.Tableau.ScorePile.Where(x => x.Age == maxAgeInPile).ToList();
 
-			foreach (ICard card in cardsInHandToTransfer)
-			{
-				parameters.TargetPlayer.RemoveCardFromHand(card);
-				parameters.TargetPlayer.Tableau.ScorePile.Add(card);
-			}
+            foreach (ICard card in cardsInHandToTransfer)
+            {
+                parameters.TargetPlayer.RemoveCardFromHand(card);
+                parameters.TargetPlayer.Tableau.ScorePile.Add(card);
+            }
 
-			foreach (ICard card in cardsInPileToTransfer)
-			{
-				parameters.TargetPlayer.Tableau.ScorePile.Remove(card);
-				parameters.TargetPlayer.AddCardToHand(card);
-			}
+            foreach (ICard card in cardsInPileToTransfer)
+            {
+                parameters.TargetPlayer.Tableau.ScorePile.Remove(card);
+                parameters.TargetPlayer.AddCardToHand(card);
+            }
 
-			PlayerActed(parameters);
-		}
-	}
+            PlayerActed(parameters);
+        }
+    }
 }

@@ -10,7 +10,7 @@ namespace Innovation.Cards
 {
     public class CityStates : CardBase
     {
-		public override string Name => "City States";
+        public override string Name => "City States";
         public override int Age => 1;
         public override Color Color => Color.Purple;
         public override Symbol Top => Symbol.Blank;
@@ -24,36 +24,36 @@ namespace Innovation.Cards
         };
 
         void Action1(ICardActionParameters parameters)
-		{
-			
+        {
+            
 
-			ValidateParameters(parameters);
+            ValidateParameters(parameters);
 
-			if (parameters.TargetPlayer.Tableau.GetSymbolCount(Symbol.Tower) < 4)
-				return;
-			
-			var topCardsWithTowers = new List<ICard>();
+            if (parameters.TargetPlayer.Tableau.GetSymbolCount(Symbol.Tower) < 4)
+                return;
+            
+            var topCardsWithTowers = new List<ICard>();
 
-			foreach (var stack in parameters.TargetPlayer.Tableau.Stacks.Values)
-			{
-				var card = stack.GetTopCard();
+            foreach (var stack in parameters.TargetPlayer.Tableau.Stacks.Values)
+            {
+                var card = stack.GetTopCard();
 
-				if ((card != null) && (card.HasSymbol(Symbol.Tower)))
-					topCardsWithTowers.Add(card);
-			}
+                if ((card != null) && (card.HasSymbol(Symbol.Tower)))
+                    topCardsWithTowers.Add(card);
+            }
 
-			if (!topCardsWithTowers.Any())
-				return;
+            if (!topCardsWithTowers.Any())
+                return;
 
-			var cardToMove = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = topCardsWithTowers, MinimumCardsToPick = 1, MaximumCardsToPick = 1 }).First();
+            var cardToMove = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = topCardsWithTowers, MinimumCardsToPick = 1, MaximumCardsToPick = 1 }).First();
 
-			// remove from TargetPlayer's board
-			parameters.TargetPlayer.Tableau.Stacks[cardToMove.Color].RemoveCard(cardToMove);
+            // remove from TargetPlayer's board
+            parameters.TargetPlayer.Tableau.Stacks[cardToMove.Color].RemoveCard(cardToMove);
 
-			// add to ActivePlayer's board - doesn't say meld, so just add it
-			parameters.ActivePlayer.Tableau.Stacks[cardToMove.Color].AddCardToTop(cardToMove);
+            // add to ActivePlayer's board - doesn't say meld, so just add it
+            parameters.ActivePlayer.Tableau.Stacks[cardToMove.Color].AddCardToTop(cardToMove);
 
-			parameters.TargetPlayer.AddCardToHand(Draw.Action(1, parameters.AgeDecks));
-		}
+            parameters.TargetPlayer.AddCardToHand(Draw.Action(1, parameters.AgeDecks));
+        }
     }
 }

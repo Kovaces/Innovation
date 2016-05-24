@@ -2,7 +2,7 @@
 
 namespace Innovation.Models.Other
 {
-	public class EndOfGameException : Exception
-	{
-	}
+    public class EndOfGameException : Exception
+    {
+    }
 }

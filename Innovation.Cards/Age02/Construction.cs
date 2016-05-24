@@ -26,41 +26,41 @@ namespace Innovation.Cards
         };
 
         void Action1(ICardActionParameters parameters)
-		{
-			
+        {
+            
 
-			ValidateParameters(parameters);
+            ValidateParameters(parameters);
 
-			if (parameters.TargetPlayer.Hand.Any())
-			{
-				var selectedCards = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = parameters.TargetPlayer.Hand, MinimumCardsToPick = Math.Min(parameters.TargetPlayer.Hand.Count, 2), MaximumCardsToPick = 2 });
-				foreach (var card in selectedCards)
-				{
-					parameters.TargetPlayer.RemoveCardFromHand(card);
-					parameters.ActivePlayer.AddCardToHand(card);
-				}
+            if (parameters.TargetPlayer.Hand.Any())
+            {
+                var selectedCards = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = parameters.TargetPlayer.Hand, MinimumCardsToPick = Math.Min(parameters.TargetPlayer.Hand.Count, 2), MaximumCardsToPick = 2 });
+                foreach (var card in selectedCards)
+                {
+                    parameters.TargetPlayer.RemoveCardFromHand(card);
+                    parameters.ActivePlayer.AddCardToHand(card);
+                }
 
-				parameters.TargetPlayer.AddCardToHand(Draw.Action(2, parameters.AgeDecks));
-			}
-		}
-		
+                parameters.TargetPlayer.AddCardToHand(Draw.Action(2, parameters.AgeDecks));
+            }
+        }
+        
 
         void Action2(ICardActionParameters parameters) 
-		{
-			
+        {
+            
 
-			ValidateParameters(parameters);
+            ValidateParameters(parameters);
 
-			var playersWithFiveTopCards = parameters.Players.Where(p => p.Tableau.GetStackColors().Count == 5).ToList();
-			
-			if (playersWithFiveTopCards.Count != 1)
-				return;
+            var playersWithFiveTopCards = parameters.Players.Where(p => p.Tableau.GetStackColors().Count == 5).ToList();
+            
+            if (playersWithFiveTopCards.Count != 1)
+                return;
 
-	        if (playersWithFiveTopCards.First() != parameters.TargetPlayer)
-		        return;
-			
-			throw new NotImplementedException("Empire Achievement"); // TODO::achieve Empire.  Special achievements need a larger framework and some discussion
-			PlayerActed(parameters);
-		}
+            if (playersWithFiveTopCards.First() != parameters.TargetPlayer)
+                return;
+            
+            throw new NotImplementedException("Empire Achievement"); // TODO::achieve Empire.  Special achievements need a larger framework and some discussion
+            PlayerActed(parameters);
+        }
     }
 }

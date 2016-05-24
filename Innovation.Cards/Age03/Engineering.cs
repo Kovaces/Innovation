@@ -7,8 +7,8 @@ using Innovation.Interfaces;
 
 namespace Innovation.Cards
 {
-	public class Engineering : CardBase
-	{
+    public class Engineering : CardBase
+    {
         public override string Name => "Engineering";
         public override int Age => 3;
         public override Color Color => Color.Red;
@@ -23,29 +23,29 @@ namespace Innovation.Cards
         };
 
 
-		void Action1(ICardActionParameters parameters)
-		{
-			ValidateParameters(parameters);
+        void Action1(ICardActionParameters parameters)
+        {
+            ValidateParameters(parameters);
 
-			var towerCards = parameters.TargetPlayer.Tableau.GetTopCards().Where(c => c.HasSymbol(Symbol.Tower)).ToList();
-			foreach (var card in towerCards)
-			{
-				parameters.TargetPlayer.RemoveCardFromStack(card);
-				parameters.ActivePlayer.AddCardToScorePile(card);
-			}
-		}
+            var towerCards = parameters.TargetPlayer.Tableau.GetTopCards().Where(c => c.HasSymbol(Symbol.Tower)).ToList();
+            foreach (var card in towerCards)
+            {
+                parameters.TargetPlayer.RemoveCardFromStack(card);
+                parameters.ActivePlayer.AddCardToScorePile(card);
+            }
+        }
 
-		void Action2(ICardActionParameters parameters)
-		{
-			ValidateParameters(parameters);
+        void Action2(ICardActionParameters parameters)
+        {
+            ValidateParameters(parameters);
 
-			var answer = parameters.TargetPlayer.Interaction.AskQuestion(parameters.TargetPlayer.Id, "You may splay your red cards left.");
-			if (!answer.HasValue || !answer.Value)
-				return;
+            var answer = parameters.TargetPlayer.Interaction.AskQuestion(parameters.TargetPlayer.Id, "You may splay your red cards left.");
+            if (!answer.HasValue || !answer.Value)
+                return;
 
-			PlayerActed(parameters);
+            PlayerActed(parameters);
 
-			parameters.TargetPlayer.SplayStack(Color.Red, SplayDirection.Left);
-		}
-	}
+            parameters.TargetPlayer.SplayStack(Color.Red, SplayDirection.Left);
+        }
+    }
 }

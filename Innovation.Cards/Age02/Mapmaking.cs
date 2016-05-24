@@ -28,37 +28,37 @@ namespace Innovation.Cards
         };
 
         void Action1(ICardActionParameters parameters)
-		{
-			
+        {
+            
 
-			ValidateParameters(parameters);
+            ValidateParameters(parameters);
 
-			List<ICard> ageOneCardsinScorePile = parameters.TargetPlayer.Tableau.ScorePile.Where(x => x.Age == 1).ToList();
-			
-			if (ageOneCardsinScorePile.Count == 0)
-				return;
+            List<ICard> ageOneCardsinScorePile = parameters.TargetPlayer.Tableau.ScorePile.Where(x => x.Age == 1).ToList();
+            
+            if (ageOneCardsinScorePile.Count == 0)
+                return;
 
-			var selectedCard = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = ageOneCardsinScorePile, MinimumCardsToPick = 1, MaximumCardsToPick = 1 }).First();
+            var selectedCard = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id, new PickCardParameters { CardsToPickFrom = ageOneCardsinScorePile, MinimumCardsToPick = 1, MaximumCardsToPick = 1 }).First();
 
-			parameters.TargetPlayer.Tableau.ScorePile.Remove(selectedCard);
-			parameters.ActivePlayer.Tableau.ScorePile.Add(selectedCard);
+            parameters.TargetPlayer.Tableau.ScorePile.Remove(selectedCard);
+            parameters.ActivePlayer.Tableau.ScorePile.Add(selectedCard);
 
             parameters.AddToStorage("MapMakingCardTransferedKey", true);
-		}
+        }
 
-		void Action2(ICardActionParameters parameters)
-		{
-			
+        void Action2(ICardActionParameters parameters)
+        {
+            
 
-			ValidateParameters(parameters);
+            ValidateParameters(parameters);
 
             var cardTransfered = parameters.GetFromStorage("MapMakingCardTransferedKey");
-			if (cardTransfered != null && !(bool)cardTransfered)
-				return;
-			
-			Score.Action(Draw.Action(1, parameters.AgeDecks), parameters.TargetPlayer);
+            if (cardTransfered != null && !(bool)cardTransfered)
+                return;
+            
+            Score.Action(Draw.Action(1, parameters.AgeDecks), parameters.TargetPlayer);
 
-			PlayerActed(parameters);
-		}
+            PlayerActed(parameters);
+        }
     }
 }
