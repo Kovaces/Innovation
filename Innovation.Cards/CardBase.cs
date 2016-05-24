@@ -12,9 +12,9 @@ namespace Innovation.Cards
 {
 	public abstract class CardBase : ICard
 	{
-		public string Id { get { return "C_" + new Regex("[^a-zA-Z0-9]").Replace(Name, ""); } }
+		public string Id => "C_" + new Regex("[^a-zA-Z0-9]").Replace(Name, "");
 
-		public abstract Symbol Top { get; }
+	    public abstract Symbol Top { get; }
 		public abstract Symbol Left { get; }
 		public abstract Symbol Center { get; }
 		public abstract Symbol Right { get; }

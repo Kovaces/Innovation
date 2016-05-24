@@ -10,23 +10,19 @@ namespace Innovation.Cards
 {
 	public class Paper : CardBase
 	{
-		public override string Name { get { return "Paper"; } }
-		public override int Age { get { return 3; } }
-		public override Color Color { get { return Color.Green; } }
-		public override Symbol Top { get { return Symbol.Blank; } }
-		public override Symbol Left { get { return Symbol.Lightbulb; } }
-		public override Symbol Center { get { return Symbol.Lightbulb; } }
-		public override Symbol Right { get { return Symbol.Crown; } }
-		public override IEnumerable<ICardAction> Actions
-		{
-			get
-			{
-				return new List<CardAction>(){
-					new CardAction(ActionType.Optional,Symbol.Lightbulb,"You may splay your green or blue cards left.", Action1)
-					,new CardAction(ActionType.Required,Symbol.Lightbulb,"Draw a [4] for every color you have splayed left.", Action2)
-				};
-			}
-		}
+        public override string Name => "Paper";
+        public override int Age => 3;
+        public override Color Color => Color.Green;
+        public override Symbol Top => Symbol.Blank;
+        public override Symbol Left => Symbol.Lightbulb;
+        public override Symbol Center => Symbol.Lightbulb;
+        public override Symbol Right => Symbol.Crown;
+
+        public override IEnumerable<ICardAction> Actions => new List<CardAction>(){
+            new CardAction(ActionType.Optional,Symbol.Lightbulb,"You may splay your green or blue cards left.", Action1)
+            ,new CardAction(ActionType.Required,Symbol.Lightbulb,"Draw a [4] for every color you have splayed left.", Action2)
+        };
+
 
 		void Action1(ICardActionParameters parameters)
 		{

@@ -11,23 +11,18 @@ namespace Innovation.Cards
 {
     public class Masonry : CardBase
     {
-        public override string Name { get { return "Masonry"; } }
-		public override int Age { get { return 1; } }
-		public override Color Color { get { return Color.Yellow; } }
-		public override Symbol Top { get { return Symbol.Tower; } }
-		public override Symbol Left { get { return Symbol.Blank; } }
-		public override Symbol Center { get { return Symbol.Tower; } }
-		public override Symbol Right { get { return Symbol.Tower; } }
-		public override IEnumerable<ICardAction> Actions
+        public override string Name => "Masonry";
+        public override int Age => 1;
+        public override Color Color => Color.Yellow;
+        public override Symbol Top => Symbol.Tower;
+        public override Symbol Left => Symbol.Blank;
+        public override Symbol Center => Symbol.Tower;
+        public override Symbol Right => Symbol.Tower;
+
+        public override IEnumerable<ICardAction> Actions => new List<CardAction>()
         {
-            get
-            {
-                return new List<CardAction>()
-				{
-                    new CardAction(ActionType.Optional, Symbol.Tower, "You may meld any number of cards from your hand, each with a [TOWER]. If you melded four or more cards in this way, claim the Monument achievement.", Action1)
-                };
-            }
-        }
+            new CardAction(ActionType.Optional, Symbol.Tower, "You may meld any number of cards from your hand, each with a [TOWER]. If you melded four or more cards in this way, claim the Monument achievement.", Action1)
+        };
 
         void Action1(ICardActionParameters parameters) 
 		{

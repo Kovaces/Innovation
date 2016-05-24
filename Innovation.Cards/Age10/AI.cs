@@ -13,25 +13,20 @@ namespace Innovation.Cards
 {
 	public class AI : CardBase
 	{
-		public override string Name { get { return "A.I."; } }
-		public override int Age { get { return 10; } }
-		public override Color Color { get { return Color.Purple; } }
-		public override Symbol Top { get { return Symbol.Lightbulb; } }
-		public override Symbol Left { get { return Symbol.Lightbulb; } }
-		public override Symbol Center { get { return Symbol.Clock; } }
-		public override Symbol Right { get { return Symbol.Blank; } }
-		public override IEnumerable<ICardAction> Actions
-		{
-			get
-			{
-				return new List<CardAction>(){
-                    new CardAction(ActionType.Required,Symbol.Lightbulb,"Draw and score a [10].", Action1)
-                    ,new CardAction(ActionType.Required,Symbol.Lightbulb,"If Robotics and Software are top cards on any board, the single player with the lowest score wins.", Action2)
-                };
-			}
-		}
+		public override string Name => "A.I.";
+	    public override int Age => 10;
+	    public override Color Color => Color.Purple;
+	    public override Symbol Top => Symbol.Lightbulb;
+	    public override Symbol Left => Symbol.Lightbulb;
+	    public override Symbol Center => Symbol.Clock;
+	    public override Symbol Right => Symbol.Blank;
 
-		void Action1(ICardActionParameters parameters)
+	    public override IEnumerable<ICardAction> Actions => new List<CardAction>(){
+	        new CardAction(ActionType.Required,Symbol.Lightbulb,"Draw and score a [10].", Action1)
+	        ,new CardAction(ActionType.Required,Symbol.Lightbulb,"If Robotics and Software are top cards on any board, the single player with the lowest score wins.", Action2)
+	    };
+
+	    void Action1(ICardActionParameters parameters)
 		{
 			
 

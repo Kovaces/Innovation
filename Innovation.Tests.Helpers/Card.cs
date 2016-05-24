@@ -12,9 +12,9 @@ namespace Innovation.Tests.Helpers
 {
 	public class Card : ICard
 	{
-		public string Id { get { return "C_" + new Regex("[^a-zA-Z0-9]").Replace(Name, ""); } }
+		public string Id => "C_" + new Regex("[^a-zA-Z0-9]").Replace(Name, "");
 
-		public Symbol Top { get; set; }
+	    public Symbol Top { get; set; }
 		public Symbol Left { get; set; }
 		public Symbol Center { get; set; }
 		public Symbol Right { get; set; }

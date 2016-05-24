@@ -8,23 +8,19 @@ namespace Innovation.Cards
 {
     public class Gunpowder : CardBase
     {
-        public override string Name { get { return "Gunpowder"; } }
-        public override int Age { get { return 4; } }
-        public override Color Color { get { return Color.Red; } }
-        public override Symbol Top { get { return Symbol.Blank; } }
-        public override Symbol Left { get { return Symbol.Factory; } }
-        public override Symbol Center { get { return Symbol.Crown; } }
-        public override Symbol Right { get { return Symbol.Factory; } }
-        public override IEnumerable<ICardAction> Actions
-        {
-            get
-            {
-                return new List<CardAction>(){
-                    new CardAction(ActionType.Demand,Symbol.Factory,"I demand you transfer a top card with a [TOWER] from your board to my score pile!", Action1)
-                    ,new CardAction(ActionType.Required,Symbol.Factory,"If any card was transferred due to the demand, draw and score a [2].", Action2)
-                };
-            }
-        }
+        public override string Name => "Gunpowder";
+        public override int Age => 4;
+        public override Color Color => Color.Red;
+        public override Symbol Top => Symbol.Blank;
+        public override Symbol Left => Symbol.Factory;
+        public override Symbol Center => Symbol.Crown;
+        public override Symbol Right => Symbol.Factory;
+
+        public override IEnumerable<ICardAction> Actions => new List<CardAction>(){
+            new CardAction(ActionType.Demand,Symbol.Factory,"I demand you transfer a top card with a [TOWER] from your board to my score pile!", Action1)
+            ,new CardAction(ActionType.Required,Symbol.Factory,"If any card was transferred due to the demand, draw and score a [2].", Action2)
+        };
+
         void Action1(ICardActionParameters parameters) { throw new NotImplementedException(); }
         void Action2(ICardActionParameters parameters) { throw new NotImplementedException(); }
     }

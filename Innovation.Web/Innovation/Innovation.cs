@@ -31,12 +31,9 @@ namespace Innovation.Web.Innovation
 			_players.Clear();
 		}
 
-		public static Innovation Instance
-		{
-			get { return _instance.Value; }
-		}
+		public static Innovation Instance => _instance.Value;
 
-		private Player.Player GetPlayerById(string id)
+	    private Player.Player GetPlayerById(string id)
 		{
 			Player.Player tempPlayer = null;
 

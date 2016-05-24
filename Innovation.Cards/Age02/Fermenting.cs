@@ -9,24 +9,20 @@ namespace Innovation.Cards
 {
     public class Fermenting : CardBase
     {
-        public override string Name { get { return "Fermenting"; } }
-        public override int Age { get { return 2; } }
-        public override Color Color { get { return Color.Yellow; } }
-        public override Symbol Top { get { return Symbol.Leaf; } }
-        public override Symbol Left { get { return Symbol.Leaf; } }
-        public override Symbol Center { get { return Symbol.Blank; } }
-        public override Symbol Right { get { return Symbol.Tower; } }
-        public override IEnumerable<ICardAction> Actions
+        public override string Name => "Fermenting";
+        public override int Age => 2;
+        public override Color Color => Color.Yellow;
+        public override Symbol Top => Symbol.Leaf;
+        public override Symbol Left => Symbol.Leaf;
+        public override Symbol Center => Symbol.Blank;
+        public override Symbol Right => Symbol.Tower;
+
+        public override IEnumerable<ICardAction> Actions => new List<CardAction>()
         {
-            get
-            {
-                return new List<CardAction>()
-				{
-                    new CardAction(ActionType.Required, Symbol.Leaf, "Draw a [2] for every two [LEAF] icons on your board.", Action1)
-                };
-            }
-        }
-		void Action1(ICardActionParameters parameters)
+            new CardAction(ActionType.Required, Symbol.Leaf, "Draw a [2] for every two [LEAF] icons on your board.", Action1)
+        };
+
+        void Action1(ICardActionParameters parameters)
 		{
 			
 
