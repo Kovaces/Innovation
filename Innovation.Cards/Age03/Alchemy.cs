@@ -12,25 +12,20 @@ namespace Innovation.Cards
 {
 	public class Alchemy : CardBase
 	{
-		public override string Name { get { return "Alchemy"; } }
-		public override int Age { get { return 3; } }
-		public override Color Color { get { return Color.Blue; } }
-		public override Symbol Top { get { return Symbol.Blank; } }
-		public override Symbol Left { get { return Symbol.Leaf; } }
-		public override Symbol Center { get { return Symbol.Tower; } }
-		public override Symbol Right { get { return Symbol.Tower; } }
-		public override IEnumerable<ICardAction> Actions
-		{
-			get
-			{
-				return new List<CardAction>(){
-                    new CardAction(ActionType.Required,Symbol.Tower,"Draw and reveal a [4] for every three [TOWER] on your board. If any of the drawn cards are red, return the cards drawn and return all cards in your hand. Otherwise, keep them.", Action1)
-                    ,new CardAction(ActionType.Required,Symbol.Tower,"Meld a card from your hand, then score a card from your hand.", Action2)
-                };
-			}
-		}
+		public override string Name => "Alchemy";
+	    public override int Age => 3;
+	    public override Color Color => Color.Blue;
+	    public override Symbol Top => Symbol.Blank;
+	    public override Symbol Left => Symbol.Leaf;
+	    public override Symbol Center => Symbol.Tower;
+	    public override Symbol Right => Symbol.Tower;
 
-		void Action1(ICardActionParameters parameters)
+	    public override IEnumerable<ICardAction> Actions => new List<CardAction>(){
+	        new CardAction(ActionType.Required,Symbol.Tower,"Draw and reveal a [4] for every three [TOWER] on your board. If any of the drawn cards are red, return the cards drawn and return all cards in your hand. Otherwise, keep them.", Action1)
+	        ,new CardAction(ActionType.Required,Symbol.Tower,"Meld a card from your hand, then score a card from your hand.", Action2)
+	    };
+
+	    void Action1(ICardActionParameters parameters)
 		{
 			
 

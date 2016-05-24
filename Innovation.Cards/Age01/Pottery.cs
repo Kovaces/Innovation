@@ -10,26 +10,21 @@ namespace Innovation.Cards
 {
 	public class Pottery : CardBase
 	{
-		public override string Name { get { return "Pottery"; } }
-		public override int Age { get { return 1; } }
-		public override Color Color { get { return Color.Blue; } }
-		public override Symbol Top { get { return Symbol.Blank; } }
-		public override Symbol Left { get { return Symbol.Leaf; } }
-		public override Symbol Center { get { return Symbol.Leaf; } }
-		public override Symbol Right { get { return Symbol.Leaf; } }
-		public override IEnumerable<ICardAction> Actions
-		{
-			get
-			{
-				return new List<CardAction>()
-				{
-                    new CardAction(ActionType.Optional, Symbol.Leaf, "You may return up to three cards from your hand. If you returned any cards, draw and score a card of value equal to the number of cards you returned.", Action1)
-                    ,new CardAction(ActionType.Required, Symbol.Leaf, "Draw a [1].", Action2)
-                };
-			}
-		}
+		public override string Name => "Pottery";
+	    public override int Age => 1;
+	    public override Color Color => Color.Blue;
+	    public override Symbol Top => Symbol.Blank;
+	    public override Symbol Left => Symbol.Leaf;
+	    public override Symbol Center => Symbol.Leaf;
+	    public override Symbol Right => Symbol.Leaf;
 
-		void Action1(ICardActionParameters parameters)
+	    public override IEnumerable<ICardAction> Actions => new List<CardAction>()
+	    {
+	        new CardAction(ActionType.Optional, Symbol.Leaf, "You may return up to three cards from your hand. If you returned any cards, draw and score a card of value equal to the number of cards you returned.", Action1)
+	        ,new CardAction(ActionType.Required, Symbol.Leaf, "Draw a [1].", Action2)
+	    };
+
+	    void Action1(ICardActionParameters parameters)
 		{
 			
 

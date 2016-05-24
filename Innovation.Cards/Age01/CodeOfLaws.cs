@@ -11,23 +11,17 @@ namespace Innovation.Cards
 {
     public class CodeOfLaws : CardBase
     {
-        public override string Name { get { return "Code of Laws"; } }
-        public override int Age { get { return 1; } }
-        public override Color Color { get { return Color.Purple; } }
-        public override Symbol Top { get { return Symbol.Blank; } }
-        public override Symbol Left { get { return Symbol.Crown; } }
-        public override Symbol Center { get { return Symbol.Crown; } }
-        public override Symbol Right { get { return Symbol.Leaf; } }
+        public override string Name => "Code of Laws";
+        public override int Age => 1;
+        public override Color Color => Color.Purple;
+        public override Symbol Top => Symbol.Blank;
+        public override Symbol Left => Symbol.Crown;
+        public override Symbol Center => Symbol.Crown;
+        public override Symbol Right => Symbol.Leaf;
 
-        public override IEnumerable<ICardAction> Actions
-        {
-            get
-            {
-                return new List<CardAction>(){
-                    new CardAction(ActionType.Optional,Symbol.Crown,"You may tuck a card from your hand of the same color as any card on your board. If you do, you may splay that color of your cards left.", Action1)
-                };
-            }
-        }
+        public override IEnumerable<ICardAction> Actions => new List<CardAction>(){
+            new CardAction(ActionType.Optional,Symbol.Crown,"You may tuck a card from your hand of the same color as any card on your board. If you do, you may splay that color of your cards left.", Action1)
+        };
 
         void Action1(ICardActionParameters parameters)
         {

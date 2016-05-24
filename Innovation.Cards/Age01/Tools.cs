@@ -10,24 +10,19 @@ namespace Innovation.Cards
 {
     public class Tools : CardBase
     {
-        public override string Name { get { return "Tools"; } }
-        public override int Age { get { return 1; } }
-        public override Color Color { get { return Color.Blue; } }
-        public override Symbol Top { get { return Symbol.Blank; } }
-        public override Symbol Left { get { return Symbol.Lightbulb; } }
-        public override Symbol Center { get { return Symbol.Lightbulb; } }
-        public override Symbol Right { get { return Symbol.Tower; } }
-        public override IEnumerable<ICardAction> Actions
+        public override string Name => "Tools";
+        public override int Age => 1;
+        public override Color Color => Color.Blue;
+        public override Symbol Top => Symbol.Blank;
+        public override Symbol Left => Symbol.Lightbulb;
+        public override Symbol Center => Symbol.Lightbulb;
+        public override Symbol Right => Symbol.Tower;
+
+        public override IEnumerable<ICardAction> Actions => new List<CardAction>()
         {
-            get
-            {
-                return new List<CardAction>()
-				{
-                    new CardAction(ActionType.Optional, Symbol.Lightbulb, "You may return three cards from your hand. If you do, draw and meld a [3].", Action1)
-                    ,new CardAction(ActionType.Optional, Symbol.Lightbulb, "You may return a [3] from your hand. If you do, draw three [1].", Action2)
-                };
-            }
-        }
+            new CardAction(ActionType.Optional, Symbol.Lightbulb, "You may return three cards from your hand. If you do, draw and meld a [3].", Action1)
+            ,new CardAction(ActionType.Optional, Symbol.Lightbulb, "You may return a [3] from your hand. If you do, draw three [1].", Action2)
+        };
 
         void Action1(ICardActionParameters parameters) 
 		{

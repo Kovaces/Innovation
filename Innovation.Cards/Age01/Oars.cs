@@ -12,26 +12,21 @@ namespace Innovation.Cards
 {
     public class Oars : CardBase
     {
-        public override string Name { get { return "Oars"; } }
-        public override int Age { get { return 1; } }
-        public override Color Color { get { return Color.Red; } }
-        public override Symbol Top { get { return Symbol.Tower; } }
-        public override Symbol Left { get { return Symbol.Crown; } }
-        public override Symbol Center { get { return Symbol.Blank; } }
-        public override Symbol Right { get { return Symbol.Tower; } }
-        public override IEnumerable<ICardAction> Actions
+        public override string Name => "Oars";
+        public override int Age => 1;
+        public override Color Color => Color.Red;
+        public override Symbol Top => Symbol.Tower;
+        public override Symbol Left => Symbol.Crown;
+        public override Symbol Center => Symbol.Blank;
+        public override Symbol Right => Symbol.Tower;
+
+        public override IEnumerable<ICardAction> Actions => new List<CardAction>()
         {
-            get
-            {
-                return new List<CardAction>()
-				{
-                    new CardAction(ActionType.Demand, Symbol.Tower, "I demand you transfer a card with a [CROWN] from your hand to my score pile! If you do, draw a [1]!", Action1)
-                    ,new CardAction(ActionType.Required, Symbol.Tower, "If no cards were transferred due to this demand, draw a [1].", Action2)
-                };
-            }
-        }
-        
-		void Action1(ICardActionParameters parameters)
+            new CardAction(ActionType.Demand, Symbol.Tower, "I demand you transfer a card with a [CROWN] from your hand to my score pile! If you do, draw a [1]!", Action1)
+            ,new CardAction(ActionType.Required, Symbol.Tower, "If no cards were transferred due to this demand, draw a [1].", Action2)
+        };
+
+        void Action1(ICardActionParameters parameters)
 		{
 			
 
