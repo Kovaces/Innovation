@@ -57,7 +57,7 @@ namespace Innovation.Web.Innovation
 		}
 		private Game.Game GetGameByPlayerId(string playerId)
 		{
-            Player.Player player;
+			Player.Player player;
 			player = GetPlayerById(playerId);
 
 			var game = _games.Values.FirstOrDefault(g => g.Players.Contains(player));
@@ -79,20 +79,20 @@ namespace Innovation.Web.Innovation
 		//User
 		public void AddUser(string userId)
 		{
-            var interaction = new PlayerInteraction
-            {
-                AskQuestionHandler = new AskQuestion { Handler = AskQuestion },
-                PickCardsHandler = new PickCards { Handler = PickCards },
-                PickColorHandler = new PickColor { Handler = PickColor },
-                PickPlayerHandler = new PickPlayer { Handler = PickPlayer },
-                RevealCardHandler = new RevealCard { Handler = RevealCard }
-            };
+			var interaction = new PlayerInteraction
+			{
+				AskQuestionHandler = new AskQuestion { Handler = AskQuestion },
+				PickCardsHandler = new PickCards { Handler = PickCards },
+				PickColorHandler = new PickColor { Handler = PickColor },
+				PickPlayerHandler = new PickPlayer { Handler = PickPlayer },
+				RevealCardHandler = new RevealCard { Handler = RevealCard }
+			};
 
 			var player = new Player.Player
 			{
 				Id = userId,
 				UpdateClientHandler = UpdateClient,
-                Interaction = interaction,
+				Interaction = interaction,
 			};
 
 			_players.TryAdd(player.Id, player);
@@ -113,9 +113,9 @@ namespace Innovation.Web.Innovation
 				Name = gameName,
 				Id = Guid.NewGuid().ToString(),
 				Players = playerIds.Select(id => GetPlayerById(id)).ToList(),
-                SynchGameState = SyncGameState,
-                StartTurn = PlayerStartTurn,
-                EndTurn = PlayerEndTurn
+				SynchGameState = SyncGameState,
+				StartTurn = PlayerStartTurn,
+				EndTurn = PlayerEndTurn
 			};
 
 			_games.TryAdd(game.Id, game);
@@ -186,20 +186,20 @@ namespace Innovation.Web.Innovation
 		{
 			Clients.User(playerId).startTurn();
 		}
-        public void PlayerEndTurn(string playerId)
-        {
-            Clients.User(playerId).startTurn();
-        }
+		public void PlayerEndTurn(string playerId)
+		{
+			Clients.User(playerId).startTurn();
+		}
 
-        internal void PlayerPickAction(string gameId, string playerId, string selectedAction)
+		internal void PlayerPickAction(string gameId, string playerId, string selectedAction)
 		{
 			Game.Game game;
-            Player.Player player;
+			Player.Player player;
 			ValidateResponseParameters(gameId, playerId, out game, out player);
 
 			ActionEnum action;
-            if (!Enum.TryParse(selectedAction, true, out action))
-                throw new InvalidEnumArgumentException();
+			if (!Enum.TryParse(selectedAction, true, out action))
+				throw new InvalidEnumArgumentException();
 
 			game.TakeAction(action);
 		}
@@ -219,7 +219,7 @@ namespace Innovation.Web.Innovation
 			Player.Player player;
 			ValidateResponseParameters(gameId, playerId, out game, out player);
 
-            player.Interaction.PickCardsHandler.Response(CardList.GetCardList().Where(c => cardIds.ToList().Contains(c.Id)));
+			player.Interaction.PickCardsHandler.Response(CardList.GetCardList().Where(c => cardIds.ToList().Contains(c.Id)));
 		}
 
 		public void AskQuestion(string playerId, string question)
@@ -229,13 +229,13 @@ namespace Innovation.Web.Innovation
 		internal void AskQuestionResponse(string gameId, string playerId, bool response)
 		{
 			Game.Game game;
-            Player.Player player;
+			Player.Player player;
 			ValidateResponseParameters(gameId, playerId, out game, out player);
 
-            player.Interaction.AskQuestionHandler.Response(response);
+			player.Interaction.AskQuestionHandler.Response(response);
 		}
 
-        public void PickPlayer(string playerId, IEnumerable<Player.Player> playerList)
+		public void PickPlayer(string playerId, IEnumerable<IPlayer> playerList)
 		{
 			Clients.User(playerId).pickPlayers(
 				Newtonsoft.Json.JsonConvert.SerializeObject(playerList.Select(x => x.Id).ToList())
@@ -243,39 +243,39 @@ namespace Innovation.Web.Innovation
 				, 1
 			);
 		}
-        internal void PickPlayerResponse(string gameId, string playerId, string selectedPlayerId)
-        {
-            Game.Game game;
-            Player.Player player;
-            ValidateResponseParameters(gameId, playerId, out game, out player);
+		internal void PickPlayerResponse(string gameId, string playerId, string selectedPlayerId)
+		{
+			Game.Game game;
+			Player.Player player;
+			ValidateResponseParameters(gameId, playerId, out game, out player);
 
-            player.Interaction.PickPlayerHandler.Response(_players.First(p => p.Key.Equals(selectedPlayerId)).Value);
-        }
+			player.Interaction.PickPlayerHandler.Response(_players.First(p => p.Key.Equals(selectedPlayerId)).Value);
+		}
 		
-        public void PickColor(string playerId, IEnumerable<Color> colors)
+		public void PickColor(string playerId, IEnumerable<Color> colors)
 		{
 			;
 		}
-        internal void PickColorResponse(string gameId, string playerId, string selectedColor)
-        {
-            Game.Game game;
-            Player.Player player;
-            ValidateResponseParameters(gameId, playerId, out game, out player);
+		internal void PickColorResponse(string gameId, string playerId, string selectedColor)
+		{
+			Game.Game game;
+			Player.Player player;
+			ValidateResponseParameters(gameId, playerId, out game, out player);
 
-            Color color;
-            if (!Enum.TryParse(selectedColor, true, out color))
-                throw new InvalidEnumArgumentException();
+			Color color;
+			if (!Enum.TryParse(selectedColor, true, out color))
+				throw new InvalidEnumArgumentException();
 
-            player.Interaction.PickColorHandler.Response(color);
-        }
+			player.Interaction.PickColorHandler.Response(color);
+		}
 
 		public void RevealCard(string playerId, ICard card)
 		{
 			Game.Game game = GetGameByPlayerId(playerId);
 			Clients.Group(game.Name).revealCard(playerId, JsonConvert.SerializeObject(card));
-            
-            Player.Player player = GetPlayerById(playerId);
-            player.Interaction.RevealCardHandler.Response(true);
+			
+			Player.Player player = GetPlayerById(playerId);
+			player.Interaction.RevealCardHandler.Response(true);
 		}
 
 		public void UpdateClient(string playerId)

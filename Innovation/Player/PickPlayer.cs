@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using Innovation.Interfaces;
 
 namespace Innovation.Player
 {
-	public class PickPlayer : PlayerAction<Player, string, IEnumerable<Player>>
+	public class PickPlayer : PlayerAction<IPlayer, string, IEnumerable<IPlayer>>
 	{
-		public override Action<string, IEnumerable<Player>> Handler { get; set; }
+		public override Action<string, IEnumerable<IPlayer>> Handler { get; set; }
 	}
 }
