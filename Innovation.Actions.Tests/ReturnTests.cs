@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using Innovation.GameObjects;
 using Innovation.Interfaces;
 
 
@@ -44,7 +41,7 @@ namespace Innovation.Actions.Tests
         [TestMethod]
         public void ReturnAction_Base()
         {
-            Return.Action(testCard, testGame);
+            Return.Action(testCard, testGame.AgeDecks);
             Assert.AreEqual(testCard, testGame.AgeDecks[0].Cards[1]);
             Assert.AreEqual(2, testGame.AgeDecks[0].Cards.Count);
             Assert.AreEqual(1, testGame.AgeDecks[1].Cards.Count);

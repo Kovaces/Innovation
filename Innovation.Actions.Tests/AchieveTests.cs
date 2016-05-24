@@ -1,7 +1,7 @@
-﻿
-using Innovation.Tests.Helpers;
+﻿using Innovation.Tests.Helpers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
+using Innovation.GameObjects;
 using Innovation.Interfaces;
 
 

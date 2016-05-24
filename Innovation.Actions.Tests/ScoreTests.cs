@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Innovation.GameObjects;
 using Innovation.Interfaces;
-
-
 using Innovation.Tests.Helpers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -15,14 +11,14 @@ namespace Innovation.Actions.Tests
     public class ScoreTests
     {
         private Card testCard;
-        private Player testPlayer;
+        private Player.Player testPlayer;
 
         [TestInitialize]
         public void Setup()
         {
             testCard = new Card { Name = "Test Blue Card", Color = Color.Blue, Age = 1, Top = Symbol.Blank, Left = Symbol.Tower, Center = Symbol.Tower, Right = Symbol.Tower };
 
-            testPlayer = new Player
+            testPlayer = new Player.Player
             {
                 Tableau = new Tableau
                 {

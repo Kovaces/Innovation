@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using Innovation.Exceptions;
+using Innovation.GameObjects;
 using Innovation.Interfaces;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -39,7 +37,7 @@ namespace Innovation.Actions.Tests
         [TestMethod]
         public void DrawAction_Base()
         {
-            var drawnCard = Draw.Action(1, testGame);
+            var drawnCard = Draw.Action(1, testGame.AgeDecks);
             Assert.IsNotNull(drawnCard);
             Assert.AreEqual(1, drawnCard.Age);
         }
@@ -47,7 +45,7 @@ namespace Innovation.Actions.Tests
         [TestMethod]
         public void DrawAction_RequestedDeckEmpty()
         {
-            var drawnCard = Draw.Action(2, testGame);
+            var drawnCard = Draw.Action(2, testGame.AgeDecks);
             Assert.IsNotNull(drawnCard);
             Assert.AreEqual(3, drawnCard.Age);
         }
@@ -55,16 +53,16 @@ namespace Innovation.Actions.Tests
         [TestMethod]
         public void DrawAction_MultipleDecksEmpty()
         {
-            var drawnCard = Draw.Action(4, testGame);
+            var drawnCard = Draw.Action(4, testGame.AgeDecks);
             Assert.IsNotNull(drawnCard);
             Assert.AreEqual(7, drawnCard.Age);
         }
 
         [TestMethod]
-        [ExpectedException(typeof(NotImplementedException))]
+        [ExpectedException(typeof(CardDrawException))]
         public void DrawAction_DrawAgeTen_DeckEmpty()
         {
-            Draw.Action(10, testGame);
+            Draw.Action(10, testGame.AgeDecks);
         }
     }
 }
