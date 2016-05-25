@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Innovation.Cards;
 using Innovation.Interfaces;
 
 
@@ -22,7 +23,7 @@ namespace Innovation.Tests.Helpers
         public string Name { get; set; }
         public int Age { get; set; }
         public Color Color { get; set; }
-        public IEnumerable<CardAction> Actions { get; set; }
+        public IEnumerable<ICardAction> Actions { get; set; }
 
         public bool HasSymbol(Symbol symbol)
         {

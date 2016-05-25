@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Innovation.Models.Enums;
+﻿using System.Collections.Generic;
+using Innovation.GameObjects;
+using Innovation.Interfaces;
 using Innovation.Tests.Helpers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -17,7 +14,7 @@ namespace Innovation.Models.Tests
         [TestInitialize]
         public void Setup()
         {
-            var blueStack = new Stack
+            var blueStack = new GameObjects.Stack
             {
                 SplayedDirection = SplayDirection.None,
                 Cards = new List<ICard> //cards when played are added to end of list with .Add method therefore the last card in the list is the card on top
@@ -28,7 +25,7 @@ namespace Innovation.Models.Tests
                 }
             };
 
-            var greenStack = new Stack
+            var greenStack = new GameObjects.Stack
             {
                 SplayedDirection = SplayDirection.None,
                 Cards = new List<ICard> //cards when played are added to end of list with .Add method therefore the last card in the list is the card on top
@@ -39,7 +36,7 @@ namespace Innovation.Models.Tests
                 }
             };
 
-            var purpleStack = new Stack
+            var purpleStack = new GameObjects.Stack
             {
                 SplayedDirection = SplayDirection.None,
                 Cards = new List<ICard> //cards when played are added to end of list with .Add method therefore the last card in the list is the card on top

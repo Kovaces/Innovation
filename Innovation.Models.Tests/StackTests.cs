@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using Innovation.Models.Enums;
+﻿using System.Collections.Generic;
+using Innovation.Interfaces;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Innovation.Tests.Helpers;
 
@@ -11,12 +9,12 @@ namespace Innovation.Models.Tests
     [TestClass]
     public class StackTests
     {
-        private Stack testStack;
+        private GameObjects.Stack testStack;
 
         [TestInitialize]
         public void Setup()
         {
-            testStack = new Stack
+            testStack = new GameObjects.Stack
             {
                 SplayedDirection = SplayDirection.None,
                 Cards = new List<ICard> //cards when played are added to end of list with .Add method therefore the last card in the list is the card on top
@@ -31,7 +29,7 @@ namespace Innovation.Models.Tests
         [TestMethod]
         public void Stack_GetSymbolCount_WhenStackHasZeroCards()
         {
-            var emptyStack = new Stack { SplayedDirection = SplayDirection.None, Cards =  new List<ICard>()};
+            var emptyStack = new GameObjects.Stack { SplayedDirection = SplayDirection.None, Cards =  new List<ICard>()};
 
             Assert.AreEqual(0, emptyStack.GetSymbolCount(Symbol.Blank));
             Assert.AreEqual(0, emptyStack.GetSymbolCount(Symbol.Clock));
