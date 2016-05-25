@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Innovation.Actions;
 using Innovation.Interfaces;
 
 
@@ -20,6 +21,21 @@ namespace Innovation.Cards
             new CardAction(ActionType.Required,Symbol.Factory,"Draw and tuck a [3]. If it has a [CROWN], repeat this dogma effect.", Action1)
         };
 
-        void Action1(ICardActionParameters parameters) { throw new NotImplementedException(); }
+        void Action1(ICardActionParameters parameters)
+        {
+            ValidateParameters(parameters);
+
+            //Draw and tuck a [3].
+            PlayerActed(parameters);
+
+            ICard drawnCard;
+            do
+            {
+                drawnCard = Draw.Action(3, parameters.AgeDecks);
+                parameters.TargetPlayer.TuckCard(drawnCard);
+            }
+            //If it has a [CROWN], repeat this dogma effect.
+            while (drawnCard.HasSymbol(Symbol.Crown));
+        }
     }
 }

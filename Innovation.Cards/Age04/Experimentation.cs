@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Innovation.Actions;
 using Innovation.Interfaces;
 
 
@@ -20,6 +21,12 @@ namespace Innovation.Cards
             new CardAction(ActionType.Required,Symbol.Lightbulb,"Draw and meld a [5].", Action1)
         };
 
-        void Action1(ICardActionParameters parameters) { throw new NotImplementedException(); }
+        void Action1(ICardActionParameters parameters)
+        {
+            ValidateParameters(parameters);
+            PlayerActed(parameters);
+
+            Meld.Action(Draw.Action(5, parameters.AgeDecks), parameters.TargetPlayer);
+        }
     }
 }
