@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using Innovation.Actions;
 using Innovation.Interfaces;
-
+using Innovation.Player;
 
 
 namespace Innovation.Cards
@@ -21,7 +23,42 @@ namespace Innovation.Cards
             ,new CardAction(ActionType.Optional,Symbol.Crown,"You may splay your green cards right.", Action2)
         };
 
-        void Action1(ICardActionParameters parameters) { throw new NotImplementedException(); }
-        void Action2(ICardActionParameters parameters) { throw new NotImplementedException(); }
+        private void Action1(ICardActionParameters parameters)
+        {
+            ValidateParameters(parameters);
+
+            //I demand you transfer a top non-purple card with a [CROWN] from your board to my board! 
+            var topCrownCards = parameters.TargetPlayer.Tableau.GetTopCards()
+                                          .Where(c => c.HasSymbol(Symbol.Crown) && c.Color != Color.Purple)
+                                          .ToList();
+            if (topCrownCards.Any())
+            {
+                var cardToTransfer = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id,
+                                                                                    new PickCardParameters
+                                                                                    {
+                                                                                        CardsToPickFrom = topCrownCards,
+                                                                                        MinimumCardsToPick = 1,
+                                                                                        MaximumCardsToPick = 1
+                                                                                    }).First();
+
+                parameters.TargetPlayer.RemoveCardFromStack(cardToTransfer);
+                parameters.ActivePlayer.AddCardToStack(cardToTransfer);
+
+                //If you do, draw and meld a [4]!
+                Meld.Action(Draw.Action(4, parameters.AgeDecks), parameters.TargetPlayer);
+            }
+        }
+
+        private void Action2(ICardActionParameters parameters)
+        {
+            //"You may splay your green cards right."
+            var response = parameters.TargetPlayer.Interaction.AskQuestion(parameters.TargetPlayer.Id, "Do you wish to splay your GREEN cards RIGHT?");
+
+            if (response.HasValue && !response.Value)
+                return;
+            
+            parameters.TargetPlayer.SplayStack(Color.Green, SplayDirection.Right);
+            PlayerActed(parameters);
+        }
     }
 }

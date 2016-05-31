@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using Innovation.Actions;
 using Innovation.Interfaces;
-
+using Innovation.Player;
 
 
 namespace Innovation.Cards
@@ -21,7 +23,40 @@ namespace Innovation.Cards
             ,new CardAction(ActionType.Required,Symbol.Factory,"If any card was transferred due to the demand, draw and score a [2].", Action2)
         };
 
-        void Action1(ICardActionParameters parameters) { throw new NotImplementedException(); }
-        void Action2(ICardActionParameters parameters) { throw new NotImplementedException(); }
+        void Action1(ICardActionParameters parameters)
+        {
+            ValidateParameters(parameters);
+
+            //"I demand you transfer a top card with a [TOWER] from your board to my score pile!"
+            var topTowerCards = parameters.TargetPlayer.Tableau.GetTopCards().Where(c => c.HasSymbol(Symbol.Tower)).ToList();
+
+            if (topTowerCards.Any())
+            {
+                var cardToTransfer = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id,
+                                                                                    new PickCardParameters
+                                                                                    {
+                                                                                        CardsToPickFrom = topTowerCards,
+                                                                                        MinimumCardsToPick = 1,
+                                                                                        MaximumCardsToPick = 1
+                                                                                    }).First();
+
+                parameters.TargetPlayer.RemoveCardFromStack(cardToTransfer);
+                parameters.ActivePlayer.AddCardToScorePile(cardToTransfer);
+                
+                parameters.AddToStorage("Gunpowder.CardTransferred.Key", true);
+            }
+        }
+
+        void Action2(ICardActionParameters parameters)
+        {
+            ValidateParameters(parameters);
+
+            //If any card was transferred due to the demand, draw and score a [2].
+            var cardTransfered = parameters.GetFromStorage("Gunpowder.CardTransferred.Key");
+            if (cardTransfered != null && !(bool)cardTransfered)
+                return;
+
+            Score.Action(Draw.Action(2, parameters.AgeDecks), parameters.TargetPlayer);
+        }
     }
 }

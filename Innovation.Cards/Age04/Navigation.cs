@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Innovation.Interfaces;
-
+using Innovation.Player;
 
 
 namespace Innovation.Cards
@@ -20,6 +21,25 @@ namespace Innovation.Cards
             new CardAction(ActionType.Demand,Symbol.Crown,"I demand you transfer a [2] or [3] from your score pile, if it has any, to my score pile!", Action1)
         };
 
-        void Action1(ICardActionParameters parameters) { throw new NotImplementedException(); }
+        void Action1(ICardActionParameters parameters)
+        {
+            ValidateParameters(parameters);
+
+            //I demand you transfer a [2] or [3] from your score pile, if it has any, to my score pile!
+            var scorePileCards = parameters.TargetPlayer.Tableau.ScorePile.Where(c => c.Age == 2 || c.Age == 3).ToList();
+            if (!scorePileCards.Any())
+                return;
+
+            var cardToTransfer = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id,
+                                                                                    new PickCardParameters
+                                                                                    {
+                                                                                        CardsToPickFrom = scorePileCards,
+                                                                                        MinimumCardsToPick = 1,
+                                                                                        MaximumCardsToPick = 1
+                                                                                    }).First();
+
+            parameters.TargetPlayer.RemoveCardFromScorePile(cardToTransfer);
+            parameters.ActivePlayer.AddCardToScorePile(cardToTransfer);
+        }
     }
 }
