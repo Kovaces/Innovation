@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Innovation.Interfaces;
-
+using Innovation.Player;
 
 
 namespace Innovation.Cards
@@ -21,7 +22,47 @@ namespace Innovation.Cards
             ,new CardAction(ActionType.Optional,Symbol.Leaf,"You may splay your yellow or purple cards right.", Action2)
         };
 
-        void Action1(ICardActionParameters parameters) { throw new NotImplementedException(); }
-        void Action2(ICardActionParameters parameters) { throw new NotImplementedException(); }
+        void Action1(ICardActionParameters parameters)
+        {
+            ValidateParameters(parameters);
+
+            var leafCount = parameters.TargetPlayer.Tableau.GetSymbolCount(Symbol.Leaf);
+
+            if (leafCount < 2)
+                return;
+
+            var cardsToTuck = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id,
+                                                                            new PickCardParameters
+                                                                            {
+                                                                                CardsToPickFrom = parameters.TargetPlayer.Hand,
+                                                                                MinimumCardsToPick = 0,
+                                                                                MaximumCardsToPick = (leafCount / 2)
+                                                                            }).ToList();
+
+            if (!cardsToTuck.Any())
+                return;
+
+            PlayerActed(parameters);
+
+            foreach (var card in cardsToTuck)
+            {
+                parameters.TargetPlayer.TuckCard(card);
+            }
+        }
+
+        void Action2(ICardActionParameters parameters)
+        {
+            ValidateParameters(parameters);
+
+            //You may splay your blue cards right.
+            var color = parameters.TargetPlayer.Interaction.PickColor(parameters.TargetPlayer.Id, new List<Color> {Color.Purple, Color.Yellow, Color.None});
+
+            if (color == Color.None)
+                return;
+
+            PlayerActed(parameters);
+
+            parameters.TargetPlayer.SplayStack(color, SplayDirection.Right);
+        }
     }
 }
