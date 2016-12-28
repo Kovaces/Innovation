@@ -24,6 +24,11 @@ namespace Innovation.GameObjects
             return Cards.Any() ? Cards.Last() : null;
         }
 
+        public ICard GetBottomCard()
+        {
+            return Cards.Any() ? Cards.First() : null;
+        }
+
         public void AddCardToTop(ICard card)
         {
             Cards.Add(card);

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Innovation.Actions;
 using Innovation.Interfaces;
 
 
@@ -20,6 +21,17 @@ namespace Innovation.Cards
             new CardAction(ActionType.Required,Symbol.Factory,"Draw and tuck two [4], then score your bottom yellow card.", Action1)
         };
 
-        void Action1(ICardActionParameters parameters) { throw new NotImplementedException(); }
+        void Action1(ICardActionParameters parameters)
+        {
+            ValidateParameters(parameters);
+            PlayerActed(parameters);
+
+            Tuck.Action(Draw.Action(4, parameters.AgeDecks), parameters.TargetPlayer);
+            Tuck.Action(Draw.Action(4, parameters.AgeDecks), parameters.TargetPlayer);
+
+            var bottomYellow = parameters.TargetPlayer.Tableau.Stacks[Color.Yellow].GetBottomCard();
+            parameters.TargetPlayer.RemoveCardFromStack(bottomYellow);
+            Score.Action(bottomYellow, parameters.TargetPlayer);
+        }
     }
 }

@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Innovation.Interfaces;
-
+using Innovation.Player;
 
 
 namespace Innovation.Cards
@@ -21,7 +22,42 @@ namespace Innovation.Cards
             ,new CardAction(ActionType.Optional,Symbol.Leaf,"You may splay your yellow cards right.", Action2)
         };
 
-        void Action1(ICardActionParameters parameters) { throw new NotImplementedException(); }
-        void Action2(ICardActionParameters parameters) { throw new NotImplementedException(); }
+        void Action1(ICardActionParameters parameters)
+        {
+            ValidateParameters(parameters);
+
+            if (!parameters.TargetPlayer.Tableau.ScorePile.Any())
+                return;
+
+            do
+            {
+                var cardsToPickFrom = parameters.TargetPlayer.Tableau.ScorePile.Where(c => c.Age == parameters.TargetPlayer.Tableau.ScorePile.Max(x => x.Age)).ToList();
+
+                var selectedCard = parameters.TargetPlayer.Interaction.PickCards(parameters.TargetPlayer.Id, 
+                                                                                    new PickCardParameters
+                                                                                    {
+                                                                                        CardsToPickFrom = cardsToPickFrom,
+                                                                                        MinimumCardsToPick = 1,
+                                                                                        MaximumCardsToPick = 1
+                                                                                    }).First();
+
+                parameters.TargetPlayer.RemoveCardFromScorePile(selectedCard);
+                parameters.TargetPlayer.AddCardToHand(selectedCard);
+
+            } while (parameters.TargetPlayer.Hand.Count == 1);
+        }
+
+        void Action2(ICardActionParameters parameters)
+        {
+            ValidateParameters(parameters);
+
+            var answer = parameters.TargetPlayer.Interaction.AskQuestion(parameters.TargetPlayer.Id, "You may splay your yellow cards right.");
+            if (!answer.HasValue || !answer.Value)
+                return;
+
+            PlayerActed(parameters);
+
+            parameters.TargetPlayer.SplayStack(Color.Yellow, SplayDirection.Right);
+        }
     }
 }
