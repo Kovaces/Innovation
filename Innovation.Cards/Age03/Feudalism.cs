@@ -47,7 +47,7 @@ namespace Innovation.Cards
             if (parameters.TargetPlayer.Tableau.Stacks[Color.Purple].Cards.Count > 1)
                 validColors.Add(Color.Purple);
 
-            if (parameters.TargetPlayer.Tableau.Stacks[Color.Purple].Cards.Count > 1)
+            if (parameters.TargetPlayer.Tableau.Stacks[Color.Yellow].Cards.Count > 1)
                 validColors.Add(Color.Yellow);
 
             if (!validColors.Any())

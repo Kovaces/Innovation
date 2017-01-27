@@ -49,15 +49,7 @@ namespace Innovation.Cards
 
         void Action2(ICardActionParameters parameters)
         {
-            ValidateParameters(parameters);
-
-            var answer = parameters.TargetPlayer.Interaction.AskQuestion(parameters.TargetPlayer.Id, "You may splay your yellow cards right.");
-            if (!answer.HasValue || !answer.Value)
-                return;
-
-            PlayerActed(parameters);
-
-            parameters.TargetPlayer.SplayStack(Color.Yellow, SplayDirection.Right);
+            AskToSplay(parameters, Color.Yellow, SplayDirection.Right);
         }
     }
 }

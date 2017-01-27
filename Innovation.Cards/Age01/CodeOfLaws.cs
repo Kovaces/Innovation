@@ -47,12 +47,7 @@ namespace Innovation.Cards
 
             PlayerActed(parameters);
 
-            answer = parameters.TargetPlayer.Interaction.AskQuestion(parameters.TargetPlayer.Id, "you may splay that color of your cards left.");
-
-            if (!answer.HasValue || !answer.Value)
-                return;
-                
-            parameters.TargetPlayer.SplayStack(selectedCard.Color, SplayDirection.Left);
+            AskToSplay(parameters, selectedCard.Color, SplayDirection.Left);
         }
     }
 }

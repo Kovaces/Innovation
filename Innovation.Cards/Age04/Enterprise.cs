@@ -51,14 +51,7 @@ namespace Innovation.Cards
 
         private void Action2(ICardActionParameters parameters)
         {
-            //"You may splay your green cards right."
-            var response = parameters.TargetPlayer.Interaction.AskQuestion(parameters.TargetPlayer.Id, "Do you wish to splay your GREEN cards RIGHT?");
-
-            if (response.HasValue && !response.Value)
-                return;
-            
-            parameters.TargetPlayer.SplayStack(Color.Green, SplayDirection.Right);
-            PlayerActed(parameters);
+            AskToSplay(parameters, Color.Green, SplayDirection.Right);
         }
     }
 }

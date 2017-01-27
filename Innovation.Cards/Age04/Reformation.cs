@@ -54,15 +54,26 @@ namespace Innovation.Cards
         {
             ValidateParameters(parameters);
 
-            //You may splay your blue cards right.
-            var color = parameters.TargetPlayer.Interaction.PickColor(parameters.TargetPlayer.Id, new List<Color> {Color.Purple, Color.Yellow, Color.None});
+            var validColors = new List<Color>();
 
-            if (color == Color.None)
+            if (parameters.TargetPlayer.Tableau.Stacks[Color.Purple].Cards.Count > 1)
+                validColors.Add(Color.Purple);
+
+            if (parameters.TargetPlayer.Tableau.Stacks[Color.Yellow].Cards.Count > 1)
+                validColors.Add(Color.Yellow);
+
+            if (!validColors.Any())
                 return;
 
-            PlayerActed(parameters);
+            var answer = parameters.TargetPlayer.Interaction.AskQuestion(parameters.TargetPlayer.Id, "You may splay your yellow or purple cards right.");
+            if (!answer.HasValue || !answer.Value)
+                return;
 
-            parameters.TargetPlayer.SplayStack(color, SplayDirection.Right);
+            var selectedColor = parameters.TargetPlayer.Interaction.PickColor(parameters.TargetPlayer.Id, validColors);
+
+            parameters.TargetPlayer.SplayStack(selectedColor, SplayDirection.Right);
+
+            PlayerActed(parameters);
         }
     }
 }

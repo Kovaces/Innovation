@@ -25,15 +25,7 @@ namespace Innovation.Cards
 
         void Action1(ICardActionParameters parameters)
         {
-            ValidateParameters(parameters);
-
-            var answer = parameters.TargetPlayer.Interaction.AskQuestion(parameters.TargetPlayer.Id, "You may splay your blue cards right.");
-            if (!answer.HasValue || !answer.Value)
-                return;
-
-            PlayerActed(parameters);
-
-            parameters.TargetPlayer.SplayStack(Color.Blue, SplayDirection.Right);
+            AskToSplay(parameters, Color.Blue, SplayDirection.Right);
         }
 
         void Action2(ICardActionParameters parameters)

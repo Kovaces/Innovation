@@ -54,6 +54,21 @@ namespace Innovation.Cards
             return drawnCard;
         }
 
+        protected void AskToSplay(ICardActionParameters parameters, Color color, SplayDirection direction)
+        {
+            ValidateParameters(parameters);
+
+            var answer = parameters.TargetPlayer.Interaction.AskQuestion(parameters.TargetPlayer.Id, String.Format("You may splay your {0} cards {1}.", color, direction));
+            if (!answer.HasValue || !answer.Value)
+            {
+                return;
+            }
+
+            PlayerActed(parameters);
+
+            parameters.TargetPlayer.SplayStack(color, direction);
+        }
+
         protected void PlayerActed(ICardActionParameters parameters)
         {
             if (parameters.TargetPlayer != parameters.ActivePlayer)

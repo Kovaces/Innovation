@@ -57,13 +57,7 @@ namespace Innovation.Cards
                 PlayerActed(parameters);
             }
 
-            var answer = parameters.TargetPlayer.Interaction.AskQuestion(parameters.TargetPlayer.Id, "You may splay your red cards left.");
-            if (!answer.HasValue || !answer.Value)
-                return;
-
-            PlayerActed(parameters);
-
-            parameters.TargetPlayer.SplayStack(Color.Red, SplayDirection.Left);
+            AskToSplay(parameters, Color.Red, SplayDirection.Left);
         }
     }
 }
